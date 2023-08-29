@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "bun run fetch:schema && bun run codegen && bun run tsc",
-    "fetch:schema": "wget -q https://graph.defined.fi/schema/latest.graphql -O src/resources/schema.graphql",
+    "fetch:schema": "curl https://graph.defined.fi/schema/latest.graphql --output src/resources/schema.graphql",
     "codegen": "graphql-codegen --config codegen.ts",
     "prepack": "cp src/resources/* dist/resources/"
   },
