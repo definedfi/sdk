@@ -8,8 +8,6 @@ on:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    env:
-      NPM_TOKEN: ${{ secrets.DEFINED_SDK_NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
@@ -21,3 +19,5 @@ jobs:
       - run: bun i
       - run: bun run build
       - run: npm publish --access public
+        env:
+          NPM_TOKEN: ${{secrets.DEFINED_SDK_NPM_TOKEN}}
