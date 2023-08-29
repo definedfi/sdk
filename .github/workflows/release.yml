@@ -9,7 +9,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     env:
-      NODE_AUTH_TOKEN: ${{ secrets.DEFINED_SDK_NPM_TOKEN  }}
+      NPM_TOKEN: ${{ secrets.DEFINED_SDK_NPM_TOKEN }}
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v3
