@@ -1,8 +1,8 @@
 "use client"
 
-import { Defined } from '@defined/sdk/dist/sdk'
+import { Defined } from '@definedfi/sdk/dist/sdk'
 import { useEffect, useState } from 'react'
-import { Network } from '@defined/sdk/src/resources/graphql'
+import { Network } from '@definedfi/sdk/src/resources/graphql'
 
 // Don't do this -- instead use a .env file and next server routes
 const sdk = new Defined(process.env.NEXT_PUBLIC_DEFINED_API_KEY || '')
