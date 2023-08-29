@@ -1,0 +1,28 @@
+{
+  "name": "@definedfi/sdk",
+  "version": "0.0.1",
+  "main": "src/index.ts",
+  "scripts": {
+    "build": "bun run fetch:schema && bun run codegen && bun build --outdir=dist ./src/index.ts",
+    "fetch:schema": "wget -q https://graph.defined.fi/schema/latest.graphql -O src/resources/schema.graphql",
+    "codegen": "graphql-codegen --config codegen.ts"
+  },
+  "keywords": ["crypto", "charting", "sdk", "analytics", "blockchain", "api"],
+  "repository": "github:definedfi/sdk",
+  "author": "Defined.fi",
+  "license": "MIT",
+  "homepage": "https://docs.defined.fi",
+  "description": "The Defined.fi SDK for JavaScript/Typescript. It provides generated types and convenient ways to access the graphql api.",
+  "dependencies": {
+    "@types/jest": "^29.5.4",
+    "@types/node": "^20.5.7",
+    "graphql": "^16.8.0",
+    "graphql-request": "^6.1.0",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "5.0.0",
+    "@graphql-codegen/introspection": "4.0.0",
+    "@graphql-codegen/typescript": "4.0.1"
+  }
+}

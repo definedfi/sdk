@@ -1,0 +1,23 @@
+{
+  "name": "example-codegen",
+  "version": "0.0.1",
+  "main": "index.ts",
+  "scripts": {
+    "codegen": "graphql-codegen --config codegen.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@definedfi/sdk": "../../",
+    "@graphql-codegen/typescript-document-nodes": "^4.0.1",
+    "graphql": "^16.8.0",
+    "typescript": "^5.2.2"
+  },
+  "devDependencies": {
+    "@graphql-codegen/cli": "5.0.0",
+    "@graphql-codegen/client-preset": "^4.1.0",
+    "@graphql-codegen/typescript": "4.0.1"
+  }
+}
