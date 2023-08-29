@@ -1,6 +1,6 @@
 {
   "name": "@definedfi/sdk",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "src/index.ts",
   "scripts": {
     "build": "bun run fetch:schema && bun run codegen && bun build --outdir=dist ./src/index.ts",
