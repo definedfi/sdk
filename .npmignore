@@ -1,4 +1,3 @@
 node_modules
-src/resources/*
-!src/resources/.keep
 .next
+!dist

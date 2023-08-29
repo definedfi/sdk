@@ -1,5 +1,4 @@
+.DS_Store
 node_modules
-src/resources/*
-!src/resources/.keep
 .next
 dist

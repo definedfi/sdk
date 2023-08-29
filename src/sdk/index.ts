@@ -1,4 +1,4 @@
-import { GraphQLClient, Variables, gql, request } from 'graphql-request'
+import { GraphQLClient, Variables } from 'graphql-request'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { VariablesAndRequestHeadersArgs } from 'graphql-request/build/esm/types'
 
