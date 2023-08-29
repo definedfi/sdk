@@ -36,6 +36,7 @@ You need to provide an API key in order for the examples to work. We have [bun](
 After installing [bun](https://bun.sh), from the project root. 
 
 * `bun i`
+* `bun run build`
 
 ### Simple
 This performs a simple inline graphql request, and uses a user-provided query and selection set. 
