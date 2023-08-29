@@ -66,6 +66,11 @@ This shows how you could use it in a next JS project.
 * `bun i`
 * `NEXT_PUBLIC_DEFINED_API_KEY=xyz bun run dev`
 
+## Roadmap
+
+* Add support for graphql websockets and subscriptions using the graphql-ws protocol. 
+* Query definitons for common types, batteries included so you could do things like `sdk.tokens('0xabc').price`
+
 ## Contributing
 
 Prs open!
