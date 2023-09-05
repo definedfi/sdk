@@ -52,11 +52,27 @@ enum AlertRecurrence {
   ONCE
 }
 
+type Balance {
+  walletId: String!
+  tokenId: String!
+  balance: String!
+}
+
 """Optional way to provide current balance to the PnL calculator"""
 input BalanceInput {
   walletId: String!
   tokenId: String!
   balance: String!
+}
+
+input BalancesInput {
+  walletId: String!
+  cursor: String
+}
+
+type BalancesResponse {
+  items: [Balance!]!
+  cursor: String
 }
 
 """Bar chart data to track price changes over time."""
@@ -1270,6 +1286,15 @@ input GetPriceInput {
   maxDeviations: Float @deprecated(reason: "This isn't taken into account anymore.")
 }
 
+"""Input type of `getTokensInfo`."""
+input GetTokensInfoInput {
+  """The contract address of the token."""
+  address: String!
+
+  """The network ID the token is deployed on."""
+  networkId: Int!
+}
+
 type GetWebhooksResponse {
   items: [Webhook]
   cursor: String
@@ -1279,6 +1304,21 @@ type GetWebhooksResponse {
 enum GraphQlNftPoolVariant {
   ERC20
   NATIVE
+}
+
+type HoldersCounts {
+  total: Int!
+}
+
+input HoldersInput {
+  tokenId: String!
+  cursor: String
+}
+
+type HoldersResponse {
+  items: [Balance!]!
+  counts: HoldersCounts
+  cursor: String
 }
 
 """Bar chart data."""
@@ -5943,7 +5983,15 @@ type Query {
 
     """The network ID the token is deployed on."""
     networkId: Int!
-  ): EnhancedToken
+  ): TokenInfo
+
+  """Returns metadata for a given token."""
+  getTokensInfo(
+    """
+    A list of `GetTokensInfoInput`s. Accepts a maximum of 25 inputs (anything over will be truncated).
+    """
+    input: [GetTokensInfoInput!]!
+  ): [TokenInfo]
 
   """Returns bucketed stats for a given token within a pair."""
   getDetailedStats(
@@ -6211,6 +6259,8 @@ type Query {
   Returns a list of token simple chart data (sparklines) for the given tokens.
   """
   tokenSparklines(input: TokenSparklineInput!): [TokenSparkline!]!
+  balances(input: BalancesInput!): BalancesResponse!
+  holders(input: HoldersInput!): HoldersResponse!
 }
 
 enum QuoteCurrency {

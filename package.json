@@ -19,6 +19,7 @@
     "@types/node": "^20.5.7",
     "graphql": "^16.8.0",
     "graphql-request": "^6.1.0",
+    "graphql-ws": "^5.14.0",
     "typescript": "^5.2.2"
   },
   "devDependencies": {
