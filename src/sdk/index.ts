@@ -3,7 +3,7 @@ import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { VariablesAndRequestHeadersArgs } from 'graphql-request/build/esm/types'
 import { Client, ExecutionResult, Sink, createClient } from 'graphql-ws'
 
-type CleanupFunction = () => void
+export type CleanupFunction = () => void
 
 export class Defined {
   private client: GraphQLClient
