@@ -1,0 +1,40 @@
+import { Defined } from "./index"
+
+const getNetworksDocument = {"kind":"Document","definitions":[{"kind":"OperationDefinition","operation":"query","name":{"kind":"Name","value":"Networks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"getNetworks"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as any;
+const getNetworksString = `query GetNetworks { getNetworks { id } }`
+const subscribePriceUpdatedString = `subscription onPriceUpdated($address: String!, $networkId: Int!) { onPriceUpdated(address: $address, networkId: $networkId) { address networkId priceUsd timestamp } }`
+
+describe(Defined, () => {
+  let sdk: Defined
+  beforeEach(() => {
+    sdk = new Defined('dummy-key')
+  })
+
+  describe("query", () => {
+    it("send a fetch request with the correct params", async () => {
+      const fetchSpy = jest.spyOn(sdk['client'], 'request').mockResolvedValue({} as any)
+      await sdk.query(getNetworksDocument, {})
+      expect(fetchSpy).toHaveBeenCalledWith(getNetworksDocument, {})
+    })
+  })
+  describe("send", () => {
+    it("should return the results of the query", async () => {
+      const fetchSpy = jest.spyOn(sdk['client'], 'request').mockResolvedValue({} as any)
+      await sdk.send(getNetworksString, {})
+      expect(fetchSpy).toHaveBeenCalledWith(getNetworksString, {})
+    })
+  })
+  describe("subscribe", () => {
+    it("should return a cleanup function", () => {
+      const next = jest.fn(), error = jest.fn(), complete = jest.fn()
+      const sink = {
+        next,
+        error,
+        complete
+      }
+      jest.spyOn(sdk['wsClient'], 'subscribe').mockReturnValue(() => {})
+      const cleanup = sdk.subscribe(subscribePriceUpdatedString, { address: "0xtoken", networkId: 1 }, sink)
+      expect(typeof cleanup).toBe("function")
+    })
+  })
+})

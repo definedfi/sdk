@@ -2,6 +2,8 @@ import { GraphQLClient, Variables } from 'graphql-request'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { VariablesAndRequestHeadersArgs } from 'graphql-request/build/esm/types'
 import { Client, ExecutionResult, Sink, createClient } from 'graphql-ws'
+import { invariant } from './invariant'
+import WebSocket from 'isomorphic-ws'
 
 export type CleanupFunction = () => void
 
@@ -14,6 +16,8 @@ export class Defined {
     private apiUrl: string = `https://graph.defined.fi/graphql`,
     private apiRealtimeUrl: string = `wss://realtime-api.defined.fi/graphql`
   ) {
+    invariant(this.apiKey, "apiKey must be defined")
+
     this.client = new GraphQLClient(this.apiUrl, {
       method: "POST",
       headers: new Headers({
@@ -22,7 +26,9 @@ export class Defined {
         'X-Apollo-Operation-Name': 'query'
       })
     })
+
     this.wsClient = createClient({
+      webSocketImpl: WebSocket,
       url: this.apiRealtimeUrl,
       connectionParams: {
         Authorization: this.apiKey
