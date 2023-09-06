@@ -53,11 +53,29 @@ export enum AlertRecurrence {
   Once = 'ONCE'
 }
 
+export type Balance = {
+  __typename?: 'Balance';
+  balance: Scalars['String']['output'];
+  tokenId: Scalars['String']['output'];
+  walletId: Scalars['String']['output'];
+};
+
 /** Optional way to provide current balance to the PnL calculator */
 export type BalanceInput = {
   balance: Scalars['String']['input'];
   tokenId: Scalars['String']['input'];
   walletId: Scalars['String']['input'];
+};
+
+export type BalancesInput = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  walletId: Scalars['String']['input'];
+};
+
+export type BalancesResponse = {
+  __typename?: 'BalancesResponse';
+  cursor?: Maybe<Scalars['String']['output']>;
+  items: Array<Balance>;
 };
 
 /** Bar chart data to track price changes over time. */
@@ -1056,6 +1074,14 @@ export type GetPriceInput = {
   timestamp?: InputMaybe<Scalars['Int']['input']>;
 };
 
+/** Input type of `getTokensInfo`. */
+export type GetTokensInfoInput = {
+  /** The contract address of the token. */
+  address: Scalars['String']['input'];
+  /** The network ID the token is deployed on. */
+  networkId: Scalars['Int']['input'];
+};
+
 export type GetWebhooksResponse = {
   __typename?: 'GetWebhooksResponse';
   cursor?: Maybe<Scalars['String']['output']>;
@@ -1067,6 +1093,23 @@ export enum GraphQlNftPoolVariant {
   Erc20 = 'ERC20',
   Native = 'NATIVE'
 }
+
+export type HoldersCounts = {
+  __typename?: 'HoldersCounts';
+  total: Scalars['Int']['output'];
+};
+
+export type HoldersInput = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  tokenId: Scalars['String']['input'];
+};
+
+export type HoldersResponse = {
+  __typename?: 'HoldersResponse';
+  counts?: Maybe<HoldersCounts>;
+  cursor?: Maybe<Scalars['String']['output']>;
+  items: Array<Balance>;
+};
 
 /** Bar chart data. */
 export type IndividualBarData = {
@@ -4289,6 +4332,7 @@ export type PriceEventWebhookConditionInput = {
 
 export type Query = {
   __typename?: 'Query';
+  balances: BalancesResponse;
   /** Returns a URL for a pair chart. */
   chartUrls?: Maybe<ChartUrlsResponse>;
   /** Returns a list of exchanges based on a variety of filters. */
@@ -4347,12 +4391,15 @@ export type Query = {
   /** Returns transactions for a pair. */
   getTokenEvents?: Maybe<EventConnection>;
   /** Returns metadata for a given token. */
-  getTokenInfo?: Maybe<EnhancedToken>;
+  getTokenInfo?: Maybe<TokenInfo>;
   /** Returns real-time or historical prices for a list of tokens, fetched in batches. */
   getTokenPrices?: Maybe<Array<Maybe<Price>>>;
+  /** Returns metadata for a given token. */
+  getTokensInfo?: Maybe<Array<Maybe<TokenInfo>>>;
   /** Get the wallet profit and loss based on their dex trades */
   getWalletPnl: Array<Maybe<WalletPnl>>;
   getWebhooks?: Maybe<GetWebhooksResponse>;
+  holders: HoldersResponse;
   /** Returns a list of token metadata. */
   listFavoriteTokens?: Maybe<Array<TokenWithMetadata>>;
   /** Returns a list of pairs containing a given token. */
@@ -4373,6 +4420,11 @@ export type Query = {
   tokenSparklines: Array<TokenSparkline>;
   /** Find a list of tokens by their addresses & network id, with pagination. */
   tokens: Array<Maybe<EnhancedToken>>;
+};
+
+
+export type QueryBalancesArgs = {
+  input: BalancesInput;
 };
 
 
@@ -4600,6 +4652,11 @@ export type QueryGetTokenPricesArgs = {
 };
 
 
+export type QueryGetTokensInfoArgs = {
+  input: Array<GetTokensInfoInput>;
+};
+
+
 export type QueryGetWalletPnlArgs = {
   input: PnlInput;
 };
@@ -4611,6 +4668,11 @@ export type QueryGetWebhooksArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   webhookId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryHoldersArgs = {
+  input: HoldersInput;
 };
 
 

@@ -28,6 +28,6 @@ sdk.subscribe<Price>(`
     }
   }
 `, {
-  address: "0xaef420fd77477d9dc8b46d704d44dd09d6c27866",
+  address: "0x302cae5dcf8f051d0177043c3438020b89b33218",
   networkId: 1
  }, sink)
