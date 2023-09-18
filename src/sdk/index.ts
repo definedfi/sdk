@@ -1,7 +1,7 @@
 import { GraphQLClient, Variables } from 'graphql-request'
 import { TypedDocumentNode } from '@graphql-typed-document-node/core'
 import { VariablesAndRequestHeadersArgs } from 'graphql-request/build/esm/types'
-import { Client, ExecutionResult, Sink, createClient } from 'graphql-ws'
+import { Client as GraphQLWsClient, ExecutionResult, Sink, createClient } from 'graphql-ws'
 import { invariant } from './invariant'
 import WebSocket from 'isomorphic-ws'
 
@@ -9,7 +9,7 @@ export type CleanupFunction = () => void
 
 export class Defined {
   private client: GraphQLClient
-  private wsClient: Client
+  private wsClient: GraphQLWsClient
 
   constructor(
     private apiKey: string,

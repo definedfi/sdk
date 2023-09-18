@@ -47,6 +47,15 @@ type AddNftEventsOutput {
   events: [NftEvent]!
 }
 
+type AddNftPoolEventsOutput {
+  collectionAddress: String!
+  exchangeAddress: String!
+  poolAddress: String!
+  networkId: Int!
+  id: String!
+  events: [NftPoolEvent]!
+}
+
 enum AlertRecurrence {
   INDEFINITE
   ONCE
@@ -542,6 +551,9 @@ type DetailedPairStats {
   """The token of interest used to calculate token-specific stats."""
   tokenOfInterest: TokenOfInterest
 
+  """The unix timestamp for the last transaction to happen on the pair."""
+  lastTransaction: Int
+
   """The breakdown of stats over a 5 minute window."""
   stats_min5: WindowedDetailedPairStats
 
@@ -565,6 +577,7 @@ type DetailedPairStats {
 
   """The breakdown of stats over a 30 day window."""
   stats_day30: WindowedDetailedPairStats
+  pair: Pair
 }
 
 """The start/end timestamp for a given bucket within the window."""
@@ -725,6 +738,9 @@ type EnhancedNftContract {
 
   """The URL for an image of the NFT collection."""
   image: String
+
+  """A list of labels for the NFT collection."""
+  labels: [ContractLabel]
 }
 
 """Metadata for a token."""
@@ -1249,6 +1265,31 @@ type FrontRunLabelData {
   token1DrainedAmount: String!
 }
 
+"""Input type of `getDetailedPairsStats`."""
+input GetDetailedPairsStatsInput {
+  """The contract address of the pair."""
+  pairAddress: String!
+
+  """The network ID the pair is deployed on."""
+  networkId: Int!
+
+  """
+  The token of interest used to calculate token-specific stats for the pair. Can be `token0` or `token1`.
+  """
+  tokenOfInterest: TokenOfInterest
+
+  """The unix timestamp for the stats. Defaults to current."""
+  timestamp: Int
+
+  """The list of durations to get detailed pair stats for."""
+  durations: [DetailedPairStatsDuration]
+
+  """
+  The number of aggregated values to receive. Note: Each duration has predetermined bucket sizes.<br>  The first n-1 buckets are historical. The last bucket is a snapshot of current data.<br> duration `day1`: 6 buckets (4 hours each) plus 1 partial bucket<br> duration `hour12`: 12 buckets (1 hour each) plus 1 partial bucket<br> duration `hour4`: 8 buckets (30 min each) plus 1 partial bucket<br> duration `hour1`: 12 buckets (5 min each) plus 1 partial bucket<br> duration `min5`: 5 buckets (1 min each) plus 1 partial bucket<br> For example, requesting 11 buckets for a `min5` duration will return the last 10 minutes worth of data plus a snapshot for the current minute.
+  """
+  bucketCount: Int
+}
+
 """Response returned by `getNftPoolCollectionsByExchange`."""
 type GetNftPoolCollectionsResponse {
   """A list of NFT collections."""
@@ -1277,7 +1318,9 @@ input GetPriceInput {
   """The network ID the token is deployed on."""
   networkId: Int!
 
-  """The unix timestamp for the price."""
+  """
+  The unix timestamp for the price. Lookup is limited to the last three months.
+  """
   timestamp: Int
 
   """
@@ -1726,7 +1769,7 @@ type NewPoolEventDataV2 {
   usdRatio: String!
 
   """The list of NFT token IDs initially deposited."""
-  nftTokenIds: [String]!
+  nftTokenIds: [String!]!
 
   """The amount of each NFT token initially deposited."""
   nftTokenQuantities: [String]!
@@ -4396,7 +4439,7 @@ type NftPoolNftDepositEventData {
   type: NftPoolEventType!
 
   """The list of NFT token IDs deposited."""
-  nftTokenIds: [String!]
+  nftTokenIds: [String!]!
 
   """The number of NFTs in the contract after the block has processed."""
   nftTokenBalance: String!
@@ -4430,7 +4473,7 @@ type NftPoolNftWithdrawalEventData {
   type: NftPoolEventType!
 
   """The NFT token IDs withdrawn."""
-  nftTokenIds: [String!]
+  nftTokenIds: [String!]!
 
   """The number of NFTs in the contract after the block has processed."""
   nftTokenBalance: String!
@@ -4447,7 +4490,7 @@ type NftPoolNftWithdrawalEventDataV2 {
   type: NftPoolEventType!
 
   """The list of NFT token IDs withdrawn."""
-  nftTokenIds: [String!]
+  nftTokenIds: [String!]!
 
   """The amount of each NFT token withdrawn."""
   nftTokenAmounts: [String!]!
@@ -4534,6 +4577,12 @@ type NftPoolResponse {
   """The contract address of the NFT collection."""
   collectionAddress: String!
 
+  """The contract name of the NFT collection."""
+  collectionName: String!
+
+  """The symbol of the NFT collection."""
+  collectionSymbol: String
+
   """The contract address of the NFT AMM marketplace."""
   exchangeAddress: String!
 
@@ -4570,6 +4619,8 @@ type NftPoolResponse {
 
   """The current fee for pool."""
   fee: String!
+  poolFeesAllTimeT: String
+  poolFeesAllTimeNBT: String
 
   """
   The current price at which the pool is willing to sell an NFT in the network's base token. Only applicable for `SELL` and `BUY_AND_SELL` pool types.
@@ -4707,6 +4758,97 @@ type NftPoolSpotPriceUpdateEventDataV2 {
 
   """The ratio of the transaction token to USD."""
   usdRatio: String!
+}
+
+"""Stats for an NFT pool."""
+type NftPoolStatsResponse {
+  """The contract address of the NFT AMM marketplace."""
+  exchangeAddress: String!
+
+  """The network ID the NFT collection is deployed on."""
+  networkId: Int!
+
+  """The contract address of the NFT collection."""
+  collectionAddress: String!
+
+  """The unix timestamp for the start of the time frame."""
+  startTime: Int!
+
+  """The unix timestamp for the end of the time frame."""
+  endTime: Int!
+
+  """The contract address of the NFT pool."""
+  poolAddress: String
+
+  """The total number of NFTs bought and sold over the time frame."""
+  nftVolumeV2: String
+
+  """The total number of NFTs bought over the time frame."""
+  nftsBoughtV2: String
+
+  """The total number of NFTs sold over the time frame."""
+  nftsSoldV2: String
+
+  """The number of NFTs in the pool at the start of the time frame."""
+  openNftBalanceV2: String
+
+  """The number of NFTs in the pool at the end of the time frame."""
+  closeNftBalanceV2: String
+
+  """
+  The total volume of the pool in the network's base token over the time frame.
+  """
+  volumeNBT: String
+
+  """
+  The total buy volume of the pool in the network's base token over the time frame.
+  """
+  revenueNBT: String
+
+  """
+  The total sell volume of the pool in the network's base token over the time frame.
+  """
+  expenseNBT: String
+
+  """
+  The sum of pool fees generated by the pool in the network's base token over the time frame.
+  """
+  poolFeesNBT: String
+
+  """
+  The sum of protocol fees generated by the pool in the network's base token over the time frame.
+  """
+  protocolFeesNBT: String
+
+  """
+  The lowest price at which the pool was willing to sell an NFT in the network's base token over the time frame.
+  """
+  lowFloorNBT: String
+
+  """
+  The highest price at which the pool was willing to sell an NFT in the network's base token over the time frame.
+  """
+  highFloorNBT: String
+
+  """
+  The lowest price at which the pool was willing to buy an NFT in the network's base token over the time frame.
+  """
+  lowOfferNBT: String
+
+  """
+  The highest price at which the pool was willing to buy an NFT in the network's base token over the time frame.
+  """
+  highOfferNBT: String
+
+  """
+  The pool liquidity in the network's base token at the start of the time frame.
+  """
+  openBalanceNBT: String
+
+  """
+  The pool liquidity in the network's base token at the end of the time frame.
+  """
+  closeBalanceNBT: String
 }
 
 """Event data for depositing a token into a pool."""
@@ -4995,6 +5137,11 @@ type Pair {
 
   """The contract address of `token1`."""
   token1: String!
+
+  """The time elapsed in seconds since the pair was first seen."""
+  age: Int
+  token0Data: EnhancedToken
+  token1Data: EnhancedToken
 }
 
 """Input type of `PairChartInput`."""
@@ -5557,6 +5704,400 @@ enum PairRankingAttribute {
   volumeUSD24
 }
 
+"""A Parallel asset."""
+type ParallelAsset {
+  """The ID of the NFT asset (`address`:`tokenId`)."""
+  id: String!
+
+  """The contract address of the NFT collection."""
+  address: String!
+
+  """The token ID of the NFT asset."""
+  tokenId: String!
+
+  """The network ID the NFT collection is deployed on."""
+  networkId: Int!
+
+  """The NFT asset media."""
+  media: NftAssetMedia
+
+  """The name of the NFT asset."""
+  name: String
+
+  """The description of the NFT asset."""
+  description: String
+
+  """The source image URI linked by smart contract metadata."""
+  originalImage: String
+
+  """
+  The URI provided by the smart contract. Typically JSON that contains metadata.
+  """
+  uri: String
+
+  """The attributes for the NFT asset."""
+  attributes: [NftAssetAttribute!]
+
+  """The game data for the NFT asset."""
+  gameData: ParallelAssetGameData
+
+  """Metadata for the NFT asset."""
+  metadata: ParallelAssetMetadata
+}
+
+"""Response returned by `filterNftParallelAssets`."""
+type ParallelAssetFilterConnection {
+  """The list of Parallel assets matching the filter parameters."""
+  results: [ParallelAssetFilterResult]
+
+  """The number of Parallel assets returned."""
+  count: Int
+
+  """Where in the list the server started when returning items."""
+  offset: Int
+}
+
+"""A Parallel asset matching a set of filter parameters."""
+type ParallelAssetFilterResult {
+  """The ID of the NFT asset (`address`:`tokenId`)."""
+  id: String!
+
+  """The contract address of the NFT collection."""
+  address: String!
+
+  """The token ID of the NFT asset."""
+  tokenId: String!
+
+  """The internal Parallel ID of the NFT asset."""
+  parallelId: Int!
+
+  """The network ID the NFT collection is deployed on."""
+  networkId: Int!
+
+  """The NFT asset media."""
+  media: NftAssetMedia
+
+  """The name of the NFT asset."""
+  name: String
+
+  """The description of the NFT asset."""
+  description: String
+
+  """The source image URI linked by smart contract metadata."""
+  originalImage: String
+
+  """
+  The URI provided by the smart contract. Typically JSON that contains metadata.
+  """
+  uri: String
+
+  """The unix timestamp for the last trade."""
+  timestamp: Int
+
+  """The last sale price in USD."""
+  lastPriceUsd: String
+
+  """The last sale price in the network's base token."""
+  lastPriceNetworkBaseToken: String
+
+  """The game data for the NFT asset."""
+  gameData: ParallelAssetGameData
+
+  """Metadata for the NFT asset."""
+  metadata: ParallelAssetMetadata
+}
+
+"""Input type of `ParallelAssetFilters`."""
+input ParallelAssetFilters {
+  """The damage dealt when engaged in combat."""
+  attack: NumberFilter
+
+  """The energy used to play in-game."""
+  cost: NumberFilter
+
+  """The possible damage received before being destroyed."""
+  health: NumberFilter
+
+  """The total supply of this individual asset."""
+  supply: NumberFilter
+
+  """The last sale price in USD."""
+  lastPriceUsd: NumberFilter
+
+  """The last sale price in the network's base token."""
+  lastPriceNetworkBaseToken: NumberFilter
+}
+
+"""Game data for a Parallel asset."""
+type ParallelAssetGameData {
+  """
+  The rarity of the asset. Can be `Common`, `Uncommon`, `Rare`, `Legendary`, or `Prime`.
+  """
+  rarity: String
+
+  """The Parallel the asset belongs to."""
+  parallel: String
+
+  """The energy used to play in-game."""
+  cost: String
+
+  """The damage dealt when engaged in combat."""
+  attack: String
+
+  """The possible damage received before being destroyed."""
+  health: String
+
+  """
+  The card type. Can be `Effect`, `Relic`, `Unit`, `Upgrade` or `Paragon`.
+  """
+  cardType: String
+
+  """The card subtype. Can be `Pirate`, `Vehicle` or `Clone`."""
+  subtype: String
+
+  """The description of the card's in-game abilities."""
+  functionText: String
+
+  """The description of the card's passive ability."""
+  passiveAbility: String
+}
+
+"""The Parallel asset card type."""
+enum ParallelAssetMatcherCardType {
+  Effect
+  Relic
+  Unit
+  Upgrade
+  Paragon
+}
+
+"""The Parallel asset class."""
+enum ParallelAssetMatcherClass {
+  FE
+  SE
+  Asset
+  ArtCard
+  CardBack
+  Masterpiece
+  PL
+}
+
+"""The Parallel stream of evolution."""
+enum ParallelAssetMatcherParallel {
+  Augencore
+  Marcolian
+  Shroud
+  Earthen
+  Kathari
+  UnknownOrigins
+  Universal
+}
+
+"""The Parallel asset rarity."""
+enum ParallelAssetMatcherRarity {
+  Common
+  Uncommon
+  Rare
+  Legendary
+  Prime
+}
+
+"""Input type of `ParallelAssetMatchers`."""
+input ParallelAssetMatchers {
+  tokenId: [String]
+
+  """The Parallel the asset belongs to."""
+  parallel: [ParallelAssetMatcherParallel]
+
+  """
+  The card type. Can be `Effect`, `Relic`, `Unit`, `Upgrade` or `Paragon`.
+  """
+  cardType: [ParallelAssetMatcherCardType]
+
+  """
+  The card class. Can be `Art Card`, `Asset`, `Card Back`, `FE`, `Masterpiece`, `PL`, or `SE`.
+  """
+  class: [ParallelAssetMatcherClass]
+
+  """The paraset the asset belongs to."""
+  paraset: [String]
+
+  """
+  The list of rarities. Can be `Common`, `Uncommon`, `Rare`, `Legendary`, or `Prime`.
+  """
+  rarity: [ParallelAssetMatcherRarity]
+
+  """The card subtype. Can be `Pirate`, `Vehicle` or `Clone`."""
+  subtype: [ParallelAssetMatcherSubtype]
+
+  """The expansion used for naming base and expansion sets."""
+  expansion: [String]
+}
+
+"""The Parallel asset subtype."""
+enum ParallelAssetMatcherSubtype {
+  Pirate
+  Vehicle
+  Clone
+}
+
+type ParallelAssetMetadata {
+  """
+  The card class. Can be `Art Card`, `Asset`, `Card Back`, `FE`, `Masterpiece`, `PL`, or `SE`.
+  """
+  class: String
+
+  """The total supply of this individual asset."""
+  supply: String
+
+  """
+  The asset description, sourced off-chain. Usually equal to the asset's on-chain `description`.
+  """
+  flavourText: String
+
+  """The expansion used for naming base and expansion sets."""
+  expansion: String
+
+  """The paraset the asset belongs to."""
+  paraset: String
+
+  """
+  The ID used to match other cards with the same name but different class.
+  """
+  parallelId: String
+
+  """The artist name."""
+  artist: String
+}
+
+"""Input type of `ParallelAssetRanking`."""
+input ParallelAssetRanking {
+  """The attribute to rank Parallel assets by."""
+  attribute: ParallelAssetRankingAttribute
+
+  """The direction to apply to the ranking attribute."""
+  direction: RankingDirection
+}
+
+"""Attribute used to rank Parallel assets."""
+enum ParallelAssetRankingAttribute {
+  attack
+  cost
+  health
+  supply
+  lastPriceUsd
+  lastPriceNetworkBaseToken
+}
+
+"""Response returned by `getParallelAssets`."""
+type ParallelAssetsConnection {
+  """A list of Parallel assets."""
+  items: [ParallelAsset]
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+"""Tracked changes made to a Parallel card."""
+type ParallelCardChange {
+  """The token ID of the Parallel asset."""
+  tokenId: String!
+
+  """The unix timestamp for the card change."""
+  timestamp: Int!
+
+  """The Parallel card metadata before and after the card change."""
+  diff: ParallelCardChangeDiff!
+}
+
+"""Parallel card metadata before and after a card change."""
+type ParallelCardChangeDiff {
+  """Metadata for a Parallel card before the card change."""
+  old: ParallelCardChangeFields!
+
+  """Metadata for a Parallel card after the card change."""
+  new: ParallelCardChangeFields!
+}
+
+"""Metadata for a Parallel card."""
+type ParallelCardChangeFields {
+  """
+  The ID used to match other cards with the same name but different class.
+  """
+  parallelId: String
+
+  """
+  The rarity of the asset. Can be `Common`, `Uncommon`, `Rare`, `Legendary`, or `Prime`.
+  """
+  rarity: String
+
+  """
+  The card class. Can be `Art Card`, `Asset`, `Card Back`, `FE`, `Masterpiece`, `PL`, or `SE`.
+  """
+  class: String
+
+  """The total supply of this individual asset."""
+  supply: String
+
+  """The Parallel the asset belongs to."""
+  parallel: String
+
+  """The energy used to play in-game."""
+  cost: String
+
+  """The damage dealt when engaged in combat."""
+  attack: String
+
+  """The possible damage received before being destroyed."""
+  health: String
+
+  """
+  The card type. Can be `Effect`, `Relic`, `Unit`, `Upgrade` or `Paragon`.
+  """
+  cardType: String
+
+  """The card subtype. Can be `Pirate`, `Vehicle` or `Clone`."""
+  subtype: String
+
+  """The description of the card's in-game abilities."""
+  functionText: String
+
+  """The description of the card's passive ability."""
+  passiveAbility: String
+
+  """
+  The asset description, sourced off-chain. Usually equal to the asset's on-chain `description`.
+  """
+  flavourText: String
+
+  """The expansion used for naming base and expansion sets."""
+  expansion: String
+
+  """The paraset the asset belongs to."""
+  paraset: String
+
+  """The artist name."""
+  artist: String
+}
+
+"""Input type of `ParallelCardChangeQueryTimestamp."""
+input ParallelCardChangeQueryTimestampInput {
+  """The unix timestamp for the start of the requested range."""
+  from: Int
+
+  """The unix timestamp for the end of the requested range."""
+  to: Int
+}
+
+"""Response returned by `getParallelCardChanges`."""
+type ParallelCardChangesConnection {
+  """A cursor for use in pagination."""
+  cursor: String
+
+  """A list of tracked changes made to a Parallel card."""
+  items: [ParallelCardChange]
+}
+
 enum Plan {
   ENTERPRISE
   DEFINED
@@ -5614,6 +6155,662 @@ input PriceEventWebhookConditionInput {
   tokenAddress: StringEqualsConditionInput!
   networkId: IntEqualsConditionInput!
   priceUsd: ComparisonOperatorInput!
+}
+
+"""An Echelon Prime Pool."""
+type PrimePool {
+  """
+  The ID of the contract-level Prime Pool (poolContractAddress:networkId). For example, `0x89bb49d06610b4b18e355504551809be5177f3d0:1`.
+  """
+  id: String
+
+  """The contract address for the Prime Pool."""
+  poolContractAddress: String
+
+  """The network ID the Prime Pool is deployed on."""
+  networkId: Int
+
+  """The ID of the pool within the contract."""
+  poolId: String
+
+  """Values calculated by Defined using on-chain data."""
+  calcData: PrimePoolCalcData
+
+  """Values obtained directly from the chain."""
+  chainData: PrimePoolChainData
+
+  """When the pool was created by Defined."""
+  createdAt: Int
+
+  """The block number for when Defined discovered this pool."""
+  discoveryBlockNumber: Int
+
+  """The transaction hash of when Defined discovered this pool."""
+  discoveryTransactionHash: String
+
+  """The contract address for the tokens cached ib the pool."""
+  nftContractAddress: String
+
+  """The type of pool for this Prime Pool."""
+  poolType: String
+
+  """The Parallel tokenIds required to cache in the pool."""
+  tokenIds: [String]
+
+  """The # of cached sets in the pool."""
+  totalSupply: String
+}
+
+"""A cached Prime pool asset."""
+type PrimePoolAsset {
+  """The Prime pool asset ID (poolContractAddress:poolId:networkId)"""
+  id: String!
+
+  """The owner wallet address of the cached Prime pool asset."""
+  sortKey: String!
+
+  """The number of cached Prime pool assets of this type by this owner."""
+  amount: String!
+
+  """The owner wallet address of the cached Prime pool asset."""
+  from: String!
+
+  """
+  The owner wallet address of the cached Prime pool asset, and network ID (from:networkId).
+  """
+  fromHashKey: String!
+
+  """
+  The Prime pool ID and Prime pool contract address (poolId:poolContractAddress).
+  """
+  fromSortKey: String!
+
+  """The network ID of the cached Prime pool asset."""
+  networkId: Int!
+
+  """THe contract address of the Prime pool."""
+  poolContractAddress: String!
+
+  """The Prime pool ID."""
+  poolId: String!
+
+  """
+  The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  ethRewardDebt: String
+
+  """
+  The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  primeRewardDebt: String
+}
+
+"""Response returned by `getPrimePoolAssets`."""
+type PrimePoolAssetConnection {
+  """The cursor to use for pagination."""
+  cursor: String
+
+  """The list of cached Prime pool assets returned by the query."""
+  items: [PrimePoolAsset]
+}
+
+"""Event-specific data for a Prime pool Cache transaction."""
+type PrimePoolCacheData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The amount of Prime pool asset(s) cached."""
+  eventAmount: String!
+
+  """
+  The total supply of assets cached in this Prime pool, including the amount cached in this transaction.
+  """
+  totalSupply: String!
+
+  """The owner wallet address of the cached Prime pool asset(s)."""
+  user: String!
+
+  """
+  The total number of Prime pool asset(s) cached in this pool by this owner.
+  """
+  userCachedAmount: String!
+
+  """
+  The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userPrimeRewardDebt: String!
+
+  """
+  The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userEthRewardDebt: String!
+}
+
+"""Event-specific data for a Prime pool CachingPaused transaction."""
+type PrimePoolCachingPausedData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The state of caching paused set on the pool."""
+  cachingPaused: Boolean!
+}
+
+type PrimePoolCalcData {
+  """The amount of accumulated PRIME rewards in total for the pool."""
+  poolAccumulatedPrime: String
+
+  """The amount of accumulated PRIME rewards per share for the pool."""
+  shareAccumulatedPrime: String
+
+  """The amount of accumulated ETH rewards in total for the pool."""
+  poolAccumulatedEth: String
+
+  """The amount of accumulated ETH rewards per share for the pool."""
+  shareAccumulatedEth: String
+
+  """The amount of PRIME for the pool to pay out as caching rewards."""
+  poolPrimeAmount: String
+
+  """The amount of ETH for the pool to pay out as caching rewards."""
+  poolEthAmount: String
+
+  """The amount of PRIME paid out daily by the pool as caching rewards."""
+  poolPrimePerDay: String
+
+  """
+  The amount of PRIME paid out per second by the pool as caching rewards.
+  """
+  poolPrimePerSecond: String
+
+  """The amount of ETH paid out daily by the pool as caching rewards."""
+  poolEthPerDay: String
+
+  """The amount of ETH paid out per second by the pool as caching rewards."""
+  poolEthPerSecond: String
+
+  """
+  The amount of PRIME paid out daily by the pool, per share of the pool's total cached supply.
+  """
+  sharePrimePerDay: String
+
+  """
+  The amount of PRIME paid out per second by the pool, per share of the pool's total cached supply.
+  """
+  sharePrimePerSecond: String
+
+  """
+  The amount of ETH paid out daily by the pool, per share of the pool's total cached supply.
+  """
+  shareEthPerDay: String
+
+  """
+  The amount of ETH paid out per second by the pool, per share of the pool's total cached supply.
+  """
+  shareEthPerSecond: String
+}
+
+"""Values obtained directly from the chain."""
+type PrimePoolChainData {
+  """Whether caching is paused for this pool."""
+  cachingPaused: Boolean
+
+  """How much ETH has been claimed for this pool."""
+  ethClaimed: String
+
+  """How much ETH reward has been accrued for this pool."""
+  ethReward: String
+
+  """The pool's allocation of the contract's per-second ETH rewards."""
+  ethAllocPoint: String
+
+  """
+  Total share points of the contract's per-second ETH rewards to the pool.
+  """
+  ethTotalAllocPoint: String
+
+  """Caching ETH rewards period start timestamp."""
+  ethStartTimestamp: Int
+
+  """Caching ETH rewards period end timestamp."""
+  ethEndTimestamp: Int
+
+  """Last timestamp at which ETH rewards were assigned."""
+  ethLastRewardTimestamp: Int
+
+  """Minimum number of timed cache seconds per ETH."""
+  ethTimedCachePeriod: String
+
+  """The pool's allocation of the contract's per second PRIME rewards."""
+  primeAllocPoint: String
+
+  """
+  Total share points of the contract's per second PRIME rewards to the pool.
+  """
+  primeTotalAllocPoint: String
+
+  """Caching rewards period start timestamp."""
+  primeStartTimestamp: String
+
+  """Caching rewards period end timestamp."""
+  primeEndTimestamp: Int
+
+  """Last timestamp at which PRIME rewards were assigned."""
+  primeLastRewardTimestamp: Int
+}
+
+"""Event-specific data for a Prime pool ClaimEth transaction."""
+type PrimePoolClaimEthData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The wallet address claiming ETH rewards."""
+  user: String!
+
+  """The amount of ETH claimed."""
+  eventAmount: String!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """
+  The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userEthRewardDebt: String!
+
+  """The total amount of ETH claimed for a pool."""
+  ethClaimed: String
+}
+
+"""Event-specific data for a Prime pool ClaimPrime transaction."""
+type PrimePoolClaimPrimeData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The wallet address claiming PRIME rewards."""
+  user: String!
+
+  """The amount of PRIME claimed."""
+  eventAmount: String!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The total amount of PRIME claimed for a pool."""
+  userPrimeRewardDebt: String!
+}
+
+"""Response returned by `getPrimePools`."""
+type PrimePoolConnection {
+  """A cursor for use in pagination."""
+  cursor: String
+
+  """A list of prime pools."""
+  items: [PrimePool]
+}
+
+"""Currency types for Prime pool events."""
+enum PrimePoolCurrency {
+  ETH
+  PRIME
+}
+
+"""Event-specific data for a Prime pool EmergencyWithdraw transaction."""
+type PrimePoolEmergencyWithdrawData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The wallet address emergency withdrawing from the pool."""
+  user: String!
+
+  """The amount of Prime pool asset(s) emergency withdrawn."""
+  eventAmount: String!
+
+  """The total supply of assets cached in this Prime pool."""
+  totalSupply: String!
+
+  """
+  The updated total number of Prime pool asset(s) cached in this pool by this owner.
+  """
+  userCachedAmount: String!
+
+  """
+  The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userPrimeRewardDebt: String!
+
+  """
+  The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userEthRewardDebt: String!
+}
+
+"""
+Event-specific data for a Prime pool EndTimestampUpdatedEth transaction.
+"""
+type PrimePoolEndTimestampUpdatedEthData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The updated ETH reward start timestamp for the pool."""
+  ethStartTimestamp: Int!
+
+  """The updated ETH reward end timestamp for the pool."""
+  ethEndTimestamp: Int!
+
+  """The updated reward per second for the pool."""
+  ethPerSecond: String!
+}
+
+"""
+Event-specific data for a Prime pool EndTimestampUpdatedPrime transaction.
+"""
+type PrimePoolEndTimestampUpdatedPrimeData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The updated PRIME reward start timestamp for the pool."""
+  primeStartTimestamp: Int!
+
+  """The updated PRIME reward end timestamp for the pool."""
+  primeEndTimestamp: Int!
+
+  """The updated reward per second for the pool."""
+  primePerSecond: String!
+}
+
+"""Event-specific data for a Prime pool LogUpdatePool transaction."""
+type PrimePoolEthRewardsAddedData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The amount of ETH rewards added to the pool."""
+  amount: String!
+
+  """The total ETH rewards for the pool."""
+  totalRewards: String!
+}
+
+"""Event-specific data for a Prime pool EthRewardsSet transaction."""
+type PrimePoolEthRewardsSetData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The amount of ETH rewards set for the pool."""
+  amount: String!
+
+  """The total ETH rewards for the pool."""
+  totalRewards: String!
+}
+
+"""A Prime pool event."""
+type PrimePoolEvent {
+  """The Prime pool event ID (poolContractAddress:poolId:networkId)"""
+  id: String!
+
+  """
+  The sort key of the Prime pool event (blockNumber:transactionIndex:logIndex).
+  """
+  sortKey: String!
+
+  """The blockHash of the Prime pool event."""
+  blockHash: String!
+
+  """The blockNumber of the Prime pool event."""
+  blockNumber: Int!
+
+  """The event data for the Prime pool event."""
+  data: PrimePoolEventData!
+
+  """The Prime pool event type."""
+  eventType: PrimePoolEventType!
+
+  """The Prime pool event's calling address."""
+  from: String!
+
+  """
+  The Prime pool event's calling address, and network ID (from:networkId).
+  """
+  fromHashKey: String!
+
+  """The logIndex of the Prime pool event."""
+  logIndex: Int!
+
+  """The network ID of the Prime pool event."""
+  networkId: Int!
+
+  """The Prime pool contract address."""
+  poolContractAddress: String!
+
+  """The Prime pool ID."""
+  poolId: String!
+
+  """The Prime pool type."""
+  poolType: PrimePoolType!
+
+  """The timestamp of the Prime pool event."""
+  timestamp: Int!
+
+  """The transactionHash of the Prime pool event."""
+  transactionHash: String!
+
+  """The transactionIndex of the Prime pool event."""
+  transactionIndex: Int!
+}
+
+"""Response returned by `getPrimePoolEvents`."""
+type PrimePoolEventConnection {
+  """The cursor to use for pagination."""
+  cursor: String
+
+  """The list of Prime pool events returned by the query."""
+  items: [PrimePoolEvent]
+}
+
+"""Event-specific data for a Prime pool transaction."""
+union PrimePoolEventData = PrimePoolCacheData | PrimePoolCachingPausedData | PrimePoolClaimEthData | PrimePoolClaimPrimeData | PrimePoolEmergencyWithdrawData | PrimePoolEndTimestampUpdatedEthData | PrimePoolEndTimestampUpdatedPrimeData | PrimePoolEthRewardsAddedData | PrimePoolEthRewardsSetData | PrimePoolLogPoolAdditionData | PrimePoolLogPoolSetAllocPointData | PrimePoolLogSetPerSecondData | PrimePoolLogUpdatePoolData | PrimePoolRewardDecreaseData | PrimePoolRewardIncreaseData | PrimePoolTimeCachePeriodUpdateData | PrimePoolWithdrawData
+
+"""A Prime pool event type."""
+enum PrimePoolEventType {
+  CACHE
+  CACHING_PAUSED
+  CLAIM
+  EMERGENCY_WITHDRAW
+  END_TIMESTAMP_UPDATED
+  ETH_REWARDS_ADDED
+  ETH_REWARDS_SET
+  LOG_POOL_ADDITION
+  LOG_POOL_SET_ALLOC_POINT
+  LOG_SET_PER_SECOND
+  LOG_UPDATE_POOL
+  POOL_DISCOVERED
+  REWARD_DECREASE
+  REWARD_INCREASE
+  TIME_CACHE_PERIOD_UPDATED
+  WITHDRAW
+}
+
+"""Input Type of `PrimePoolQuery`"""
+input PrimePoolInput {
+  """The address of the pool contract."""
+  address: String!
+
+  """The network that the pool is deployed on."""
+  networkId: Int!
+
+  """Optional list of pool ids to fetch."""
+  poolIds: [String]
+}
+
+"""
+Event-specific data for a Prime pool LogPoolAddition (new Prime pool) transaction.
+"""
+type PrimePoolLogPoolAdditionData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The token ID's added to the new Prime pool."""
+  tokenIds: [String!]!
+}
+
+"""Event-specific data for a Prime pool LogPoolSetAllocPoint transaction."""
+type PrimePoolLogPoolSetAllocPointData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """
+  The updated alloc point for the pool (the pool's share of the contract's total rewards).
+  """
+  allocPoint: String!
+
+  """
+  The updated total alloc point for the pool (the sum of all pools' alloc points).
+  """
+  totalAllocPoint: String!
+}
+
+"""Event-specific data for a Prime pool LogSetPerSecond transaction."""
+type PrimePoolLogSetPerSecondData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The updated reward per second for the pool."""
+  amount: String!
+
+  """The updated reward start timestamp for the pool."""
+  startTimestamp: Int!
+
+  """The updated reward end timestamp for the pool."""
+  endTimestamp: Int!
+
+  """The updated PRIME reward per second for the pool."""
+  primeAmountPerSecond: String
+
+  """The updated ETH reward per second for the pool."""
+  ethAmountPerSecond: String
+}
+
+"""Event-specific data for a Prime pool LogUpdatePool transaction."""
+type PrimePoolLogUpdatePoolData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The timestamp at which rewards were last assigned."""
+  lastRewardTimestamp: Int!
+
+  """
+  The total amount of assets cached in the pool (emitted by the event, before the transaction).
+  """
+  supply: String!
+
+  """
+  The total amount of assets cached in the pool (queried from the pool after the transaction).
+  """
+  totalSupply: String!
+
+  """The amount of accumulated rewards per share."""
+  accPerShare: String!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The PRIME amount of the pool."""
+  primeAmount: String
+
+  """The ETH amount of the pool."""
+  ethAmount: String
+}
+
+"""Event-specific data for a Prime pool RewardDecrease transaction."""
+type PrimePoolRewardDecreaseData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The amount of rewards decreased."""
+  eventAmount: String!
+
+  """The updated total rewards for the pool."""
+  updatedAmount: String!
+}
+
+"""Event-specific data for a Prime pool RewardIncrease transaction."""
+type PrimePoolRewardIncreaseData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The amount of rewards increased."""
+  eventAmount: String!
+
+  """The updated total rewards for the pool."""
+  updatedAmount: String!
+}
+
+"""
+Event-specific data for a Prime pool TimeCachePeriodUpdate transaction.
+"""
+type PrimePoolTimeCachePeriodUpdateData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The currency type of the event."""
+  currency: PrimePoolCurrency!
+
+  """The minimum number of timed cache seconds per ETH reward."""
+  timedCachePeriod: String!
+}
+
+"""The type of Prime pool caching contract."""
+enum PrimePoolType {
+  PRIME_REWARDS
+  ETH_AND_PRIME_REWARDS
+  TIMED_CACHE_ETH_AND_PRIME_REWARDS
+}
+
+"""Event-specific data for a Prime pool Withdraw transaction."""
+type PrimePoolWithdrawData {
+  """The Prime pool event type."""
+  type: PrimePoolEventType!
+
+  """The address of the wallet who withdrew."""
+  user: String!
+
+  """The amount of assets withdrawn."""
+  eventAmount: String!
+
+  """The updated total assets for the pool after the withdrawal."""
+  totalSupply: String!
+
+  """
+  The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userPrimeRewardDebt: String!
+
+  """
+  The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past.
+  """
+  userEthRewardDebt: String!
+
+  """
+  The amount of cached asset the user has in the pool, following the withdrawal.
+  """
+  userCachedAmount: String!
 }
 
 type Query {
@@ -5690,6 +6887,24 @@ type Query {
     limit: Int
   ): GetNftPoolCollectionsResponse
 
+  """Returns NFT pools for a given collection and AMM NFT marketplace."""
+  getNftPoolsByCollectionAndExchange(
+    """The contract address of the NFT collection."""
+    collectionAddress: String!
+
+    """The NFT AMM marketplace address to filter by."""
+    exchangeAddress: String!
+
+    """The network ID the NFT collection is deployed on."""
+    networkId: Int!
+
+    """The cursor to use for pagination."""
+    cursor: String
+
+    """The maximum number of NFT pools to return."""
+    limit: Int
+  ): GetNftPoolsResponse
+
   """Returns a list of NFT pools for a given owner."""
   getNftPoolsByOwner(
     """The contract address of the pool owner."""
@@ -5707,6 +6922,27 @@ type Query {
     """The maximum number of NFT pools to return."""
     limit: Int
   ): GetNftPoolsResponse
+
+  """Returns aggregated NFT pool/collection stats for a given time frame."""
+  getNftPoolStats(
+    """The contract address of the NFT collection."""
+    collectionAddress: String!
+
+    """The NFT AMM marketplace address to filter by."""
+    exchangeAddress: String!
+
+    """The network ID the NFT collection is deployed on."""
+    networkId: Int!
+
+    """The unix timestamp for the start of the requested range."""
+    startTime: Int!
+
+    """The unix timestamp for the end of the requested range."""
+    endTime: Int!
+
+    """The NFT pool address to filter by."""
+    poolAddress: String
+  ): NftPoolStatsResponse
 
   """Returns a list of NFT collection based on a variety of filters."""
   filterNftCollections(
@@ -5895,6 +7131,121 @@ type Query {
     contracts: [NftContractInput]
   ): [EnhancedNftContract]
 
+  """Returns transactions for an NFT collection across any marketplace(s)."""
+  getParallelAssets(
+    """An optional list of token IDs to filter by."""
+    tokenIds: [String]
+
+    """The cursor to use for pagination."""
+    cursor: String
+
+    """The maximum number of Parallel assets to return."""
+    limit: Int
+  ): ParallelAssetsConnection
+
+  """Returns a list of Parallel assets based on a variety of filters."""
+  filterNftParallelAssets(
+    """A set of filters to apply."""
+    filters: ParallelAssetFilters
+
+    """
+    A phrase to search for. Can match a Parallel asset ID (`address`:`tokenId`) or partially match a name.
+    """
+    phrase: String
+
+    """A set of parameters to match."""
+    match: ParallelAssetMatchers
+
+    """A list of ranking attributes to apply."""
+    rankings: [ParallelAssetRanking]
+
+    """The maximum number of Parallel assets to return."""
+    limit: Int
+
+    """
+    Where in the list the server should start when returning items. Use `count`+`offset` from the previous query to request the next page of results.
+    """
+    offset: Int
+  ): ParallelAssetFilterConnection
+
+  """Returns changes made to Parallel card metadata over time."""
+  getParallelCardChanges(
+    """The token ID for a Parallel asset."""
+    tokenId: String
+
+    """The time frame to request card changes."""
+    timestamp: ParallelCardChangeQueryTimestampInput
+
+    """The cursor to use for pagination."""
+    cursor: String
+
+    """The maximum number of Parallel card changes to return."""
+    limit: Int
+  ): ParallelCardChangesConnection
+
+  """Returns a list of Prime pool cached assets."""
+  getPrimePoolAssets(
+    """The network ID the Prime pool is deployed on."""
+    networkId: Int!
+
+    """The contract address of the Prime pool."""
+    poolContractAddress: String
+
+    """The pool ID for the Prime pool, within the contract."""
+    poolId: String
+
+    """The owner wallet address to filter assets by."""
+    walletAddress: String
+
+    """The maximum number of Prime Pool assets to return."""
+    limit: Int
+
+    """The cursor to use for pagination."""
+    cursor: String
+  ): PrimePoolAssetConnection
+
+  """Returns a list of Prime pool events."""
+  getPrimePoolEvents(
+    """The network ID the Prime pool is deployed on."""
+    networkId: Int!
+
+    """The contract address of the Prime pool."""
+    poolContractAddress: String
+
+    """The pool ID for the Prime pool, within the contract."""
+    poolId: String
+
+    """The calling wallet address to filter events by."""
+    walletAddress: String
+
+    """The event types to query for."""
+    eventTypes: [PrimePoolEventType]
+
+    """The maximum number of Prime Pool events to return."""
+    limit: Int
+
+    """The cursor to use for pagination."""
+    cursor: String
+  ): PrimePoolEventConnection
+
+  """Returns a list of Prime pools."""
+  getPrimePools(
+    """The contract address for the prime pool."""
+    address: String!
+
+    """The network ID the prime pool is deployed on."""
+    networkId: Int!
+
+    """An optional list of pool IDs to filter by."""
+    poolIds: [String]
+
+    """The maximum number of Prime pools to return."""
+    limit: Int
+
+    """The cursor to use for pagination."""
+    cursor: String
+  ): PrimePoolConnection
+
   """Returns a list of tokens based on a variety of filters."""
   filterTokens(
     """A set of filters to apply."""
@@ -5985,7 +7336,7 @@ type Query {
     networkId: Int!
   ): TokenInfo
 
-  """Returns metadata for a given token."""
+  """Returns metadata for a list of given tokens."""
   getTokensInfo(
     """
     A list of `GetTokensInfoInput`s. Accepts a maximum of 25 inputs (anything over will be truncated).
@@ -6039,6 +7390,9 @@ type Query {
     """
     bucketCount: Int
   ): DetailedPairStats
+
+  """Returns bucketed stats for a given token within a list of pairs."""
+  getDetailedPairsStats(input: [GetDetailedPairsStatsInput!]!): [DetailedPairStats]
 
   """Returns a list of trending tokens across any given network(s)."""
   listTopTokens(
@@ -6259,8 +7613,6 @@ type Query {
   Returns a list of token simple chart data (sparklines) for the given tokens.
   """
   tokenSparklines(input: TokenSparklineInput!): [TokenSparkline!]!
-  balances(input: BalancesInput!): BalancesResponse!
-  holders(input: HoldersInput!): HoldersResponse!
 }
 
 enum QuoteCurrency {
@@ -6637,6 +7989,11 @@ type Subscription {
     """The ID of the pair (`address`:`networkId`)."""
     id: String
   ): EventLabel
+
+  """
+  Live streamed nft pool events for a given pool address or collection address
+  """
+  onNftPoolEventsCreated(poolAddress: String, networkId: Int, collectionAddress: String, exchangeAddress: String): AddNftPoolEventsOutput
 }
 
 """Event data for a token swap event."""
@@ -7643,6 +9000,9 @@ type WindowedDetailedCurrencyPairStats {
 
   """The closing price for the time frame."""
   close: DetailedPairStatsStringMetrics
+
+  """The liquidity for the time frame."""
+  liquidity: DetailedPairStatsStringMetrics
 }
 
 """
