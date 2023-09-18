@@ -68,7 +68,6 @@ This shows how you could use it in a next JS project.
 
 ## Roadmap
 
-* Add support for graphql websockets and subscriptions using the graphql-ws protocol. 
 * Query definitons for common types, batteries included so you could do things like `sdk.tokens('0xabc').price`
 
 ## Contributing
