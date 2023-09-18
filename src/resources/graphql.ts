@@ -45,6 +45,16 @@ export type AddNftEventsOutput = {
   networkId: Scalars['Int']['output'];
 };
 
+export type AddNftPoolEventsOutput = {
+  __typename?: 'AddNftPoolEventsOutput';
+  collectionAddress: Scalars['String']['output'];
+  events: Array<Maybe<NftPoolEvent>>;
+  exchangeAddress: Scalars['String']['output'];
+  id: Scalars['String']['output'];
+  networkId: Scalars['Int']['output'];
+  poolAddress: Scalars['String']['output'];
+};
+
 export enum AlertRecurrence {
   Indefinite = 'INDEFINITE',
   Once = 'ONCE'
@@ -491,8 +501,11 @@ export type DetailedNftStatsStringMetrics = {
 /** Detailed stats for a token within a pair. */
 export type DetailedPairStats = {
   __typename?: 'DetailedPairStats';
+  /** The unix timestamp for the last transaction to happen on the pair. */
+  lastTransaction?: Maybe<Scalars['Int']['output']>;
   /** The network ID the pair is deployed on. */
   networkId: Scalars['Int']['output'];
+  pair?: Maybe<Pair>;
   /** The contract address of the pair. */
   pairAddress: Scalars['String']['output'];
   /** The breakdown of stats over a 24 hour window. */
@@ -638,6 +651,8 @@ export type EnhancedNftContract = {
   id: Scalars['String']['output'];
   /** The URL for an image of the NFT collection. */
   image?: Maybe<Scalars['String']['output']>;
+  /** A list of labels for the NFT collection. */
+  labels?: Maybe<Array<Maybe<ContractLabel>>>;
   /** The name of the NFT collection. */
   name?: Maybe<Scalars['String']['output']>;
   /** The network ID the NFT collection is deployed on. */
@@ -1038,6 +1053,22 @@ export type FrontRunLabelData = {
   token1DrainedAmount: Scalars['String']['output'];
 };
 
+/** Input type of `getDetailedPairsStats`. */
+export type GetDetailedPairsStatsInput = {
+  /** The number of aggregated values to receive. Note: Each duration has predetermined bucket sizes.<br>  The first n-1 buckets are historical. The last bucket is a snapshot of current data.<br> duration `day1`: 6 buckets (4 hours each) plus 1 partial bucket<br> duration `hour12`: 12 buckets (1 hour each) plus 1 partial bucket<br> duration `hour4`: 8 buckets (30 min each) plus 1 partial bucket<br> duration `hour1`: 12 buckets (5 min each) plus 1 partial bucket<br> duration `min5`: 5 buckets (1 min each) plus 1 partial bucket<br> For example, requesting 11 buckets for a `min5` duration will return the last 10 minutes worth of data plus a snapshot for the current minute. */
+  bucketCount?: InputMaybe<Scalars['Int']['input']>;
+  /** The list of durations to get detailed pair stats for. */
+  durations?: InputMaybe<Array<InputMaybe<DetailedPairStatsDuration>>>;
+  /** The network ID the pair is deployed on. */
+  networkId: Scalars['Int']['input'];
+  /** The contract address of the pair. */
+  pairAddress: Scalars['String']['input'];
+  /** The unix timestamp for the stats. Defaults to current. */
+  timestamp?: InputMaybe<Scalars['Int']['input']>;
+  /** The token of interest used to calculate token-specific stats for the pair. Can be `token0` or `token1`. */
+  tokenOfInterest?: InputMaybe<TokenOfInterest>;
+};
+
 /** Response returned by `getNftPoolCollectionsByExchange`. */
 export type GetNftPoolCollectionsResponse = {
   __typename?: 'GetNftPoolCollectionsResponse';
@@ -1067,7 +1098,7 @@ export type GetPriceInput = {
   maxDeviations?: InputMaybe<Scalars['Float']['input']>;
   /** The network ID the token is deployed on. */
   networkId: Scalars['Int']['input'];
-  /** The unix timestamp for the price. */
+  /** The unix timestamp for the price. Lookup is limited to the last three months. */
   timestamp?: InputMaybe<Scalars['Int']['input']>;
 };
 
@@ -1366,7 +1397,7 @@ export type NewPoolEventDataV2 = {
   /** The network ID the NFT collection is deployed on. */
   networkId: Scalars['Int']['output'];
   /** The list of NFT token IDs initially deposited. */
-  nftTokenIds: Array<Maybe<Scalars['String']['output']>>;
+  nftTokenIds: Array<Scalars['String']['output']>;
   /** The amount of each NFT token initially deposited. */
   nftTokenQuantities: Array<Maybe<Scalars['String']['output']>>;
   /** The wallet address of the pool owner. */
@@ -3415,7 +3446,7 @@ export type NftPoolNftDepositEventData = {
   /** The number of NFTs in the contract after the block has processed. */
   nftTokenBalance: Scalars['String']['output'];
   /** The list of NFT token IDs deposited. */
-  nftTokenIds?: Maybe<Array<Scalars['String']['output']>>;
+  nftTokenIds: Array<Scalars['String']['output']>;
   /** The amount of token in the contract after the block has processed in the pool's liquidity token. */
   tokenBalanceT: Scalars['String']['output'];
   /** The type of NFT pool event, `NFT_DEPOSIT`. */
@@ -3441,7 +3472,7 @@ export type NftPoolNftWithdrawalEventData = {
   /** The number of NFTs in the contract after the block has processed. */
   nftTokenBalance: Scalars['String']['output'];
   /** The NFT token IDs withdrawn. */
-  nftTokenIds?: Maybe<Array<Scalars['String']['output']>>;
+  nftTokenIds: Array<Scalars['String']['output']>;
   /** The amount of token in the contract after the block has processed in the pool's liquidity token. */
   tokenBalanceT: Scalars['String']['output'];
   /** The type of NFT pool event, `NFT_WITHDRAWAL`. */
@@ -3454,7 +3485,7 @@ export type NftPoolNftWithdrawalEventDataV2 = {
   /** The amount of each NFT token withdrawn. */
   nftTokenAmounts: Array<Scalars['String']['output']>;
   /** The list of NFT token IDs withdrawn. */
-  nftTokenIds?: Maybe<Array<Scalars['String']['output']>>;
+  nftTokenIds: Array<Scalars['String']['output']>;
   /** The amount of token in the contract after the block has processed in the pool's liquidity token. */
   tokenBalanceT: Scalars['String']['output'];
   /** The type of NFT pool event, `NFT_WITHDRAWAL`. */
@@ -3535,6 +3566,10 @@ export type NftPoolResponse = {
   bondingCurveType: BondingCurveType;
   /** The contract address of the NFT collection. */
   collectionAddress: Scalars['String']['output'];
+  /** The contract name of the NFT collection. */
+  collectionName: Scalars['String']['output'];
+  /** The symbol of the NFT collection. */
+  collectionSymbol?: Maybe<Scalars['String']['output']>;
   /** The current delta used in the bonding curve. */
   delta: Scalars['String']['output'];
   /** The contract address of the NFT AMM marketplace. */
@@ -3571,6 +3606,8 @@ export type NftPoolResponse = {
   owner: Scalars['String']['output'];
   /** The contract address of the NFT pool. */
   poolAddress: Scalars['String']['output'];
+  poolFeesAllTimeNBT?: Maybe<Scalars['String']['output']>;
+  poolFeesAllTimeT?: Maybe<Scalars['String']['output']>;
   /** The ID of the NFT pool (`poolAddress`:`networkId`). For example, `0xdbea289dcc10eed8431e78753414a3d81b8e7201:1`. */
   poolId: Scalars['String']['output'];
   /** The type of NFT in the pool. */
@@ -3638,6 +3675,55 @@ export type NftPoolSpotPriceUpdateEventDataV2 = {
   type: NftPoolEventType;
   /** The ratio of the transaction token to USD. */
   usdRatio: Scalars['String']['output'];
+};
+
+/** Stats for an NFT pool. */
+export type NftPoolStatsResponse = {
+  __typename?: 'NftPoolStatsResponse';
+  /** The pool liquidity in the network's base token at the end of the time frame. */
+  closeBalanceNBT?: Maybe<Scalars['String']['output']>;
+  /** The number of NFTs in the pool at the end of the time frame. */
+  closeNftBalanceV2?: Maybe<Scalars['String']['output']>;
+  /** The contract address of the NFT collection. */
+  collectionAddress: Scalars['String']['output'];
+  /** The unix timestamp for the end of the time frame. */
+  endTime: Scalars['Int']['output'];
+  /** The contract address of the NFT AMM marketplace. */
+  exchangeAddress: Scalars['String']['output'];
+  /** The total sell volume of the pool in the network's base token over the time frame. */
+  expenseNBT?: Maybe<Scalars['String']['output']>;
+  /** The highest price at which the pool was willing to sell an NFT in the network's base token over the time frame. */
+  highFloorNBT?: Maybe<Scalars['String']['output']>;
+  /** The highest price at which the pool was willing to buy an NFT in the network's base token over the time frame. */
+  highOfferNBT?: Maybe<Scalars['String']['output']>;
+  /** The lowest price at which the pool was willing to sell an NFT in the network's base token over the time frame. */
+  lowFloorNBT?: Maybe<Scalars['String']['output']>;
+  /** The lowest price at which the pool was willing to buy an NFT in the network's base token over the time frame. */
+  lowOfferNBT?: Maybe<Scalars['String']['output']>;
+  /** The network ID the NFT collection is deployed on. */
+  networkId: Scalars['Int']['output'];
+  /** The total number of NFTs bought and sold over the time frame. */
+  nftVolumeV2?: Maybe<Scalars['String']['output']>;
+  /** The total number of NFTs bought over the time frame. */
+  nftsBoughtV2?: Maybe<Scalars['String']['output']>;
+  /** The total number of NFTs sold over the time frame. */
+  nftsSoldV2?: Maybe<Scalars['String']['output']>;
+  /** The pool liquidity in the network's base token at the start of the time frame. */
+  openBalanceNBT?: Maybe<Scalars['String']['output']>;
+  /** The number of NFTs in the pool at the start of the time frame. */
+  openNftBalanceV2?: Maybe<Scalars['String']['output']>;
+  /** The contract address of the NFT pool. */
+  poolAddress?: Maybe<Scalars['String']['output']>;
+  /** The sum of pool fees generated by the pool in the network's base token over the time frame. */
+  poolFeesNBT?: Maybe<Scalars['String']['output']>;
+  /** The sum of protocol fees generated by the pool in the network's base token over the time frame. */
+  protocolFeesNBT?: Maybe<Scalars['String']['output']>;
+  /** The total buy volume of the pool in the network's base token over the time frame. */
+  revenueNBT?: Maybe<Scalars['String']['output']>;
+  /** The unix timestamp for the start of the time frame. */
+  startTime: Scalars['Int']['output'];
+  /** The total volume of the pool in the network's base token over the time frame. */
+  volumeNBT?: Maybe<Scalars['String']['output']>;
 };
 
 /** Event data for depositing a token into a pool. */
@@ -3854,6 +3940,8 @@ export type Pair = {
   __typename?: 'Pair';
   /** The contract address of the pair. */
   address: Scalars['String']['output'];
+  /** The time elapsed in seconds since the pair was first seen. */
+  age?: Maybe<Scalars['Int']['output']>;
   /** The address for the exchange factory contract. */
   exchangeHash: Scalars['String']['output'];
   /** The exchange fee for swaps. */
@@ -3866,8 +3954,10 @@ export type Pair = {
   tickSpacing?: Maybe<Scalars['Int']['output']>;
   /** The contract address of `token0`. */
   token0: Scalars['String']['output'];
+  token0Data?: Maybe<EnhancedToken>;
   /** The contract address of `token1`. */
   token1: Scalars['String']['output'];
+  token1Data?: Maybe<EnhancedToken>;
 };
 
 /** Input type of `PairChartInput`. */
@@ -4271,6 +4361,305 @@ export enum PairRankingAttribute {
   VolumeUsd24 = 'volumeUSD24'
 }
 
+/** A Parallel asset. */
+export type ParallelAsset = {
+  __typename?: 'ParallelAsset';
+  /** The contract address of the NFT collection. */
+  address: Scalars['String']['output'];
+  /** The attributes for the NFT asset. */
+  attributes?: Maybe<Array<NftAssetAttribute>>;
+  /** The description of the NFT asset. */
+  description?: Maybe<Scalars['String']['output']>;
+  /** The game data for the NFT asset. */
+  gameData?: Maybe<ParallelAssetGameData>;
+  /** The ID of the NFT asset (`address`:`tokenId`). */
+  id: Scalars['String']['output'];
+  /** The NFT asset media. */
+  media?: Maybe<NftAssetMedia>;
+  /** Metadata for the NFT asset. */
+  metadata?: Maybe<ParallelAssetMetadata>;
+  /** The name of the NFT asset. */
+  name?: Maybe<Scalars['String']['output']>;
+  /** The network ID the NFT collection is deployed on. */
+  networkId: Scalars['Int']['output'];
+  /** The source image URI linked by smart contract metadata. */
+  originalImage?: Maybe<Scalars['String']['output']>;
+  /** The token ID of the NFT asset. */
+  tokenId: Scalars['String']['output'];
+  /** The URI provided by the smart contract. Typically JSON that contains metadata. */
+  uri?: Maybe<Scalars['String']['output']>;
+};
+
+/** Response returned by `filterNftParallelAssets`. */
+export type ParallelAssetFilterConnection = {
+  __typename?: 'ParallelAssetFilterConnection';
+  /** The number of Parallel assets returned. */
+  count?: Maybe<Scalars['Int']['output']>;
+  /** Where in the list the server started when returning items. */
+  offset?: Maybe<Scalars['Int']['output']>;
+  /** The list of Parallel assets matching the filter parameters. */
+  results?: Maybe<Array<Maybe<ParallelAssetFilterResult>>>;
+};
+
+/** A Parallel asset matching a set of filter parameters. */
+export type ParallelAssetFilterResult = {
+  __typename?: 'ParallelAssetFilterResult';
+  /** The contract address of the NFT collection. */
+  address: Scalars['String']['output'];
+  /** The description of the NFT asset. */
+  description?: Maybe<Scalars['String']['output']>;
+  /** The game data for the NFT asset. */
+  gameData?: Maybe<ParallelAssetGameData>;
+  /** The ID of the NFT asset (`address`:`tokenId`). */
+  id: Scalars['String']['output'];
+  /** The last sale price in the network's base token. */
+  lastPriceNetworkBaseToken?: Maybe<Scalars['String']['output']>;
+  /** The last sale price in USD. */
+  lastPriceUsd?: Maybe<Scalars['String']['output']>;
+  /** The NFT asset media. */
+  media?: Maybe<NftAssetMedia>;
+  /** Metadata for the NFT asset. */
+  metadata?: Maybe<ParallelAssetMetadata>;
+  /** The name of the NFT asset. */
+  name?: Maybe<Scalars['String']['output']>;
+  /** The network ID the NFT collection is deployed on. */
+  networkId: Scalars['Int']['output'];
+  /** The source image URI linked by smart contract metadata. */
+  originalImage?: Maybe<Scalars['String']['output']>;
+  /** The internal Parallel ID of the NFT asset. */
+  parallelId: Scalars['Int']['output'];
+  /** The unix timestamp for the last trade. */
+  timestamp?: Maybe<Scalars['Int']['output']>;
+  /** The token ID of the NFT asset. */
+  tokenId: Scalars['String']['output'];
+  /** The URI provided by the smart contract. Typically JSON that contains metadata. */
+  uri?: Maybe<Scalars['String']['output']>;
+};
+
+/** Input type of `ParallelAssetFilters`. */
+export type ParallelAssetFilters = {
+  /** The damage dealt when engaged in combat. */
+  attack?: InputMaybe<NumberFilter>;
+  /** The energy used to play in-game. */
+  cost?: InputMaybe<NumberFilter>;
+  /** The possible damage received before being destroyed. */
+  health?: InputMaybe<NumberFilter>;
+  /** The last sale price in the network's base token. */
+  lastPriceNetworkBaseToken?: InputMaybe<NumberFilter>;
+  /** The last sale price in USD. */
+  lastPriceUsd?: InputMaybe<NumberFilter>;
+  /** The total supply of this individual asset. */
+  supply?: InputMaybe<NumberFilter>;
+};
+
+/** Game data for a Parallel asset. */
+export type ParallelAssetGameData = {
+  __typename?: 'ParallelAssetGameData';
+  /** The damage dealt when engaged in combat. */
+  attack?: Maybe<Scalars['String']['output']>;
+  /** The card type. Can be `Effect`, `Relic`, `Unit`, `Upgrade` or `Paragon`. */
+  cardType?: Maybe<Scalars['String']['output']>;
+  /** The energy used to play in-game. */
+  cost?: Maybe<Scalars['String']['output']>;
+  /** The description of the card's in-game abilities. */
+  functionText?: Maybe<Scalars['String']['output']>;
+  /** The possible damage received before being destroyed. */
+  health?: Maybe<Scalars['String']['output']>;
+  /** The Parallel the asset belongs to. */
+  parallel?: Maybe<Scalars['String']['output']>;
+  /** The description of the card's passive ability. */
+  passiveAbility?: Maybe<Scalars['String']['output']>;
+  /** The rarity of the asset. Can be `Common`, `Uncommon`, `Rare`, `Legendary`, or `Prime`. */
+  rarity?: Maybe<Scalars['String']['output']>;
+  /** The card subtype. Can be `Pirate`, `Vehicle` or `Clone`. */
+  subtype?: Maybe<Scalars['String']['output']>;
+};
+
+/** The Parallel asset card type. */
+export enum ParallelAssetMatcherCardType {
+  Effect = 'Effect',
+  Paragon = 'Paragon',
+  Relic = 'Relic',
+  Unit = 'Unit',
+  Upgrade = 'Upgrade'
+}
+
+/** The Parallel asset class. */
+export enum ParallelAssetMatcherClass {
+  ArtCard = 'ArtCard',
+  Asset = 'Asset',
+  CardBack = 'CardBack',
+  Fe = 'FE',
+  Masterpiece = 'Masterpiece',
+  Pl = 'PL',
+  Se = 'SE'
+}
+
+/** The Parallel stream of evolution. */
+export enum ParallelAssetMatcherParallel {
+  Augencore = 'Augencore',
+  Earthen = 'Earthen',
+  Kathari = 'Kathari',
+  Marcolian = 'Marcolian',
+  Shroud = 'Shroud',
+  Universal = 'Universal',
+  UnknownOrigins = 'UnknownOrigins'
+}
+
+/** The Parallel asset rarity. */
+export enum ParallelAssetMatcherRarity {
+  Common = 'Common',
+  Legendary = 'Legendary',
+  Prime = 'Prime',
+  Rare = 'Rare',
+  Uncommon = 'Uncommon'
+}
+
+/** The Parallel asset subtype. */
+export enum ParallelAssetMatcherSubtype {
+  Clone = 'Clone',
+  Pirate = 'Pirate',
+  Vehicle = 'Vehicle'
+}
+
+/** Input type of `ParallelAssetMatchers`. */
+export type ParallelAssetMatchers = {
+  /** The card type. Can be `Effect`, `Relic`, `Unit`, `Upgrade` or `Paragon`. */
+  cardType?: InputMaybe<Array<InputMaybe<ParallelAssetMatcherCardType>>>;
+  /** The card class. Can be `Art Card`, `Asset`, `Card Back`, `FE`, `Masterpiece`, `PL`, or `SE`. */
+  class?: InputMaybe<Array<InputMaybe<ParallelAssetMatcherClass>>>;
+  /** The expansion used for naming base and expansion sets. */
+  expansion?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** The Parallel the asset belongs to. */
+  parallel?: InputMaybe<Array<InputMaybe<ParallelAssetMatcherParallel>>>;
+  /** The paraset the asset belongs to. */
+  paraset?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** The list of rarities. Can be `Common`, `Uncommon`, `Rare`, `Legendary`, or `Prime`. */
+  rarity?: InputMaybe<Array<InputMaybe<ParallelAssetMatcherRarity>>>;
+  /** The card subtype. Can be `Pirate`, `Vehicle` or `Clone`. */
+  subtype?: InputMaybe<Array<InputMaybe<ParallelAssetMatcherSubtype>>>;
+  tokenId?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+export type ParallelAssetMetadata = {
+  __typename?: 'ParallelAssetMetadata';
+  /** The artist name. */
+  artist?: Maybe<Scalars['String']['output']>;
+  /** The card class. Can be `Art Card`, `Asset`, `Card Back`, `FE`, `Masterpiece`, `PL`, or `SE`. */
+  class?: Maybe<Scalars['String']['output']>;
+  /** The expansion used for naming base and expansion sets. */
+  expansion?: Maybe<Scalars['String']['output']>;
+  /** The asset description, sourced off-chain. Usually equal to the asset's on-chain `description`. */
+  flavourText?: Maybe<Scalars['String']['output']>;
+  /** The ID used to match other cards with the same name but different class. */
+  parallelId?: Maybe<Scalars['String']['output']>;
+  /** The paraset the asset belongs to. */
+  paraset?: Maybe<Scalars['String']['output']>;
+  /** The total supply of this individual asset. */
+  supply?: Maybe<Scalars['String']['output']>;
+};
+
+/** Input type of `ParallelAssetRanking`. */
+export type ParallelAssetRanking = {
+  /** The attribute to rank Parallel assets by. */
+  attribute?: InputMaybe<ParallelAssetRankingAttribute>;
+  /** The direction to apply to the ranking attribute. */
+  direction?: InputMaybe<RankingDirection>;
+};
+
+/** Attribute used to rank Parallel assets. */
+export enum ParallelAssetRankingAttribute {
+  Attack = 'attack',
+  Cost = 'cost',
+  Health = 'health',
+  LastPriceNetworkBaseToken = 'lastPriceNetworkBaseToken',
+  LastPriceUsd = 'lastPriceUsd',
+  Supply = 'supply'
+}
+
+/** Response returned by `getParallelAssets`. */
+export type ParallelAssetsConnection = {
+  __typename?: 'ParallelAssetsConnection';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** A list of Parallel assets. */
+  items?: Maybe<Array<Maybe<ParallelAsset>>>;
+};
+
+/** Tracked changes made to a Parallel card. */
+export type ParallelCardChange = {
+  __typename?: 'ParallelCardChange';
+  /** The Parallel card metadata before and after the card change. */
+  diff: ParallelCardChangeDiff;
+  /** The unix timestamp for the card change. */
+  timestamp: Scalars['Int']['output'];
+  /** The token ID of the Parallel asset. */
+  tokenId: Scalars['String']['output'];
+};
+
+/** Parallel card metadata before and after a card change. */
+export type ParallelCardChangeDiff = {
+  __typename?: 'ParallelCardChangeDiff';
+  /** Metadata for a Parallel card after the card change. */
+  new: ParallelCardChangeFields;
+  /** Metadata for a Parallel card before the card change. */
+  old: ParallelCardChangeFields;
+};
+
+/** Metadata for a Parallel card. */
+export type ParallelCardChangeFields = {
+  __typename?: 'ParallelCardChangeFields';
+  /** The artist name. */
+  artist?: Maybe<Scalars['String']['output']>;
+  /** The damage dealt when engaged in combat. */
+  attack?: Maybe<Scalars['String']['output']>;
+  /** The card type. Can be `Effect`, `Relic`, `Unit`, `Upgrade` or `Paragon`. */
+  cardType?: Maybe<Scalars['String']['output']>;
+  /** The card class. Can be `Art Card`, `Asset`, `Card Back`, `FE`, `Masterpiece`, `PL`, or `SE`. */
+  class?: Maybe<Scalars['String']['output']>;
+  /** The energy used to play in-game. */
+  cost?: Maybe<Scalars['String']['output']>;
+  /** The expansion used for naming base and expansion sets. */
+  expansion?: Maybe<Scalars['String']['output']>;
+  /** The asset description, sourced off-chain. Usually equal to the asset's on-chain `description`. */
+  flavourText?: Maybe<Scalars['String']['output']>;
+  /** The description of the card's in-game abilities. */
+  functionText?: Maybe<Scalars['String']['output']>;
+  /** The possible damage received before being destroyed. */
+  health?: Maybe<Scalars['String']['output']>;
+  /** The Parallel the asset belongs to. */
+  parallel?: Maybe<Scalars['String']['output']>;
+  /** The ID used to match other cards with the same name but different class. */
+  parallelId?: Maybe<Scalars['String']['output']>;
+  /** The paraset the asset belongs to. */
+  paraset?: Maybe<Scalars['String']['output']>;
+  /** The description of the card's passive ability. */
+  passiveAbility?: Maybe<Scalars['String']['output']>;
+  /** The rarity of the asset. Can be `Common`, `Uncommon`, `Rare`, `Legendary`, or `Prime`. */
+  rarity?: Maybe<Scalars['String']['output']>;
+  /** The card subtype. Can be `Pirate`, `Vehicle` or `Clone`. */
+  subtype?: Maybe<Scalars['String']['output']>;
+  /** The total supply of this individual asset. */
+  supply?: Maybe<Scalars['String']['output']>;
+};
+
+/** Input type of `ParallelCardChangeQueryTimestamp. */
+export type ParallelCardChangeQueryTimestampInput = {
+  /** The unix timestamp for the start of the requested range. */
+  from?: InputMaybe<Scalars['Int']['input']>;
+  /** The unix timestamp for the end of the requested range. */
+  to?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Response returned by `getParallelCardChanges`. */
+export type ParallelCardChangesConnection = {
+  __typename?: 'ParallelCardChangesConnection';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** A list of tracked changes made to a Parallel card. */
+  items?: Maybe<Array<Maybe<ParallelCardChange>>>;
+};
+
 export enum Plan {
   Defined = 'DEFINED',
   Enterprise = 'ENTERPRISE'
@@ -4327,15 +4716,498 @@ export type PriceEventWebhookConditionInput = {
   tokenAddress: StringEqualsConditionInput;
 };
 
+/** An Echelon Prime Pool. */
+export type PrimePool = {
+  __typename?: 'PrimePool';
+  /** Values calculated by Defined using on-chain data. */
+  calcData?: Maybe<PrimePoolCalcData>;
+  /** Values obtained directly from the chain. */
+  chainData?: Maybe<PrimePoolChainData>;
+  /** When the pool was created by Defined. */
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  /** The block number for when Defined discovered this pool. */
+  discoveryBlockNumber?: Maybe<Scalars['Int']['output']>;
+  /** The transaction hash of when Defined discovered this pool. */
+  discoveryTransactionHash?: Maybe<Scalars['String']['output']>;
+  /** The ID of the contract-level Prime Pool (poolContractAddress:networkId). For example, `0x89bb49d06610b4b18e355504551809be5177f3d0:1`. */
+  id?: Maybe<Scalars['String']['output']>;
+  /** The network ID the Prime Pool is deployed on. */
+  networkId?: Maybe<Scalars['Int']['output']>;
+  /** The contract address for the tokens cached ib the pool. */
+  nftContractAddress?: Maybe<Scalars['String']['output']>;
+  /** The contract address for the Prime Pool. */
+  poolContractAddress?: Maybe<Scalars['String']['output']>;
+  /** The ID of the pool within the contract. */
+  poolId?: Maybe<Scalars['String']['output']>;
+  /** The type of pool for this Prime Pool. */
+  poolType?: Maybe<Scalars['String']['output']>;
+  /** The Parallel tokenIds required to cache in the pool. */
+  tokenIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  /** The # of cached sets in the pool. */
+  totalSupply?: Maybe<Scalars['String']['output']>;
+};
+
+/** A cached Prime pool asset. */
+export type PrimePoolAsset = {
+  __typename?: 'PrimePoolAsset';
+  /** The number of cached Prime pool assets of this type by this owner. */
+  amount: Scalars['String']['output'];
+  /** The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past. */
+  ethRewardDebt?: Maybe<Scalars['String']['output']>;
+  /** The owner wallet address of the cached Prime pool asset. */
+  from: Scalars['String']['output'];
+  /** The owner wallet address of the cached Prime pool asset, and network ID (from:networkId). */
+  fromHashKey: Scalars['String']['output'];
+  /** The Prime pool ID and Prime pool contract address (poolId:poolContractAddress). */
+  fromSortKey: Scalars['String']['output'];
+  /** The Prime pool asset ID (poolContractAddress:poolId:networkId) */
+  id: Scalars['String']['output'];
+  /** The network ID of the cached Prime pool asset. */
+  networkId: Scalars['Int']['output'];
+  /** THe contract address of the Prime pool. */
+  poolContractAddress: Scalars['String']['output'];
+  /** The Prime pool ID. */
+  poolId: Scalars['String']['output'];
+  /** The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past. */
+  primeRewardDebt?: Maybe<Scalars['String']['output']>;
+  /** The owner wallet address of the cached Prime pool asset. */
+  sortKey: Scalars['String']['output'];
+};
+
+/** Response returned by `getPrimePoolAssets`. */
+export type PrimePoolAssetConnection = {
+  __typename?: 'PrimePoolAssetConnection';
+  /** The cursor to use for pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** The list of cached Prime pool assets returned by the query. */
+  items?: Maybe<Array<Maybe<PrimePoolAsset>>>;
+};
+
+/** Event-specific data for a Prime pool Cache transaction. */
+export type PrimePoolCacheData = {
+  __typename?: 'PrimePoolCacheData';
+  /** The amount of Prime pool asset(s) cached. */
+  eventAmount: Scalars['String']['output'];
+  /** The total supply of assets cached in this Prime pool, including the amount cached in this transaction. */
+  totalSupply: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The owner wallet address of the cached Prime pool asset(s). */
+  user: Scalars['String']['output'];
+  /** The total number of Prime pool asset(s) cached in this pool by this owner. */
+  userCachedAmount: Scalars['String']['output'];
+  /** The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userEthRewardDebt: Scalars['String']['output'];
+  /** The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userPrimeRewardDebt: Scalars['String']['output'];
+};
+
+/** Event-specific data for a Prime pool CachingPaused transaction. */
+export type PrimePoolCachingPausedData = {
+  __typename?: 'PrimePoolCachingPausedData';
+  /** The state of caching paused set on the pool. */
+  cachingPaused: Scalars['Boolean']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+export type PrimePoolCalcData = {
+  __typename?: 'PrimePoolCalcData';
+  /** The amount of accumulated ETH rewards in total for the pool. */
+  poolAccumulatedEth?: Maybe<Scalars['String']['output']>;
+  /** The amount of accumulated PRIME rewards in total for the pool. */
+  poolAccumulatedPrime?: Maybe<Scalars['String']['output']>;
+  /** The amount of ETH for the pool to pay out as caching rewards. */
+  poolEthAmount?: Maybe<Scalars['String']['output']>;
+  /** The amount of ETH paid out daily by the pool as caching rewards. */
+  poolEthPerDay?: Maybe<Scalars['String']['output']>;
+  /** The amount of ETH paid out per second by the pool as caching rewards. */
+  poolEthPerSecond?: Maybe<Scalars['String']['output']>;
+  /** The amount of PRIME for the pool to pay out as caching rewards. */
+  poolPrimeAmount?: Maybe<Scalars['String']['output']>;
+  /** The amount of PRIME paid out daily by the pool as caching rewards. */
+  poolPrimePerDay?: Maybe<Scalars['String']['output']>;
+  /** The amount of PRIME paid out per second by the pool as caching rewards. */
+  poolPrimePerSecond?: Maybe<Scalars['String']['output']>;
+  /** The amount of accumulated ETH rewards per share for the pool. */
+  shareAccumulatedEth?: Maybe<Scalars['String']['output']>;
+  /** The amount of accumulated PRIME rewards per share for the pool. */
+  shareAccumulatedPrime?: Maybe<Scalars['String']['output']>;
+  /** The amount of ETH paid out daily by the pool, per share of the pool's total cached supply. */
+  shareEthPerDay?: Maybe<Scalars['String']['output']>;
+  /** The amount of ETH paid out per second by the pool, per share of the pool's total cached supply. */
+  shareEthPerSecond?: Maybe<Scalars['String']['output']>;
+  /** The amount of PRIME paid out daily by the pool, per share of the pool's total cached supply. */
+  sharePrimePerDay?: Maybe<Scalars['String']['output']>;
+  /** The amount of PRIME paid out per second by the pool, per share of the pool's total cached supply. */
+  sharePrimePerSecond?: Maybe<Scalars['String']['output']>;
+};
+
+/** Values obtained directly from the chain. */
+export type PrimePoolChainData = {
+  __typename?: 'PrimePoolChainData';
+  /** Whether caching is paused for this pool. */
+  cachingPaused?: Maybe<Scalars['Boolean']['output']>;
+  /** The pool's allocation of the contract's per-second ETH rewards. */
+  ethAllocPoint?: Maybe<Scalars['String']['output']>;
+  /** How much ETH has been claimed for this pool. */
+  ethClaimed?: Maybe<Scalars['String']['output']>;
+  /** Caching ETH rewards period end timestamp. */
+  ethEndTimestamp?: Maybe<Scalars['Int']['output']>;
+  /** Last timestamp at which ETH rewards were assigned. */
+  ethLastRewardTimestamp?: Maybe<Scalars['Int']['output']>;
+  /** How much ETH reward has been accrued for this pool. */
+  ethReward?: Maybe<Scalars['String']['output']>;
+  /** Caching ETH rewards period start timestamp. */
+  ethStartTimestamp?: Maybe<Scalars['Int']['output']>;
+  /** Minimum number of timed cache seconds per ETH. */
+  ethTimedCachePeriod?: Maybe<Scalars['String']['output']>;
+  /** Total share points of the contract's per-second ETH rewards to the pool. */
+  ethTotalAllocPoint?: Maybe<Scalars['String']['output']>;
+  /** The pool's allocation of the contract's per second PRIME rewards. */
+  primeAllocPoint?: Maybe<Scalars['String']['output']>;
+  /** Caching rewards period end timestamp. */
+  primeEndTimestamp?: Maybe<Scalars['Int']['output']>;
+  /** Last timestamp at which PRIME rewards were assigned. */
+  primeLastRewardTimestamp?: Maybe<Scalars['Int']['output']>;
+  /** Caching rewards period start timestamp. */
+  primeStartTimestamp?: Maybe<Scalars['String']['output']>;
+  /** Total share points of the contract's per second PRIME rewards to the pool. */
+  primeTotalAllocPoint?: Maybe<Scalars['String']['output']>;
+};
+
+/** Event-specific data for a Prime pool ClaimEth transaction. */
+export type PrimePoolClaimEthData = {
+  __typename?: 'PrimePoolClaimEthData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The total amount of ETH claimed for a pool. */
+  ethClaimed?: Maybe<Scalars['String']['output']>;
+  /** The amount of ETH claimed. */
+  eventAmount: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The wallet address claiming ETH rewards. */
+  user: Scalars['String']['output'];
+  /** The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userEthRewardDebt: Scalars['String']['output'];
+};
+
+/** Event-specific data for a Prime pool ClaimPrime transaction. */
+export type PrimePoolClaimPrimeData = {
+  __typename?: 'PrimePoolClaimPrimeData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The amount of PRIME claimed. */
+  eventAmount: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The wallet address claiming PRIME rewards. */
+  user: Scalars['String']['output'];
+  /** The total amount of PRIME claimed for a pool. */
+  userPrimeRewardDebt: Scalars['String']['output'];
+};
+
+/** Response returned by `getPrimePools`. */
+export type PrimePoolConnection = {
+  __typename?: 'PrimePoolConnection';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** A list of prime pools. */
+  items?: Maybe<Array<Maybe<PrimePool>>>;
+};
+
+/** Currency types for Prime pool events. */
+export enum PrimePoolCurrency {
+  Eth = 'ETH',
+  Prime = 'PRIME'
+}
+
+/** Event-specific data for a Prime pool EmergencyWithdraw transaction. */
+export type PrimePoolEmergencyWithdrawData = {
+  __typename?: 'PrimePoolEmergencyWithdrawData';
+  /** The amount of Prime pool asset(s) emergency withdrawn. */
+  eventAmount: Scalars['String']['output'];
+  /** The total supply of assets cached in this Prime pool. */
+  totalSupply: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The wallet address emergency withdrawing from the pool. */
+  user: Scalars['String']['output'];
+  /** The updated total number of Prime pool asset(s) cached in this pool by this owner. */
+  userCachedAmount: Scalars['String']['output'];
+  /** The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userEthRewardDebt: Scalars['String']['output'];
+  /** The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userPrimeRewardDebt: Scalars['String']['output'];
+};
+
+/** Event-specific data for a Prime pool EndTimestampUpdatedEth transaction. */
+export type PrimePoolEndTimestampUpdatedEthData = {
+  __typename?: 'PrimePoolEndTimestampUpdatedEthData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The updated ETH reward end timestamp for the pool. */
+  ethEndTimestamp: Scalars['Int']['output'];
+  /** The updated reward per second for the pool. */
+  ethPerSecond: Scalars['String']['output'];
+  /** The updated ETH reward start timestamp for the pool. */
+  ethStartTimestamp: Scalars['Int']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool EndTimestampUpdatedPrime transaction. */
+export type PrimePoolEndTimestampUpdatedPrimeData = {
+  __typename?: 'PrimePoolEndTimestampUpdatedPrimeData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The updated PRIME reward end timestamp for the pool. */
+  primeEndTimestamp: Scalars['Int']['output'];
+  /** The updated reward per second for the pool. */
+  primePerSecond: Scalars['String']['output'];
+  /** The updated PRIME reward start timestamp for the pool. */
+  primeStartTimestamp: Scalars['Int']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool LogUpdatePool transaction. */
+export type PrimePoolEthRewardsAddedData = {
+  __typename?: 'PrimePoolEthRewardsAddedData';
+  /** The amount of ETH rewards added to the pool. */
+  amount: Scalars['String']['output'];
+  /** The total ETH rewards for the pool. */
+  totalRewards: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool EthRewardsSet transaction. */
+export type PrimePoolEthRewardsSetData = {
+  __typename?: 'PrimePoolEthRewardsSetData';
+  /** The amount of ETH rewards set for the pool. */
+  amount: Scalars['String']['output'];
+  /** The total ETH rewards for the pool. */
+  totalRewards: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** A Prime pool event. */
+export type PrimePoolEvent = {
+  __typename?: 'PrimePoolEvent';
+  /** The blockHash of the Prime pool event. */
+  blockHash: Scalars['String']['output'];
+  /** The blockNumber of the Prime pool event. */
+  blockNumber: Scalars['Int']['output'];
+  /** The event data for the Prime pool event. */
+  data: PrimePoolEventData;
+  /** The Prime pool event type. */
+  eventType: PrimePoolEventType;
+  /** The Prime pool event's calling address. */
+  from: Scalars['String']['output'];
+  /** The Prime pool event's calling address, and network ID (from:networkId). */
+  fromHashKey: Scalars['String']['output'];
+  /** The Prime pool event ID (poolContractAddress:poolId:networkId) */
+  id: Scalars['String']['output'];
+  /** The logIndex of the Prime pool event. */
+  logIndex: Scalars['Int']['output'];
+  /** The network ID of the Prime pool event. */
+  networkId: Scalars['Int']['output'];
+  /** The Prime pool contract address. */
+  poolContractAddress: Scalars['String']['output'];
+  /** The Prime pool ID. */
+  poolId: Scalars['String']['output'];
+  /** The Prime pool type. */
+  poolType: PrimePoolType;
+  /** The sort key of the Prime pool event (blockNumber:transactionIndex:logIndex). */
+  sortKey: Scalars['String']['output'];
+  /** The timestamp of the Prime pool event. */
+  timestamp: Scalars['Int']['output'];
+  /** The transactionHash of the Prime pool event. */
+  transactionHash: Scalars['String']['output'];
+  /** The transactionIndex of the Prime pool event. */
+  transactionIndex: Scalars['Int']['output'];
+};
+
+/** Response returned by `getPrimePoolEvents`. */
+export type PrimePoolEventConnection = {
+  __typename?: 'PrimePoolEventConnection';
+  /** The cursor to use for pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** The list of Prime pool events returned by the query. */
+  items?: Maybe<Array<Maybe<PrimePoolEvent>>>;
+};
+
+/** Event-specific data for a Prime pool transaction. */
+export type PrimePoolEventData = PrimePoolCacheData | PrimePoolCachingPausedData | PrimePoolClaimEthData | PrimePoolClaimPrimeData | PrimePoolEmergencyWithdrawData | PrimePoolEndTimestampUpdatedEthData | PrimePoolEndTimestampUpdatedPrimeData | PrimePoolEthRewardsAddedData | PrimePoolEthRewardsSetData | PrimePoolLogPoolAdditionData | PrimePoolLogPoolSetAllocPointData | PrimePoolLogSetPerSecondData | PrimePoolLogUpdatePoolData | PrimePoolRewardDecreaseData | PrimePoolRewardIncreaseData | PrimePoolTimeCachePeriodUpdateData | PrimePoolWithdrawData;
+
+/** A Prime pool event type. */
+export enum PrimePoolEventType {
+  Cache = 'CACHE',
+  CachingPaused = 'CACHING_PAUSED',
+  Claim = 'CLAIM',
+  EmergencyWithdraw = 'EMERGENCY_WITHDRAW',
+  EndTimestampUpdated = 'END_TIMESTAMP_UPDATED',
+  EthRewardsAdded = 'ETH_REWARDS_ADDED',
+  EthRewardsSet = 'ETH_REWARDS_SET',
+  LogPoolAddition = 'LOG_POOL_ADDITION',
+  LogPoolSetAllocPoint = 'LOG_POOL_SET_ALLOC_POINT',
+  LogSetPerSecond = 'LOG_SET_PER_SECOND',
+  LogUpdatePool = 'LOG_UPDATE_POOL',
+  PoolDiscovered = 'POOL_DISCOVERED',
+  RewardDecrease = 'REWARD_DECREASE',
+  RewardIncrease = 'REWARD_INCREASE',
+  TimeCachePeriodUpdated = 'TIME_CACHE_PERIOD_UPDATED',
+  Withdraw = 'WITHDRAW'
+}
+
+/** Input Type of `PrimePoolQuery` */
+export type PrimePoolInput = {
+  /** The address of the pool contract. */
+  address: Scalars['String']['input'];
+  /** The network that the pool is deployed on. */
+  networkId: Scalars['Int']['input'];
+  /** Optional list of pool ids to fetch. */
+  poolIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+/** Event-specific data for a Prime pool LogPoolAddition (new Prime pool) transaction. */
+export type PrimePoolLogPoolAdditionData = {
+  __typename?: 'PrimePoolLogPoolAdditionData';
+  /** The token ID's added to the new Prime pool. */
+  tokenIds: Array<Scalars['String']['output']>;
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool LogPoolSetAllocPoint transaction. */
+export type PrimePoolLogPoolSetAllocPointData = {
+  __typename?: 'PrimePoolLogPoolSetAllocPointData';
+  /** The updated alloc point for the pool (the pool's share of the contract's total rewards). */
+  allocPoint: Scalars['String']['output'];
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The updated total alloc point for the pool (the sum of all pools' alloc points). */
+  totalAllocPoint: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool LogSetPerSecond transaction. */
+export type PrimePoolLogSetPerSecondData = {
+  __typename?: 'PrimePoolLogSetPerSecondData';
+  /** The updated reward per second for the pool. */
+  amount: Scalars['String']['output'];
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The updated reward end timestamp for the pool. */
+  endTimestamp: Scalars['Int']['output'];
+  /** The updated ETH reward per second for the pool. */
+  ethAmountPerSecond?: Maybe<Scalars['String']['output']>;
+  /** The updated PRIME reward per second for the pool. */
+  primeAmountPerSecond?: Maybe<Scalars['String']['output']>;
+  /** The updated reward start timestamp for the pool. */
+  startTimestamp: Scalars['Int']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool LogUpdatePool transaction. */
+export type PrimePoolLogUpdatePoolData = {
+  __typename?: 'PrimePoolLogUpdatePoolData';
+  /** The amount of accumulated rewards per share. */
+  accPerShare: Scalars['String']['output'];
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The ETH amount of the pool. */
+  ethAmount?: Maybe<Scalars['String']['output']>;
+  /** The timestamp at which rewards were last assigned. */
+  lastRewardTimestamp: Scalars['Int']['output'];
+  /** The PRIME amount of the pool. */
+  primeAmount?: Maybe<Scalars['String']['output']>;
+  /** The total amount of assets cached in the pool (emitted by the event, before the transaction). */
+  supply: Scalars['String']['output'];
+  /** The total amount of assets cached in the pool (queried from the pool after the transaction). */
+  totalSupply: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** Event-specific data for a Prime pool RewardDecrease transaction. */
+export type PrimePoolRewardDecreaseData = {
+  __typename?: 'PrimePoolRewardDecreaseData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The amount of rewards decreased. */
+  eventAmount: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The updated total rewards for the pool. */
+  updatedAmount: Scalars['String']['output'];
+};
+
+/** Event-specific data for a Prime pool RewardIncrease transaction. */
+export type PrimePoolRewardIncreaseData = {
+  __typename?: 'PrimePoolRewardIncreaseData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The amount of rewards increased. */
+  eventAmount: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The updated total rewards for the pool. */
+  updatedAmount: Scalars['String']['output'];
+};
+
+/** Event-specific data for a Prime pool TimeCachePeriodUpdate transaction. */
+export type PrimePoolTimeCachePeriodUpdateData = {
+  __typename?: 'PrimePoolTimeCachePeriodUpdateData';
+  /** The currency type of the event. */
+  currency: PrimePoolCurrency;
+  /** The minimum number of timed cache seconds per ETH reward. */
+  timedCachePeriod: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+};
+
+/** The type of Prime pool caching contract. */
+export enum PrimePoolType {
+  EthAndPrimeRewards = 'ETH_AND_PRIME_REWARDS',
+  PrimeRewards = 'PRIME_REWARDS',
+  TimedCacheEthAndPrimeRewards = 'TIMED_CACHE_ETH_AND_PRIME_REWARDS'
+}
+
+/** Event-specific data for a Prime pool Withdraw transaction. */
+export type PrimePoolWithdrawData = {
+  __typename?: 'PrimePoolWithdrawData';
+  /** The amount of assets withdrawn. */
+  eventAmount: Scalars['String']['output'];
+  /** The updated total assets for the pool after the withdrawal. */
+  totalSupply: Scalars['String']['output'];
+  /** The Prime pool event type. */
+  type: PrimePoolEventType;
+  /** The address of the wallet who withdrew. */
+  user: Scalars['String']['output'];
+  /** The amount of cached asset the user has in the pool, following the withdrawal. */
+  userCachedAmount: Scalars['String']['output'];
+  /** The amount of ETH the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userEthRewardDebt: Scalars['String']['output'];
+  /** The amount of PRIME the user is not eligible for either from having already harvesting or from not caching in the past. */
+  userPrimeRewardDebt: Scalars['String']['output'];
+};
+
 export type Query = {
   __typename?: 'Query';
-  balances: BalancesResponse;
   /** Returns a URL for a pair chart. */
   chartUrls?: Maybe<ChartUrlsResponse>;
   /** Returns a list of exchanges based on a variety of filters. */
   filterExchanges?: Maybe<ExchangeFilterConnection>;
   /** Returns a list of NFT collection based on a variety of filters. */
   filterNftCollections?: Maybe<NftCollectionFilterConnection>;
+  /** Returns a list of Parallel assets based on a variety of filters. */
+  filterNftParallelAssets?: Maybe<ParallelAssetFilterConnection>;
   /** Returns a list of NFT collections based on a variety of filters. */
   filterNftPoolCollections?: Maybe<NftPoolCollectionFilterConnection>;
   /** Returns a list of NFT pools based on a variety of filters. */
@@ -4350,6 +5222,8 @@ export type Query = {
   getDetailedNftStats?: Maybe<DetailedNftStats>;
   /** Returns bucketed stats for a given token within a pair. */
   getDetailedPairStats?: Maybe<DetailedPairStats>;
+  /** Returns bucketed stats for a given token within a list of pairs. */
+  getDetailedPairsStats?: Maybe<Array<Maybe<DetailedPairStats>>>;
   /**
    * Returns bucketed stats for a given token within a pair.
    * @deprecated Use `getDetailedPairStats` instead, it has more resolutions and better support
@@ -4381,8 +5255,22 @@ export type Query = {
   getNftPoolCollectionsByExchange?: Maybe<GetNftPoolCollectionsResponse>;
   /** Returns transactions for an NFT collection across all NFT pools or within a given pool. */
   getNftPoolEvents?: Maybe<NftPoolEventsResponse>;
+  /** Returns aggregated NFT pool/collection stats for a given time frame. */
+  getNftPoolStats?: Maybe<NftPoolStatsResponse>;
+  /** Returns NFT pools for a given collection and AMM NFT marketplace. */
+  getNftPoolsByCollectionAndExchange?: Maybe<GetNftPoolsResponse>;
   /** Returns a list of NFT pools for a given owner. */
   getNftPoolsByOwner?: Maybe<GetNftPoolsResponse>;
+  /** Returns transactions for an NFT collection across any marketplace(s). */
+  getParallelAssets?: Maybe<ParallelAssetsConnection>;
+  /** Returns changes made to Parallel card metadata over time. */
+  getParallelCardChanges?: Maybe<ParallelCardChangesConnection>;
+  /** Returns a list of Prime pool cached assets. */
+  getPrimePoolAssets?: Maybe<PrimePoolAssetConnection>;
+  /** Returns a list of Prime pool events. */
+  getPrimePoolEvents?: Maybe<PrimePoolEventConnection>;
+  /** Returns a list of Prime pools. */
+  getPrimePools?: Maybe<PrimePoolConnection>;
   /** Returns metadata for a given pair. */
   getSymbol?: Maybe<SymbolResponse>;
   /** Returns transactions for a pair. */
@@ -4391,12 +5279,11 @@ export type Query = {
   getTokenInfo?: Maybe<TokenInfo>;
   /** Returns real-time or historical prices for a list of tokens, fetched in batches. */
   getTokenPrices?: Maybe<Array<Maybe<Price>>>;
-  /** Returns metadata for a given token. */
+  /** Returns metadata for a list of given tokens. */
   getTokensInfo?: Maybe<Array<Maybe<TokenInfo>>>;
   /** Get the wallet profit and loss based on their dex trades */
   getWalletPnl: Array<Maybe<WalletPnl>>;
   getWebhooks?: Maybe<GetWebhooksResponse>;
-  holders: HoldersResponse;
   /** Returns a list of token metadata. */
   listFavoriteTokens?: Maybe<Array<TokenWithMetadata>>;
   /** Returns a list of pairs containing a given token. */
@@ -4417,11 +5304,6 @@ export type Query = {
   tokenSparklines: Array<TokenSparkline>;
   /** Find a list of tokens by their addresses & network id, with pagination. */
   tokens: Array<Maybe<EnhancedToken>>;
-};
-
-
-export type QueryBalancesArgs = {
-  input: BalancesInput;
 };
 
 
@@ -4446,6 +5328,16 @@ export type QueryFilterNftCollectionsArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   phrase?: InputMaybe<Scalars['String']['input']>;
   rankings?: InputMaybe<Array<InputMaybe<NftCollectionRanking>>>;
+};
+
+
+export type QueryFilterNftParallelAssetsArgs = {
+  filters?: InputMaybe<ParallelAssetFilters>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  match?: InputMaybe<ParallelAssetMatchers>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  phrase?: InputMaybe<Scalars['String']['input']>;
+  rankings?: InputMaybe<Array<InputMaybe<ParallelAssetRanking>>>;
 };
 
 
@@ -4516,6 +5408,11 @@ export type QueryGetDetailedPairStatsArgs = {
   pairAddress: Scalars['String']['input'];
   timestamp?: InputMaybe<Scalars['Int']['input']>;
   tokenOfInterest?: InputMaybe<TokenOfInterest>;
+};
+
+
+export type QueryGetDetailedPairsStatsArgs = {
+  input: Array<GetDetailedPairsStatsInput>;
 };
 
 
@@ -4615,12 +5512,76 @@ export type QueryGetNftPoolEventsArgs = {
 };
 
 
+export type QueryGetNftPoolStatsArgs = {
+  collectionAddress: Scalars['String']['input'];
+  endTime: Scalars['Int']['input'];
+  exchangeAddress: Scalars['String']['input'];
+  networkId: Scalars['Int']['input'];
+  poolAddress?: InputMaybe<Scalars['String']['input']>;
+  startTime: Scalars['Int']['input'];
+};
+
+
+export type QueryGetNftPoolsByCollectionAndExchangeArgs = {
+  collectionAddress: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  exchangeAddress: Scalars['String']['input'];
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkId: Scalars['Int']['input'];
+};
+
+
 export type QueryGetNftPoolsByOwnerArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   exchangeAddress?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   networkId: Scalars['Int']['input'];
   ownerAddress: Scalars['String']['input'];
+};
+
+
+export type QueryGetParallelAssetsArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  tokenIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+};
+
+
+export type QueryGetParallelCardChangesArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  timestamp?: InputMaybe<ParallelCardChangeQueryTimestampInput>;
+  tokenId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetPrimePoolAssetsArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkId: Scalars['Int']['input'];
+  poolContractAddress?: InputMaybe<Scalars['String']['input']>;
+  poolId?: InputMaybe<Scalars['String']['input']>;
+  walletAddress?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetPrimePoolEventsArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  eventTypes?: InputMaybe<Array<InputMaybe<PrimePoolEventType>>>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkId: Scalars['Int']['input'];
+  poolContractAddress?: InputMaybe<Scalars['String']['input']>;
+  poolId?: InputMaybe<Scalars['String']['input']>;
+  walletAddress?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryGetPrimePoolsArgs = {
+  address: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkId: Scalars['Int']['input'];
+  poolIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
 
@@ -4665,11 +5626,6 @@ export type QueryGetWebhooksArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   webhookId?: InputMaybe<Scalars['String']['input']>;
-};
-
-
-export type QueryHoldersArgs = {
-  input: HoldersInput;
 };
 
 
@@ -4978,6 +5934,8 @@ export type Subscription = {
   onNftAssetsCreated?: Maybe<NftAsset>;
   /** Live-streamed transactions for an NFT collection. */
   onNftEventsCreated?: Maybe<AddNftEventsOutput>;
+  /** Live streamed nft pool events for a given pool address or collection address */
+  onNftPoolEventsCreated?: Maybe<AddNftPoolEventsOutput>;
   /** Live-streamed stat updates for a given token within a pair. */
   onPairMetadataUpdated?: Maybe<PairMetadata>;
   /** Live-streamed price updates for a token. */
@@ -5019,6 +5977,14 @@ export type SubscriptionOnNftAssetsCreatedArgs = {
 export type SubscriptionOnNftEventsCreatedArgs = {
   address?: InputMaybe<Scalars['String']['input']>;
   networkId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type SubscriptionOnNftPoolEventsCreatedArgs = {
+  collectionAddress?: InputMaybe<Scalars['String']['input']>;
+  exchangeAddress?: InputMaybe<Scalars['String']['input']>;
+  networkId?: InputMaybe<Scalars['Int']['input']>;
+  poolAddress?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -5759,6 +6725,8 @@ export type WindowedDetailedCurrencyPairStats = {
   close?: Maybe<DetailedPairStatsStringMetrics>;
   /** The highest price in USD in the time frame. */
   highest?: Maybe<DetailedPairStatsStringMetrics>;
+  /** The liquidity for the time frame. */
+  liquidity?: Maybe<DetailedPairStatsStringMetrics>;
   /** The lowest price in USD in the time frame. */
   lowest?: Maybe<DetailedPairStatsStringMetrics>;
   /** The opening price for the time frame. */
