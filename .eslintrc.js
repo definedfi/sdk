@@ -18,7 +18,6 @@ module.exports = {
         ignoreParameters: true,
       },
     ],
-    "prettier/prettier": "error",
     "simple-import-sort/imports": "error",
     "@typescript-eslint/no-use-before-define": [
       "error",
