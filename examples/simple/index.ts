@@ -1,5 +1,5 @@
 import { Network } from '../../src/resources/graphql'
-import { Defined } from '@definedfi/sdk/dist/sdk'
+import { Defined } from '@definedfi/sdk'
 
 const sdk = new Defined(process.env.DEFINED_API_KEY || "")
 
