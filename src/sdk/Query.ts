@@ -41,6 +41,5 @@ export class Query {
     this.sdk.query(FilterExchangesDocument, vars);
   symbol = async (vars: GetSymbolQueryVariables) =>
     this.sdk.query(GetSymbolDocument, vars);
-  networks = async () =>
-    this.sdk.query(GetNetworksDocument);
+  networks = async () => this.sdk.query(GetNetworksDocument);
 }
