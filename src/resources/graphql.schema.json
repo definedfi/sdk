@@ -16371,6 +16371,12 @@
             "deprecationReason": null
           },
           {
+            "name": "BLEND",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "BLUR",
             "description": null,
             "isDeprecated": false,
@@ -16444,6 +16450,12 @@
           },
           {
             "name": "STRATOS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SUDOSWAPAMMV2",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null

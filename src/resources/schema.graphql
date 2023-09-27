@@ -3207,6 +3207,8 @@ enum NftExchange {
   ALTO
   PROVENANT
   BLURV2
+  BLEND
+  SUDOSWAPAMMV2
 }
 
 """Number metrics for NFT fillsource stats."""

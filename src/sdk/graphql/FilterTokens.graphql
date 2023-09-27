@@ -1,0 +1,79 @@
+query FilterTokens($filters: TokenFilters, $phrase: String, $tokens: [String], $rankings: [TokenRanking], $limit: Int, $offset: Int) {
+  filterTokens(
+    filters: $filters
+    phrase: $phrase
+    tokens: $tokens
+    rankings: $rankings
+    limit: $limit
+    offset: $offset
+  ) {
+    results {
+      buyCount1
+      buyCount4
+      buyCount12
+      buyCount24
+      change1
+      change4
+      change12
+      change24
+      createdAt
+      high1
+      high4
+      high12
+      high24
+      lastTransaction
+      liquidity
+      low1
+      low4
+      low12
+      low24
+      marketCap
+      priceUSD
+      quoteToken
+      sellCount1
+      sellCount4
+      sellCount12
+      sellCount24
+      txnCount1
+      txnCount4
+      txnCount12
+      txnCount24
+      uniqueBuys1
+      uniqueBuys4
+      uniqueBuys12
+      uniqueBuys24
+      uniqueSells1
+      uniqueSells4
+      uniqueSells12
+      uniqueSells24
+      uniqueTransactions1
+      uniqueTransactions4
+      uniqueTransactions12
+      uniqueTransactions24
+      volume1
+      volume4
+      volume12
+      volume24
+      pair {
+        token0
+        token1
+        pooled {
+          token0
+          token1
+        }
+      }
+      token {
+        address
+        decimals
+        name
+        networkId
+        symbol
+        info {
+          imageSmallUrl
+          circulatingSupply
+          totalSupply
+        }
+      }
+    }
+  }
+}
