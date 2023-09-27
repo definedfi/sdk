@@ -1,5 +1,6 @@
-import { Network } from "../../src/resources/graphql";
 import { Defined } from "@definedfi/sdk";
+
+import { Network } from "../../src/resources/graphql";
 
 const sdk = new Defined(process.env.DEFINED_API_KEY || "");
 
@@ -43,3 +44,4 @@ sdk.queries
   .symbol({ symbol: "0xd99c7f6c65857ac913a8f880a4cb84032ab2fc5b:56" })
   .then(console.log);
 sdk.queries.networks().then(console.log);
+sdk.queries.networkStatus({ networkIds: [1, 56, 137] }).then(console.log);
