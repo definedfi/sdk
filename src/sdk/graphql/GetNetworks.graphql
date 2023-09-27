@@ -1,0 +1,6 @@
+query GetNetworks {
+  getNetworks {
+    id
+    name
+  }
+}
