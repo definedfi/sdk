@@ -6,7 +6,6 @@ import {
   FilterTokensQueryVariables,
   GetBarsDocument,
   GetNetworksDocument,
-  GetNetworksQueryVariables,
   GetSparklinesDocument,
   GetSparklinesQueryVariables,
   GetSymbolDocument,
