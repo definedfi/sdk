@@ -63,6 +63,7 @@ export enum AlertRecurrence {
 export type Balance = {
   __typename?: 'Balance';
   balance: Scalars['String']['output'];
+  shiftedBalance: Scalars['Float']['output'];
   tokenId: Scalars['String']['output'];
   walletId: Scalars['String']['output'];
 };
@@ -160,12 +161,14 @@ export enum ChartTheme {
 /** The chart url. */
 export type ChartUrl = {
   __typename?: 'ChartUrl';
+  /** The chart url. */
   url: Scalars['String']['output'];
 };
 
 /** The response type for a chart url query. */
 export type ChartUrlsResponse = {
   __typename?: 'ChartUrlsResponse';
+  /** The pair chart url. */
   pair: ChartUrl;
 };
 
@@ -670,7 +673,10 @@ export type EnhancedToken = {
   __typename?: 'EnhancedToken';
   /** The contract address of the token. */
   address: Scalars['String']['output'];
-  /** The circulating supply of the token. */
+  /**
+   * The circulating supply of the token.
+   * @deprecated Use the TokenInfo type
+   */
   circulatingSupply?: Maybe<Scalars['String']['output']>;
   /** The token ID on CoinMarketCap. */
   cmcId?: Maybe<Scalars['Int']['output']>;
@@ -682,11 +688,20 @@ export type EnhancedToken = {
   explorerData?: Maybe<ExplorerTokenData>;
   /** The ID of the token (`address:networkId`). */
   id: Scalars['String']['output'];
-  /** The large token logo URL. */
+  /**
+   * The large token logo URL.
+   * @deprecated Use the TokenInfo type
+   */
   imageLargeUrl?: Maybe<Scalars['String']['output']>;
-  /** The small token logo URL. */
+  /**
+   * The small token logo URL.
+   * @deprecated Use the TokenInfo type
+   */
   imageSmallUrl?: Maybe<Scalars['String']['output']>;
-  /** The thumbnail token logo URL. */
+  /**
+   * The thumbnail token logo URL.
+   * @deprecated Use the TokenInfo type
+   */
   imageThumbUrl?: Maybe<Scalars['String']['output']>;
   /** More metadata about the token such as images, description. */
   info?: Maybe<TokenInfo>;
@@ -696,7 +711,10 @@ export type EnhancedToken = {
   name?: Maybe<Scalars['String']['output']>;
   /** The network ID the token is deployed on. */
   networkId: Scalars['Int']['output'];
-  /** The amount of this token in the pair. */
+  /**
+   * The amount of this token in the pair.
+   * @deprecated pooled can be found on the pair instead
+   */
   pooled?: Maybe<Scalars['String']['output']>;
   /** Community gathered links for the socials of this token. */
   socialLinks?: Maybe<SocialLinks>;
@@ -1122,11 +1140,6 @@ export enum GraphQlNftPoolVariant {
   Native = 'NATIVE'
 }
 
-export type HoldersCounts = {
-  __typename?: 'HoldersCounts';
-  total: Scalars['Int']['output'];
-};
-
 export type HoldersInput = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   tokenId: Scalars['String']['input'];
@@ -1134,7 +1147,7 @@ export type HoldersInput = {
 
 export type HoldersResponse = {
   __typename?: 'HoldersResponse';
-  counts?: Maybe<HoldersCounts>;
+  count: Scalars['Int']['output'];
   cursor?: Maybe<Scalars['String']['output']>;
   items: Array<Balance>;
 };
@@ -3118,7 +3131,7 @@ export type NftPoolEvent = {
 };
 
 /** Event-specific data for an NFT pool transaction. */
-export type NftPoolEventData = NewPoolEventData | NewPoolEventDataV2 | NftPoolAssetRecipientUpdateEventData | NftPoolDeltaUpdateEventData | NftPoolFeeUpdateEventData | NftPoolNftDepositEventData | NftPoolNftDepositEventDataV2 | NftPoolNftWithdrawalEventData | NftPoolNftWithdrawalEventDataV2 | NftPoolSpotPriceUpdateEventData | NftPoolSpotPriceUpdateEventDataV2 | NftPoolTokenDepositEventData | NftPoolTokenDepositEventDataV2 | NftPoolTokenWithdrawalEventData | NftPoolTokenWithdrawalEventDataV2 | SwapNftInPoolEventData | SwapNftInPoolEventDataV2 | SwapNftOutPoolEventData | SwapNftOutPoolEventDataV2;
+export type NftPoolEventData = NewPoolEventData | NewPoolEventDataV2 | NftPoolAssetRecipientUpdateEventData | NftPoolDeltaUpdateEventData | NftPoolFeeUpdateEventData | NftPoolNftDepositEventData | NftPoolNftDepositEventDataV2 | NftPoolNftWithdrawalEventData | NftPoolNftWithdrawalEventDataV2 | NftPoolOwnershipTransferredEventDataV2 | NftPoolSpotPriceUpdateEventData | NftPoolSpotPriceUpdateEventDataV2 | NftPoolTokenDepositEventData | NftPoolTokenDepositEventDataV2 | NftPoolTokenWithdrawalEventData | NftPoolTokenWithdrawalEventDataV2 | SwapNftInPoolEventData | SwapNftInPoolEventDataV2 | SwapNftOutPoolEventData | SwapNftOutPoolEventDataV2;
 
 /** Metadata for an NFT transfer. */
 export type NftPoolEventNftTransfer = {
@@ -3151,6 +3164,7 @@ export enum NftPoolEventType {
   NftDepositV2 = 'NFT_DEPOSIT_V2',
   NftWithdrawal = 'NFT_WITHDRAWAL',
   NftWithdrawalV2 = 'NFT_WITHDRAWAL_V2',
+  OwnershipTransferred = 'OWNERSHIP_TRANSFERRED',
   SpotPriceUpdate = 'SPOT_PRICE_UPDATE',
   SpotPriceUpdateV2 = 'SPOT_PRICE_UPDATE_V2',
   SwapNftInPool = 'SWAP_NFT_IN_POOL',
@@ -3502,6 +3516,14 @@ export type NftPoolNumberFilter = {
   lt?: InputMaybe<Scalars['String']['input']>;
   /** Less than or equal to. */
   lte?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type NftPoolOwnershipTransferredEventDataV2 = {
+  __typename?: 'NftPoolOwnershipTransferredEventDataV2';
+  /** The new owner of the pool. */
+  newOwner: Scalars['String']['output'];
+  /** The type of NFT pool event, `OWNERSHIP_TRANSFERRED`. */
+  type: NftPoolEventType;
 };
 
 /** Input type of `NftPoolRanking`. */
@@ -3940,8 +3962,8 @@ export type Pair = {
   __typename?: 'Pair';
   /** The contract address of the pair. */
   address: Scalars['String']['output'];
-  /** The time elapsed in seconds since the pair was first seen. */
-  age?: Maybe<Scalars['Int']['output']>;
+  /** The unix timestamp for the creation of the pair. */
+  createdAt?: Maybe<Scalars['Int']['output']>;
   /** The address for the exchange factory contract. */
   exchangeHash: Scalars['String']['output'];
   /** The exchange fee for swaps. */
@@ -3950,6 +3972,8 @@ export type Pair = {
   id: Scalars['String']['output'];
   /** The network ID the pair is deployed on. */
   networkId: Scalars['Int']['output'];
+  /** The pooled amounts of each token in the pair. */
+  pooled?: Maybe<PooledTokenValues>;
   /** The amount of required tick separation. Only applicable for pairs on UniswapV3. */
   tickSpacing?: Maybe<Scalars['Int']['output']>;
   /** The contract address of `token0`. */
@@ -4662,7 +4686,8 @@ export type ParallelCardChangesConnection = {
 
 export enum Plan {
   Defined = 'DEFINED',
-  Enterprise = 'ENTERPRISE'
+  Enterprise = 'ENTERPRISE',
+  Standard = 'STANDARD'
 }
 
 export type Pnl = {
@@ -4689,6 +4714,12 @@ export enum PoolNftType {
   Erc1155Erc20 = 'ERC1155ERC20',
   Erc1155Eth = 'ERC1155ETH'
 }
+
+export type PooledTokenValues = {
+  __typename?: 'PooledTokenValues';
+  token0?: Maybe<Scalars['String']['output']>;
+  token1?: Maybe<Scalars['String']['output']>;
+};
 
 /** Current or historical prices for a token. */
 export type Price = {
@@ -5200,6 +5231,8 @@ export type PrimePoolWithdrawData = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Returns list of token balances that a wallet has */
+  balances: BalancesResponse;
   /** Returns a URL for a pair chart. */
   chartUrls?: Maybe<ChartUrlsResponse>;
   /** Returns a list of exchanges based on a variety of filters. */
@@ -5284,6 +5317,8 @@ export type Query = {
   /** Get the wallet profit and loss based on their dex trades */
   getWalletPnl: Array<Maybe<WalletPnl>>;
   getWebhooks?: Maybe<GetWebhooksResponse>;
+  /** Returns list of wallets that hold a given token, ordered by holdings descending. Also has the unique count of holders for that token */
+  holders: HoldersResponse;
   /** Returns a list of token metadata. */
   listFavoriteTokens?: Maybe<Array<TokenWithMetadata>>;
   /** Returns a list of pairs containing a given token. */
@@ -5304,6 +5339,11 @@ export type Query = {
   tokenSparklines: Array<TokenSparkline>;
   /** Find a list of tokens by their addresses & network id, with pagination. */
   tokens: Array<Maybe<EnhancedToken>>;
+};
+
+
+export type QueryBalancesArgs = {
+  input: BalancesInput;
 };
 
 
@@ -5626,6 +5666,11 @@ export type QueryGetWebhooksArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   webhookId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
+export type QueryHoldersArgs = {
+  input: HoldersInput;
 };
 
 
@@ -6327,6 +6372,8 @@ export type TokenFilters = {
   high12?: InputMaybe<NumberFilter>;
   /** The highest price in USD in the past 24 hours. */
   high24?: InputMaybe<NumberFilter>;
+  /** Whether the token has been flagged as a scam. */
+  isScam?: InputMaybe<Scalars['Boolean']['input']>;
   /** The unix timestamp for the token's last transaction. */
   lastTransaction?: InputMaybe<NumberFilter>;
   /** The amount of liquidity in the token's top pair. */
@@ -6583,7 +6630,7 @@ export type TokenWithMetadata = {
   imageSmallUrl?: Maybe<Scalars['String']['output']>;
   /** The token logo URL. */
   imageThumbUrl?: Maybe<Scalars['String']['output']>;
-  /** Is this token marked as a scam? */
+  /** Whether the token has been flagged as a scam. */
   isScam?: Maybe<Scalars['Boolean']['output']>;
   /** The unix timestamp for the token's last transaction. */
   lastTransaction?: Maybe<Scalars['Int']['output']>;
@@ -6652,7 +6699,10 @@ export type WalletPnl = {
 
 export type WalletTokenPnl = {
   __typename?: 'WalletTokenPnl';
+  /** These are only valid if they had an entry buy record */
+  averageEntry?: Maybe<Scalars['Float']['output']>;
   id: Scalars['String']['output'];
+  percentChange?: Maybe<Scalars['Float']['output']>;
   pnl: Pnl;
   tokenAddress: Scalars['String']['output'];
 };

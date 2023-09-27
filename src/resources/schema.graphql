@@ -65,6 +65,7 @@ type Balance {
   walletId: String!
   tokenId: String!
   balance: String!
+  shiftedBalance: Float!
 }
 
 """Optional way to provide current balance to the PnL calculator"""
@@ -184,11 +185,13 @@ enum ChartTheme {
 
 """The chart url."""
 type ChartUrl {
+  """The chart url."""
   url: String!
 }
 
 """The response type for a chart url query."""
 type ChartUrlsResponse {
+  """The pair chart url."""
   pair: ChartUrl!
 }
 
@@ -774,9 +777,6 @@ type EnhancedToken {
   """The total supply of the token."""
   totalSupply: String
 
-  """The amount of this token in the pair."""
-  pooled: String
-
   """Community gathered links for the socials of this token."""
   socialLinks: SocialLinks
 
@@ -790,16 +790,19 @@ type EnhancedToken {
   exchanges: [Exchange!]
 
   """The thumbnail token logo URL."""
-  imageThumbUrl: String
+  imageThumbUrl: String @deprecated(reason: "Use the TokenInfo type")
 
   """The small token logo URL."""
-  imageSmallUrl: String
+  imageSmallUrl: String @deprecated(reason: "Use the TokenInfo type")
 
   """The large token logo URL."""
-  imageLargeUrl: String
+  imageLargeUrl: String @deprecated(reason: "Use the TokenInfo type")
 
   """The circulating supply of the token."""
-  circulatingSupply: String
+  circulatingSupply: String @deprecated(reason: "Use the TokenInfo type")
+
+  """The amount of this token in the pair."""
+  pooled: String @deprecated(reason: "pooled can be found on the pair instead")
 }
 
 """A token transaction."""
@@ -1349,10 +1352,6 @@ enum GraphQlNftPoolVariant {
   NATIVE
 }
 
-type HoldersCounts {
-  total: Int!
-}
-
 input HoldersInput {
   tokenId: String!
   cursor: String
@@ -1360,7 +1359,7 @@ input HoldersInput {
 
 type HoldersResponse {
   items: [Balance!]!
-  counts: HoldersCounts
+  count: Int!
   cursor: String
 }
 
@@ -3936,7 +3935,7 @@ type NftPoolEvent {
 }
 
 """Event-specific data for an NFT pool transaction."""
-union NftPoolEventData = NewPoolEventData | SwapNftOutPoolEventData | SwapNftInPoolEventData | NftPoolNftDepositEventData | NftPoolNftWithdrawalEventData | NftPoolTokenDepositEventData | NftPoolTokenWithdrawalEventData | NftPoolSpotPriceUpdateEventData | NftPoolDeltaUpdateEventData | NftPoolFeeUpdateEventData | NftPoolAssetRecipientUpdateEventData | NewPoolEventDataV2 | SwapNftOutPoolEventDataV2 | SwapNftInPoolEventDataV2 | NftPoolNftDepositEventDataV2 | NftPoolNftWithdrawalEventDataV2 | NftPoolTokenDepositEventDataV2 | NftPoolTokenWithdrawalEventDataV2 | NftPoolSpotPriceUpdateEventDataV2
+union NftPoolEventData = NewPoolEventData | SwapNftOutPoolEventData | SwapNftInPoolEventData | NftPoolNftDepositEventData | NftPoolNftWithdrawalEventData | NftPoolTokenDepositEventData | NftPoolTokenWithdrawalEventData | NftPoolSpotPriceUpdateEventData | NftPoolDeltaUpdateEventData | NftPoolFeeUpdateEventData | NftPoolAssetRecipientUpdateEventData | NewPoolEventDataV2 | SwapNftOutPoolEventDataV2 | SwapNftInPoolEventDataV2 | NftPoolNftDepositEventDataV2 | NftPoolNftWithdrawalEventDataV2 | NftPoolTokenDepositEventDataV2 | NftPoolTokenWithdrawalEventDataV2 | NftPoolSpotPriceUpdateEventDataV2 | NftPoolOwnershipTransferredEventDataV2
 
 """Metadata for an NFT transfer."""
 type NftPoolEventNftTransfer {
@@ -3989,6 +3988,7 @@ enum NftPoolEventType {
   TOKEN_DEPOSIT_V2
   TOKEN_WITHDRAWAL_V2
   SPOT_PRICE_UPDATE_V2
+  OWNERSHIP_TRANSFERRED
 }
 
 """Event data for updating the fee of a pool."""
@@ -4514,6 +4514,14 @@ input NftPoolNumberFilter {
 
   """Less than."""
   lt: String
+}
+
+type NftPoolOwnershipTransferredEventDataV2 {
+  """The type of NFT pool event, `OWNERSHIP_TRANSFERRED`."""
+  type: NftPoolEventType!
+
+  """The new owner of the pool."""
+  newOwner: String!
 }
 
 """Input type of `NftPoolRanking`."""
@@ -5138,10 +5146,13 @@ type Pair {
   """The contract address of `token1`."""
   token1: String!
 
-  """The time elapsed in seconds since the pair was first seen."""
-  age: Int
+  """The unix timestamp for the creation of the pair."""
+  createdAt: Int
   token0Data: EnhancedToken
   token1Data: EnhancedToken
+
+  """The pooled amounts of each token in the pair."""
+  pooled: PooledTokenValues
 }
 
 """Input type of `PairChartInput`."""
@@ -6101,6 +6112,7 @@ type ParallelCardChangesConnection {
 enum Plan {
   ENTERPRISE
   DEFINED
+  STANDARD
 }
 
 type Pnl {
@@ -6120,6 +6132,11 @@ input PnlInput {
 
   """Cost basis calculation method, defaults to FIFO"""
   costBasisMethod: CostBasisMethod
+}
+
+type PooledTokenValues {
+  token0: String
+  token1: String
 }
 
 """The type of NFT in the pool."""
@@ -7460,7 +7477,7 @@ type Query {
     to: Int!
 
     """
-    The time frame for each candle. Available options are `1`, `5`, `15`, `30`, `60`, `240`, `720`, and `1D`.
+    The time frame for each candle. Available options are `1`, `5`, `15`, `30`, `60`, `240`, `720`, `1D` and `7D`.
     """
     resolution: String!
 
@@ -7508,7 +7525,10 @@ type Query {
   getExchanges: [Exchange!]!
 
   """Returns a URL for a pair chart."""
-  chartUrls(input: ChartInput!): ChartUrlsResponse
+  chartUrls(
+    """Input required to fetch a pair chart."""
+    input: ChartInput!
+  ): ChartUrlsResponse
 
   """Returns a list of event labels for a pair."""
   getEventLabels(
@@ -7613,6 +7633,14 @@ type Query {
   Returns a list of token simple chart data (sparklines) for the given tokens.
   """
   tokenSparklines(input: TokenSparklineInput!): [TokenSparkline!]!
+
+  """Returns list of token balances that a wallet has"""
+  balances(input: BalancesInput!): BalancesResponse!
+
+  """
+  Returns list of wallets that hold a given token, ordered by holdings descending. Also has the unique count of holders for that token
+  """
+  holders(input: HoldersInput!): HoldersResponse!
 }
 
 enum QuoteCurrency {
@@ -8603,6 +8631,9 @@ input TokenFilters {
 
   """The trade volume in USD in the past 4 hours."""
   volume4: NumberFilter
+
+  """Whether the token has been flagged as a scam."""
+  isScam: Boolean
 }
 
 """Metadata for a token."""
@@ -8824,7 +8855,7 @@ type TokenWithMetadata {
   """The percent price change for the time frame requested. Decimal format."""
   priceChange: Float!
 
-  """Is this token marked as a scam?"""
+  """Whether the token has been flagged as a scam."""
   isScam: Boolean
 
   """The percent price change in the past hour. Decimal format."""
@@ -8919,6 +8950,10 @@ type WalletTokenPnl {
   id: String!
   tokenAddress: String!
   pnl: Pnl!
+
+  """These are only valid if they had an entry buy record"""
+  averageEntry: Float
+  percentChange: Float
 }
 
 """Metadata for a washtrade label."""
