@@ -1,0 +1,183 @@
+subscription OnBarsUpdated($pairId: String, $quoteToken: QuoteToken) {
+  onBarsUpdated(pairId: $pairId, quoteToken: $quoteToken) {
+    eventSortKey
+    networkId
+    pairAddress
+    pairId
+    timestamp
+    quoteToken
+    aggregates {
+      r1 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r5 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r15 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r30 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r60 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r240 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r720 {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r1D {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+      r7D {
+        t
+        usd {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+        token {
+          t
+          o
+          h
+          l
+          c
+          volume
+        }
+      }
+    }
+  }
+}
