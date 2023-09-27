@@ -1,5 +1,5 @@
 import { Defined } from "./index";
-import { GetSparklinesDocument, GetSparklinesQueryVariables, GetTokenPriceDocument, GetTokensDocument, GetTokensQuery, QueryGetTokenPricesArgs, SubscriptionOnPriceUpdatedArgs, PairEventsDocument, PairEventsQueryVariables, QueryTokenArgs, GetBarsDocument, QueryListTopTokensArgs, ListTopTokensDocument, FilterTokensQueryVariables, FilterTokensDocument } from "./gql/graphql";
+import { GetSparklinesDocument, GetSparklinesQueryVariables, GetTokenPriceDocument, GetTokensDocument, GetTokensQuery, QueryGetTokenPricesArgs, SubscriptionOnPriceUpdatedArgs, PairEventsDocument, PairEventsQueryVariables, QueryTokenArgs, GetBarsDocument, QueryListTopTokensArgs, ListTopTokensDocument, FilterTokensQueryVariables, FilterTokensDocument, FilterExchangesQueryVariables, FilterExchangesDocument } from "./generated/graphql";
 import { QueryGetBarsArgs } from "../resources/graphql";
 
 export class Query {
@@ -11,4 +11,5 @@ export class Query {
   bars = async (vars: QueryGetBarsArgs) => { return this.sdk.query(GetBarsDocument, vars) }
   topTokens = async (vars: QueryListTopTokensArgs) => { return this.sdk.query(ListTopTokensDocument, vars) }
   filterTokens = async (vars: FilterTokensQueryVariables) => { return this.sdk.query(FilterTokensDocument, vars) }
+  filterExchanges = async (vars: FilterExchangesQueryVariables) => { return this.sdk.query(FilterExchangesDocument, vars) }
 }

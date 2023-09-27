@@ -1,7 +1,7 @@
 
 import { Defined } from "./index";
 import { print } from 'graphql'
-import { OnEventsCreatedDocument, OnPriceUpdatedDocument, SubscriptionOnEventsCreatedArgs, SubscriptionOnPriceUpdatedArgs } from "./gql/graphql";
+import { OnEventsCreatedDocument, OnPriceUpdatedDocument, SubscriptionOnEventsCreatedArgs, SubscriptionOnPriceUpdatedArgs } from "./generated/graphql";
 import { Sink } from "graphql-ws";
 
 export class Subscribe {
