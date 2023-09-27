@@ -1,0 +1,7 @@
+subscription OnPriceUpdated($address: String, $networkId: Int) {
+  onPriceUpdated(address: $address, networkId: $networkId) {
+    address
+    networkId
+    priceUsd
+  }
+}

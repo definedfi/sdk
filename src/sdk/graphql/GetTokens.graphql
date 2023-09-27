@@ -1,0 +1,11 @@
+query GetTokens($input: [TokenInput!]) {
+  tokens(ids: $input) {
+    address
+    decimals
+    id
+    name
+    networkId
+    symbol
+    totalSupply
+  }
+}

@@ -1,0 +1,9 @@
+query GetTokenPrice($inputs: [GetPriceInput]) {
+  getTokenPrices(
+    inputs: $inputs
+  ) {
+    address
+    networkId
+    priceUsd
+  }
+}

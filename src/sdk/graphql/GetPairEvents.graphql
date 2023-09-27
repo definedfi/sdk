@@ -1,0 +1,28 @@
+query PairEvents($query: EventsQueryInput!) {
+  pairEvents: getTokenEvents(query: $query) {
+    cursor
+    items {
+      address
+      baseTokenPrice
+      blockHash
+      blockNumber
+      eventDisplayType
+      eventType
+      id
+      liquidityToken
+      maker
+      networkId
+      quoteToken
+      token0PoolValueUsd
+      token0SwapValueUsd
+      timestamp
+      token0ValueBase
+      token1PoolValueUsd
+      token1SwapValueUsd
+      token1ValueBase
+      transactionHash
+      transactionIndex
+      logIndex
+    }
+  }
+}
