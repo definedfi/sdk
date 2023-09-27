@@ -1,4 +1,7 @@
-import { QueryGetBarsArgs } from "../resources/graphql";
+import {
+  QueryGetBarsArgs,
+  QueryGetNetworkStatusArgs,
+} from "../resources/graphql";
 import {
   FilterExchangesDocument,
   FilterExchangesQueryVariables,
@@ -6,6 +9,7 @@ import {
   FilterTokensQueryVariables,
   GetBarsDocument,
   GetNetworksDocument,
+  GetNetworkStatusDocument,
   GetSparklinesDocument,
   GetSparklinesQueryVariables,
   GetSymbolDocument,
@@ -42,4 +46,6 @@ export class Query {
   symbol = async (vars: GetSymbolQueryVariables) =>
     this.sdk.query(GetSymbolDocument, vars);
   networks = async () => this.sdk.query(GetNetworksDocument);
+  networkStatus = async (vars: QueryGetNetworkStatusArgs) =>
+    this.sdk.query(GetNetworkStatusDocument, vars);
 }
