@@ -16,8 +16,17 @@ It provides the public schema SDL for you to use. You can use graphql-codegen to
 
 Follow one of the examples in the [examples](/examples) directory, or simply run.
 
+Fetch a token. 
 ```typescript
+import { Defined } from '@definedfi/sdk'
 
+const sdk = new Defined(MY_API_KEY)
+
+sdk.queries.token({ input: { address: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c", networkId: 56 } }).then(console.log)
+```
+
+Use your own GraphQL selections
+```typescript
 import { Network } from '../../src/resources/graphql'
 import { Defined } from '@definedfi/sdk/dist/sdk'
 
@@ -30,7 +39,6 @@ sdk.send<{ getNetworks: Network[] }>(`
 `, {}).then(res => {
   console.log("Networks: ", res.getNetworks)
 })
-
 ```
 
 ## Running the examples
@@ -65,10 +73,6 @@ This shows how you could use it in a next JS project.
 * `cd examples/next`
 * `bun i`
 * `NEXT_PUBLIC_DEFINED_API_KEY=xyz bun run dev`
-
-## Roadmap
-
-* Query definitons for common types, batteries included so you could do things like `sdk.tokens('0xabc').price`
 
 ## Contributing
 
