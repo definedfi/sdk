@@ -2667,6 +2667,7 @@ export type NftEventsConnection = {
 export enum NftExchange {
   Alto = 'ALTO',
   Bitkeep = 'BITKEEP',
+  Blend = 'BLEND',
   Blur = 'BLUR',
   Blurv2 = 'BLURV2',
   Cryptopunks = 'CRYPTOPUNKS',
@@ -2680,6 +2681,7 @@ export enum NftExchange {
   Quixotic = 'QUIXOTIC',
   Seaport = 'SEAPORT',
   Stratos = 'STRATOS',
+  Sudoswapammv2 = 'SUDOSWAPAMMV2',
   Sudoswapv2 = 'SUDOSWAPV2',
   Tofunft = 'TOFUNFT',
   Treasure = 'TREASURE',

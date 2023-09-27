@@ -1,0 +1,16 @@
+query GetBars($symbol: String!, $from: Int!, $to: Int!, $resolution: String!, $currencyCode: String, $quoteToken: QuoteToken) {
+  getBars(
+    symbol: $symbol
+    from: $from
+    to: $to
+    resolution: $resolution
+    currencyCode: $currencyCode
+    quoteToken: $quoteToken
+  ) {
+    o
+    h
+    l
+    c
+    volume
+  }
+}
