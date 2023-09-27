@@ -336,6 +336,22 @@
             "deprecationReason": null
           },
           {
+            "name": "shiftedBalance",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Float",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "tokenId",
             "description": null,
             "args": [],
@@ -945,7 +961,7 @@
         "fields": [
           {
             "name": "url",
-            "description": null,
+            "description": "The chart url.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -972,7 +988,7 @@
         "fields": [
           {
             "name": "pair",
-            "description": null,
+            "description": "The pair chart url.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -4590,8 +4606,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use the TokenInfo type"
           },
           {
             "name": "cmcId",
@@ -4678,8 +4694,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use the TokenInfo type"
           },
           {
             "name": "imageSmallUrl",
@@ -4690,8 +4706,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use the TokenInfo type"
           },
           {
             "name": "imageThumbUrl",
@@ -4702,8 +4718,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use the TokenInfo type"
           },
           {
             "name": "info",
@@ -4766,8 +4782,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "pooled can be found on the pair instead"
           },
           {
             "name": "socialLinks",
@@ -7109,33 +7125,6 @@
         "possibleTypes": null
       },
       {
-        "kind": "OBJECT",
-        "name": "HoldersCounts",
-        "description": null,
-        "fields": [
-          {
-            "name": "total",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Int",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
         "kind": "INPUT_OBJECT",
         "name": "HoldersInput",
         "description": null,
@@ -7180,13 +7169,17 @@
         "description": null,
         "fields": [
           {
-            "name": "counts",
+            "name": "count",
             "description": null,
             "args": [],
             "type": {
-              "kind": "OBJECT",
-              "name": "HoldersCounts",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -18946,6 +18939,11 @@
           },
           {
             "kind": "OBJECT",
+            "name": "NftPoolOwnershipTransferredEventDataV2",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
             "name": "NftPoolSpotPriceUpdateEventData",
             "ofType": null
           },
@@ -19156,6 +19154,12 @@
           },
           {
             "name": "NFT_WITHDRAWAL_V2",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "OWNERSHIP_TRANSFERRED",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -21162,6 +21166,49 @@
           }
         ],
         "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "NftPoolOwnershipTransferredEventDataV2",
+        "description": null,
+        "fields": [
+          {
+            "name": "newOwner",
+            "description": "The new owner of the pool.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "type",
+            "description": "The type of NFT pool event, `OWNERSHIP_TRANSFERRED`.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "NftPoolEventType",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },
@@ -23724,8 +23771,8 @@
             "deprecationReason": null
           },
           {
-            "name": "age",
-            "description": "The time elapsed in seconds since the pair was first seen.",
+            "name": "createdAt",
+            "description": "The unix timestamp for the creation of the pair.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -23791,6 +23838,18 @@
                 "name": "Int",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "pooled",
+            "description": "The pooled amounts of each token in the pair.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "PooledTokenValues",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -27814,6 +27873,12 @@
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "STANDARD",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "possibleTypes": null
@@ -27985,6 +28050,41 @@
             "deprecationReason": null
           }
         ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "PooledTokenValues",
+        "description": null,
+        "fields": [
+          {
+            "name": "token0",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "token1",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
         "possibleTypes": null
       },
       {
@@ -31079,12 +31179,45 @@
         "description": null,
         "fields": [
           {
+            "name": "balances",
+            "description": "Returns list of token balances that a wallet has",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "BalancesInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "BalancesResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "chartUrls",
             "description": "Returns a URL for a pair chart.",
             "args": [
               {
                 "name": "input",
-                "description": null,
+                "description": "Input required to fetch a pair chart.",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -31776,7 +31909,7 @@
               },
               {
                 "name": "resolution",
-                "description": "The time frame for each candle. Available options are `1`, `5`, `15`, `30`, `60`, `240`, `720`, and `1D`.",
+                "description": "The time frame for each candle. Available options are `1`, `5`, `15`, `30`, `60`, `240`, `720`, `1D` and `7D`.",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -33957,6 +34090,39 @@
               "kind": "OBJECT",
               "name": "GetWebhooksResponse",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "holders",
+            "description": "Returns list of wallets that hold a given token, ordered by holdings descending. Also has the unique count of holders for that token",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "HoldersInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "HoldersResponse",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -38509,6 +38675,18 @@
             "deprecationReason": null
           },
           {
+            "name": "isScam",
+            "description": "Whether the token has been flagged as a scam.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "lastTransaction",
             "description": "The unix timestamp for the token's last transaction.",
             "type": {
@@ -40067,7 +40245,7 @@
           },
           {
             "name": "isScam",
-            "description": "Is this token marked as a scam?",
+            "description": "Whether the token has been flagged as a scam.",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -40528,6 +40706,18 @@
         "description": null,
         "fields": [
           {
+            "name": "averageEntry",
+            "description": "These are only valid if they had an entry buy record",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "id",
             "description": null,
             "args": [],
@@ -40539,6 +40729,18 @@
                 "name": "String",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "percentChange",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Float",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null

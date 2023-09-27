@@ -4,7 +4,7 @@ const getNetworksDocument = {"kind":"Document","definitions":[{"kind":"Operation
 const getNetworksString = `query GetNetworks { getNetworks { id } }`
 const subscribePriceUpdatedString = `subscription onPriceUpdated($address: String!, $networkId: Int!) { onPriceUpdated(address: $address, networkId: $networkId) { address networkId priceUsd timestamp } }`
 
-describe(Defined, () => {
+describe('Defined', () => {
   let sdk: Defined
   beforeEach(() => {
     sdk = new Defined('dummy-key')
