@@ -2,6 +2,7 @@
   "name": "@definedfi/sdk",
   "version": "0.2.0",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "build": "bun run fetch:schema && bun run codegen && bun run tsc",
     "fetch:schema": "curl -s https://graph.defined.fi/schema/latest.graphql --output src/resources/schema.graphql",
@@ -9,6 +10,10 @@
     "prepack": "cp src/resources/* dist/resources/",
     "test": "jest"
   },
+  "files": [
+    "dist",
+    "src"
+  ],
   "keywords": ["crypto", "charting", "sdk", "analytics", "blockchain", "api"],
   "repository": "github:definedfi/sdk",
   "author": "Defined.fi",

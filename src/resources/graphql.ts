@@ -6699,9 +6699,10 @@ export type WalletPnl = {
 
 export type WalletTokenPnl = {
   __typename?: 'WalletTokenPnl';
-  /** These are only valid if they had an entry buy record */
+  /** The average buy price for the token */
   averageEntry?: Maybe<Scalars['Float']['output']>;
   id: Scalars['String']['output'];
+  /** How much your investment has gained or lost in a percentage */
   percentChange?: Maybe<Scalars['Float']['output']>;
   pnl: Pnl;
   tokenAddress: Scalars['String']['output'];

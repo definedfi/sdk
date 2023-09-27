@@ -40707,7 +40707,7 @@
         "fields": [
           {
             "name": "averageEntry",
-            "description": "These are only valid if they had an entry buy record",
+            "description": "The average buy price for the token",
             "args": [],
             "type": {
               "kind": "SCALAR",
@@ -40735,7 +40735,7 @@
           },
           {
             "name": "percentChange",
-            "description": null,
+            "description": "How much your investment has gained or lost in a percentage",
             "args": [],
             "type": {
               "kind": "SCALAR",
