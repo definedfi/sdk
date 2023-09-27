@@ -29,6 +29,4 @@ describe('Query', () => {
     expect(res.pairEvents?.items?.[0]?.address).toEqual("0x1234")
     expect(sdk.queries).toBeDefined()
   })
-
-
 })
