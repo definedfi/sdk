@@ -1,2 +1,2 @@
-export * as GraphQL from './resources/graphql';
-export * from './sdk';
+export * as GraphQL from "./resources/graphql";
+export * from "./sdk";
