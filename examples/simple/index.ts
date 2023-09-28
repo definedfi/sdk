@@ -45,3 +45,15 @@ sdk.queries
   .then(console.log);
 sdk.queries.networks().then(console.log);
 sdk.queries.networkStatus({ networkIds: [1, 56, 137] }).then(console.log);
+sdk.queries
+  .filterTokens({
+    tokens: [
+      "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c:56",
+      "0xb2e539a77f0d50d49e750bf44b3602641e9b9859",
+    ],
+  })
+  .then(console.log);
+sdk.queries.filterPairs({ filters: { sellCount1: { gt: 1 } } }).then((res) => {
+  console.log(res.filterPairs?.count);
+  return res;
+});
