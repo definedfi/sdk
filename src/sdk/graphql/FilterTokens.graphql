@@ -1,4 +1,11 @@
-query FilterTokens($filters: TokenFilters, $phrase: String, $tokens: [String], $rankings: [TokenRanking], $limit: Int, $offset: Int) {
+query FilterTokens(
+  $filters: TokenFilters
+  $phrase: String
+  $tokens: [String]
+  $rankings: [TokenRanking]
+  $limit: Int
+  $offset: Int
+) {
   filterTokens(
     filters: $filters
     phrase: $phrase
@@ -7,6 +14,8 @@ query FilterTokens($filters: TokenFilters, $phrase: String, $tokens: [String], $
     limit: $limit
     offset: $offset
   ) {
+    count
+    page
     results {
       buyCount1
       buyCount4
