@@ -1,0 +1,113 @@
+query FilterPairs(
+  $filters: PairFilters
+  $phrase: String
+  $pairs: [String]
+  $rankings: [PairRanking]
+  $limit: Int
+  $offset: Int
+  $matchTokens: PairFilterMatchTokens
+) {
+  filterPairs(
+    filters: $filters
+    phrase: $phrase
+    pairs: $pairs
+    rankings: $rankings
+    limit: $limit
+    offset: $offset
+    matchTokens: $matchTokens
+  ) {
+    count
+    offset
+    results {
+      createdAt
+      lastTransaction
+      buyCount1
+      buyCount4
+      buyCount12
+      buyCount24
+      highPrice1
+      highPrice4
+      highPrice12
+      highPrice24
+      liquidity
+      liquidityToken
+      quoteToken
+      lowPrice1
+      lowPrice4
+      lowPrice12
+      lowPrice24
+      marketCap
+      price
+      priceScale
+      priceChange1
+      priceChange4
+      priceChange12
+      priceChange24
+      sellCount1
+      sellCount4
+      sellCount12
+      sellCount24
+      txnCount1
+      txnCount4
+      txnCount12
+      txnCount24
+      uniqueBuys1
+      uniqueBuys4
+      uniqueBuys12
+      uniqueBuys24
+      uniqueSells1
+      uniqueSells4
+      uniqueSells12
+      uniqueSells24
+      uniqueTransactions1
+      uniqueTransactions4
+      uniqueTransactions12
+      uniqueTransactions24
+      volumeUSD1
+      volumeUSD4
+      volumeUSD12
+      volumeUSD24
+      pair {
+        token0
+        token1
+        pooled {
+          token0
+          token1
+        }
+      }
+      token0 {
+        address
+        decimals
+        name
+        networkId
+        symbol
+        info {
+          imageSmallUrl
+          circulatingSupply
+          totalSupply
+        }
+      }
+      token1 {
+        address
+        decimals
+        name
+        networkId
+        symbol
+        info {
+          imageSmallUrl
+          circulatingSupply
+          totalSupply
+        }
+      }
+      exchange {
+        address
+        id
+        name
+        exchangeVersion
+        iconUrl
+        networkId
+        tradeUrl
+      }
+    }
+  }
+}
