@@ -54,6 +54,6 @@ sdk.queries
   })
   .then(console.log);
 sdk.queries.filterPairs({ filters: { sellCount1: { gt: 1 } } }).then((res) => {
-  console.log(res.filterPairs?.count);
+  console.log(res.filterPairs);
   return res;
 });
