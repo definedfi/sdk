@@ -720,7 +720,10 @@ export type EnhancedToken = {
   socialLinks?: Maybe<SocialLinks>;
   /** The token symbol. For example, `APE`. */
   symbol?: Maybe<Scalars['String']['output']>;
-  /** The total supply of the token. */
+  /**
+   * The total supply of the token.
+   * @deprecated Use the TokenInfo type
+   */
   totalSupply?: Maybe<Scalars['String']['output']>;
 };
 
@@ -6270,6 +6273,8 @@ export type TokenFilterResult = {
   high12?: Maybe<Scalars['String']['output']>;
   /** The highest price in USD in the past 24 hours. */
   high24?: Maybe<Scalars['String']['output']>;
+  /** Whether the token has been flagged as a scam. */
+  isScam?: Maybe<Scalars['Boolean']['output']>;
   /** The unix timestamp for the token's last transaction. */
   lastTransaction?: Maybe<Scalars['Int']['output']>;
   /** Amount of liquidity in the token's top pair. */
@@ -6374,8 +6379,8 @@ export type TokenFilters = {
   high12?: InputMaybe<NumberFilter>;
   /** The highest price in USD in the past 24 hours. */
   high24?: InputMaybe<NumberFilter>;
-  /** Whether the token has been flagged as a scam. */
-  isScam?: InputMaybe<Scalars['Boolean']['input']>;
+  /** Whether to include tokens that have been flagged as scams. Default: false */
+  includeScams?: InputMaybe<Scalars['Boolean']['input']>;
   /** The unix timestamp for the token's last transaction. */
   lastTransaction?: InputMaybe<NumberFilter>;
   /** The amount of liquidity in the token's top pair. */
