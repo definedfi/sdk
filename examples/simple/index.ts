@@ -64,3 +64,10 @@ sdk.queries
     limit: 1,
   })
   .then(console.log);
+
+sdk.queries
+  .detailedPairStats({
+    networkId: 1,
+    pairAddress: "0x34b1e73807cfac2bf77eae6d8630797dd8f924bf",
+  })
+  .then(console.log);

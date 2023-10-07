@@ -1,8 +1,4 @@
 import {
-  QueryGetBarsArgs,
-  QueryGetNetworkStatusArgs,
-} from "../resources/graphql";
-import {
   FilterExchangesDocument,
   FilterExchangesQueryVariables,
   FilterPairsDocument,
@@ -10,6 +6,7 @@ import {
   FilterTokensDocument,
   FilterTokensQueryVariables,
   GetBarsDocument,
+  GetDetailedPairStatsDocument,
   GetNetworksDocument,
   GetNetworkStatusDocument,
   GetSparklinesDocument,
@@ -23,6 +20,9 @@ import {
   ListTopTokensDocument,
   PairEventsDocument,
   PairEventsQueryVariables,
+  QueryGetBarsArgs,
+  QueryGetDetailedPairStatsArgs,
+  QueryGetNetworkStatusArgs,
   QueryGetTokenPricesArgs,
   QueryListTopTokensArgs,
   QueryTokenArgs,
@@ -39,6 +39,8 @@ export class Query {
     this.sdk.query(GetTokensDocument, vars);
   price = async (vars: QueryGetTokenPricesArgs) =>
     this.sdk.query(GetTokenPriceDocument, vars);
+  detailedPairStats = async (vars: QueryGetDetailedPairStatsArgs) =>
+    this.sdk.query(GetDetailedPairStatsDocument, vars);
   bars = async (vars: QueryGetBarsArgs) =>
     this.sdk.query(GetBarsDocument, vars);
   topTokens = async (vars: QueryListTopTokensArgs) =>
