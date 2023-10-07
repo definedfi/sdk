@@ -1,6 +1,6 @@
 import { Defined } from "@definedfi/sdk";
 
-import { CreatePriceWebhooksInput, Network } from "../../src/resources/graphql";
+import { Network } from "../../src/resources/graphql";
 
 const sdk = new Defined(process.env.DEFINED_API_KEY || "");
 
@@ -74,8 +74,6 @@ sdk.queries
 
 sdk.queries
   .webhooks({
-    priceWebhooksInput: {
-      webhooks: [{ name: "steveTheWebhook" }],
-    } as CreatePriceWebhooksInput,
+    webhookId: "1",
   })
   .then(console.log);
