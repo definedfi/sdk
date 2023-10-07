@@ -775,7 +775,7 @@ type EnhancedToken {
   symbol: String
 
   """The total supply of the token."""
-  totalSupply: String
+  totalSupply: String @deprecated(reason: "Use the TokenInfo type")
 
   """Community gathered links for the socials of this token."""
   socialLinks: SocialLinks
@@ -8490,6 +8490,9 @@ type TokenFilterResult {
 
   """The trade volume in USD in the past 4 hours."""
   volume4: String
+
+  """Whether the token has been flagged as a scam."""
+  isScam: Boolean
 }
 
 """Input type of `TokenFilters`."""
@@ -8634,8 +8637,10 @@ input TokenFilters {
   """The trade volume in USD in the past 4 hours."""
   volume4: NumberFilter
 
-  """Whether the token has been flagged as a scam."""
-  isScam: Boolean
+  """
+  Whether to include tokens that have been flagged as scams. Default: false
+  """
+  includeScams: Boolean
 }
 
 """Metadata for a token."""

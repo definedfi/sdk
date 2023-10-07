@@ -4818,8 +4818,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": false,
-            "deprecationReason": null
+            "isDeprecated": true,
+            "deprecationReason": "Use the TokenInfo type"
           }
         ],
         "inputFields": null,
@@ -38075,6 +38075,18 @@
             "deprecationReason": null
           },
           {
+            "name": "isScam",
+            "description": "Whether the token has been flagged as a scam.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "lastTransaction",
             "description": "The unix timestamp for the token's last transaction.",
             "args": [],
@@ -38687,8 +38699,8 @@
             "deprecationReason": null
           },
           {
-            "name": "isScam",
-            "description": "Whether the token has been flagged as a scam.",
+            "name": "includeScams",
+            "description": "Whether to include tokens that have been flagged as scams. Default: false",
             "type": {
               "kind": "SCALAR",
               "name": "Boolean",

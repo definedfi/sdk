@@ -54,6 +54,13 @@ sdk.queries
   })
   .then(console.log);
 sdk.queries.filterPairs({ filters: { sellCount1: { gt: 1 } } }).then((res) => {
-  console.log(res.filterPairs?.count);
+  console.log();
   return res;
 });
+sdk.queries
+  .listPairsForToken({
+    networkId: 1,
+    tokenAddress: "0x51a59a02ba906194285e81eb1f98ffa28e7cf4c9",
+    limit: 1,
+  })
+  .then(console.log);

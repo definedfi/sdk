@@ -18,6 +18,8 @@ import {
   GetSymbolQueryVariables,
   GetTokenPriceDocument,
   GetTokensDocument,
+  ListPairsForTokenDocument,
+  ListPairsForTokenQueryVariables,
   ListTopTokensDocument,
   PairEventsDocument,
   PairEventsQueryVariables,
@@ -45,6 +47,8 @@ export class Query {
     this.sdk.query(FilterTokensDocument, vars);
   filterPairs = async (vars: FilterPairsQueryVariables) =>
     this.sdk.query(FilterPairsDocument, vars);
+  listPairsForToken = async (vars: ListPairsForTokenQueryVariables) =>
+    this.sdk.query(ListPairsForTokenDocument, vars);
   filterExchanges = async (vars: FilterExchangesQueryVariables) =>
     this.sdk.query(FilterExchangesDocument, vars);
   symbol = async (vars: GetSymbolQueryVariables) =>
