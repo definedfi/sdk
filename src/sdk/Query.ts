@@ -60,6 +60,6 @@ export class Query {
   networks = async () => this.sdk.query(GetNetworksDocument);
   networkStatus = async (vars: QueryGetNetworkStatusArgs) =>
     this.sdk.query(GetNetworkStatusDocument, vars);
-  webhooks = async (vars: QueryGetWebhooksArgs) =>
+  getWebhooks = async (vars: QueryGetWebhooksArgs) =>
     this.sdk.query(GetWebhooksDocument, vars);
 }

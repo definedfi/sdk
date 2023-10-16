@@ -73,7 +73,7 @@ sdk.queries
   .then(console.log);
 
 sdk.queries
-  .webhooks({
+  .getWebhooks({
     webhookId: "1",
   })
   .then(console.log);

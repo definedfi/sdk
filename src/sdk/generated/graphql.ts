@@ -1082,6 +1082,8 @@ export type GetDetailedPairsStatsInput = {
   bucketCount?: InputMaybe<Scalars['Int']['input']>;
   /** The list of durations to get detailed pair stats for. */
   durations?: InputMaybe<Array<InputMaybe<DetailedPairStatsDuration>>>;
+  /** docs: hide */
+  filtered?: InputMaybe<Scalars['Boolean']['input']>;
   /** The network ID the pair is deployed on. */
   networkId: Scalars['Int']['input'];
   /** The contract address of the pair. */
@@ -5313,6 +5315,8 @@ export type Query = {
   getPrimePools?: Maybe<PrimePoolConnection>;
   /** Returns metadata for a given pair. */
   getSymbol?: Maybe<SymbolResponse>;
+  /** Returns the total count of tokens on Defined. This value is updated approximately every 6 hours. */
+  getTokenCount: Scalars['String']['output'];
   /** Returns transactions for a pair. */
   getTokenEvents?: Maybe<EventConnection>;
   /** Returns metadata for a given token. */
@@ -5429,6 +5433,7 @@ export type QueryFilterTokensArgs = {
 
 export type QueryGetBarsArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
+  filtered?: InputMaybe<Scalars['Boolean']['input']>;
   from: Scalars['Int']['input'];
   quoteToken?: InputMaybe<QuoteToken>;
   removeLeadingNullValues?: InputMaybe<Scalars['Boolean']['input']>;
@@ -5451,6 +5456,7 @@ export type QueryGetDetailedNftStatsArgs = {
 export type QueryGetDetailedPairStatsArgs = {
   bucketCount?: InputMaybe<Scalars['Int']['input']>;
   durations?: InputMaybe<Array<InputMaybe<DetailedPairStatsDuration>>>;
+  filtered?: InputMaybe<Scalars['Boolean']['input']>;
   networkId: Scalars['Int']['input'];
   pairAddress: Scalars['String']['input'];
   timestamp?: InputMaybe<Scalars['Int']['input']>;
@@ -5703,6 +5709,7 @@ export type QueryListPairsWithMetadataForTokenArgs = {
 
 
 export type QueryListTopTokensArgs = {
+  filtered?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   networkFilter?: InputMaybe<Array<Scalars['Int']['input']>>;
   resolution?: InputMaybe<Scalars['String']['input']>;
@@ -5892,6 +5899,12 @@ export type SandwichedLabelData = {
   token0DrainedAmount?: Maybe<Scalars['String']['output']>;
   /** The amount of `token1` drained in the attack. */
   token1DrainedAmount?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateTokenContractResult = {
+  __typename?: 'SimulateTokenContractResult';
+  error?: Maybe<Scalars['String']['output']>;
+  result: Scalars['Boolean']['output'];
 };
 
 /** Community gathered social links of tokens/NFTs. */

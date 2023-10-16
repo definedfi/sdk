@@ -1291,6 +1291,9 @@ input GetDetailedPairsStatsInput {
   The number of aggregated values to receive. Note: Each duration has predetermined bucket sizes.<br>  The first n-1 buckets are historical. The last bucket is a snapshot of current data.<br> duration `day1`: 6 buckets (4 hours each) plus 1 partial bucket<br> duration `hour12`: 12 buckets (1 hour each) plus 1 partial bucket<br> duration `hour4`: 8 buckets (30 min each) plus 1 partial bucket<br> duration `hour1`: 12 buckets (5 min each) plus 1 partial bucket<br> duration `min5`: 5 buckets (1 min each) plus 1 partial bucket<br> For example, requesting 11 buckets for a `min5` duration will return the last 10 minutes worth of data plus a snapshot for the current minute.
   """
   bucketCount: Int
+
+  """docs: hide"""
+  filtered: Boolean
 }
 
 """Response returned by `getNftPoolCollectionsByExchange`."""
@@ -7355,6 +7358,11 @@ type Query {
     networkId: Int!
   ): TokenInfo
 
+  """
+  Returns the total count of tokens on Defined. This value is updated approximately every 6 hours.
+  """
+  getTokenCount: String!
+
   """Returns metadata for a list of given tokens."""
   getTokensInfo(
     """
@@ -7408,6 +7416,9 @@ type Query {
     The number of aggregated values to receive. Note: Each duration has predetermined bucket sizes.<br>  The first n-1 buckets are historical. The last bucket is a snapshot of current data.<br> duration `day1`: 6 buckets (4 hours each) plus 1 partial bucket<br> duration `hour12`: 12 buckets (1 hour each) plus 1 partial bucket<br> duration `hour4`: 8 buckets (30 min each) plus 1 partial bucket<br> duration `hour1`: 12 buckets (5 min each) plus 1 partial bucket<br> duration `min5`: 5 buckets (1 min each) plus 1 partial bucket<br> For example, requesting 11 buckets for a `min5` duration will return the last 10 minutes worth of data plus a snapshot for the current minute.
     """
     bucketCount: Int
+
+    """docs: hide"""
+    filtered: Boolean
   ): DetailedPairStats
 
   """Returns bucketed stats for a given token within a list of pairs."""
@@ -7425,6 +7436,9 @@ type Query {
     The time frame for trending results. Can be `1`, `5`, `15`, `30`, `60`, `240`, `720`, or `1D`.
     """
     resolution: String
+
+    """docs: hide"""
+    filtered: Boolean
   ): [TokenWithMetadata!]
 
   """Returns metadata for a given pair."""
@@ -7497,6 +7511,9 @@ type Query {
     The token of interest within the token's top pair. Can be `token0` or `token1`.
     """
     quoteToken: QuoteToken
+
+    """docs: hide"""
+    filtered: Boolean
   ): BarsResponse
 
   """Returns a list of tokens matching a given query string."""
@@ -7796,6 +7813,11 @@ enum SandwichLabelForEventType {
   sandwiched
   frontrun
   backrun
+}
+
+type SimulateTokenContractResult {
+  result: Boolean!
+  error: String
 }
 
 """Community gathered social links of tokens/NFTs."""

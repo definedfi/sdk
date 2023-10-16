@@ -6810,6 +6810,18 @@
             "deprecationReason": null
           },
           {
+            "name": "filtered",
+            "description": "docs: hide",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Boolean",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "networkId",
             "description": "The network ID the pair is deployed on.",
             "type": {
@@ -31880,6 +31892,18 @@
                 "deprecationReason": null
               },
               {
+                "name": "filtered",
+                "description": "docs: hide",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "from",
                 "description": "The unix timestamp for the start of the requested range.",
                 "type": {
@@ -32100,6 +32124,18 @@
                     "name": "DetailedPairStatsDuration",
                     "ofType": null
                   }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "filtered",
+                "description": "docs: hide",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -33813,6 +33849,22 @@
             "deprecationReason": null
           },
           {
+            "name": "getTokenCount",
+            "description": "Returns the total count of tokens on Defined. This value is updated approximately every 6 hours.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "getTokenEvents",
             "description": "Returns transactions for a pair.",
             "args": [
@@ -34346,6 +34398,18 @@
             "name": "listTopTokens",
             "description": "Returns a list of trending tokens across any given network(s).",
             "args": [
+              {
+                "name": "filtered",
+                "description": "docs: hide",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "Boolean",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
               {
                 "name": "limit",
                 "description": "The maximum number of tokens to return. Max is `50`.",
@@ -35639,6 +35703,45 @@
               "kind": "SCALAR",
               "name": "String",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "SimulateTokenContractResult",
+        "description": null,
+        "fields": [
+          {
+            "name": "error",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "result",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Boolean",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
