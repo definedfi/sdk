@@ -71,3 +71,9 @@ sdk.queries
     pairAddress: "0x34b1e73807cfac2bf77eae6d8630797dd8f924bf",
   })
   .then(console.log);
+
+sdk.queries
+  .getWebhooks({
+    webhookId: "45b7de27-8063-40b9-85c1-c716c37379ba",
+  })
+  .then(console.log);

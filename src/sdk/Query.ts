@@ -15,6 +15,7 @@ import {
   GetSymbolQueryVariables,
   GetTokenPriceDocument,
   GetTokensDocument,
+  GetWebhooksDocument,
   ListPairsForTokenDocument,
   ListPairsForTokenQueryVariables,
   ListTopTokensDocument,
@@ -24,6 +25,7 @@ import {
   QueryGetDetailedPairStatsArgs,
   QueryGetNetworkStatusArgs,
   QueryGetTokenPricesArgs,
+  QueryGetWebhooksArgs,
   QueryListTopTokensArgs,
   QueryTokenArgs,
 } from "./generated/graphql";
@@ -58,4 +60,6 @@ export class Query {
   networks = async () => this.sdk.query(GetNetworksDocument);
   networkStatus = async (vars: QueryGetNetworkStatusArgs) =>
     this.sdk.query(GetNetworkStatusDocument, vars);
+  getWebhooks = async (vars: QueryGetWebhooksArgs) =>
+    this.sdk.query(GetWebhooksDocument, vars);
 }
