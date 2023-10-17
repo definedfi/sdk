@@ -10,6 +10,7 @@ import {
 import WebSocket from "isomorphic-ws";
 
 import { invariant } from "./invariant";
+import { Mutation } from "./Mutation";
 import { Query } from "./Query";
 import { Subscribe } from "./Subscribe";
 
@@ -19,15 +20,17 @@ export class Defined {
   private client: GraphQLClient;
   private wsClient: GraphQLWsClient;
   public queries: Query;
+  public mutations: Mutation;
   public subscriptions: Subscribe;
 
   constructor(
     private apiKey: string,
     private apiUrl: string = `https://graph.defined.fi/graphql`,
-    private apiRealtimeUrl: string = `wss://realtime-api.defined.fi/graphql`,
+    private apiRealtimeUrl: string = `wss://realtime-api.defined.fi/graphql`
   ) {
     invariant(this.apiKey, "apiKey must be defined");
     this.queries = new Query(this);
+    this.mutations = new Mutation(this);
     this.subscriptions = new Subscribe(this);
     this.client = new GraphQLClient(this.apiUrl, {
       method: "POST",
@@ -48,11 +51,22 @@ export class Defined {
 
   public async query<TResults, TVars extends Variables>(
     doc: TypedDocumentNode<TResults, TVars>,
-    args: TVars = {} as TVars,
+    args: TVars = {} as TVars
   ) {
     const res = await this.client.request<typeof doc, TVars>(
       doc,
-      ...([args] as unknown as VariablesAndRequestHeadersArgs<TVars>),
+      ...([args] as unknown as VariablesAndRequestHeadersArgs<TVars>)
+    );
+    return res as TResults;
+  }
+
+  public async mutation<TResults, TVars extends Variables>(
+    doc: TypedDocumentNode<TResults, TVars>,
+    args: TVars = {} as TVars
+  ) {
+    const res = await this.client.request<typeof doc, TVars>(
+      doc,
+      ...([args] as unknown as VariablesAndRequestHeadersArgs<TVars>)
     );
     return res as TResults;
   }
@@ -60,7 +74,7 @@ export class Defined {
   // Very simple network based fetch implementation, no compilation required
   public async send<TResults, V extends Variables = Variables>(
     gqlString: string,
-    args: V = {} as V,
+    args: V = {} as V
   ) {
     const res = await this.client.request<TResults>(gqlString, args);
     return res;
@@ -72,14 +86,14 @@ export class Defined {
   >(
     doc: string,
     args: TVars,
-    sink: Sink<ExecutionResult<TResults>>,
+    sink: Sink<ExecutionResult<TResults>>
   ): CleanupFunction {
     const cleanup = this.wsClient.subscribe<TResults>(
       {
         query: doc,
         variables: args,
       },
-      sink,
+      sink
     );
     return cleanup;
   }
