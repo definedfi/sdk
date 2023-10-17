@@ -74,6 +74,6 @@ sdk.queries
 
 sdk.queries
   .getWebhooks({
-    webhookId: "1",
+    webhookId: "45b7de27-8063-40b9-85c1-c716c37379ba",
   })
   .then(console.log);
