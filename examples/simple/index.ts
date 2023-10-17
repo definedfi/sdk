@@ -1,7 +1,7 @@
 import { Defined } from "@definedfi/sdk";
 
-import { AlertRecurrence } from "../../dist/sdk/generated/graphql";
-import { Network } from "../../src/resources/graphql";
+// import { AlertRecurrence } from "../../dist/sdk/generated/graphql";
+import { AlertRecurrence, Network } from "../../src/resources/graphql";
 
 const sdk = new Defined(process.env.DEFINED_API_KEY || "");
 
@@ -75,35 +75,36 @@ sdk.queries
 
 sdk.queries
   .getWebhooks({
-    webhookId: "45b7de27-8063-40b9-85c1-c716c37379ba",
+    webhookId: "802cda45-5cc4-4bec-b456-5bec5a08cec4",
   })
   .then(console.log);
 
-sdk.mutations
-  .createWebhooks({
-    input: {
-      priceWebhooksInput: {
-        webhooks: [
-          {
-            name: "SDK test webhook",
-            callbackUrl:
-              "https://webhook.site/#!/697da597-6f40-4bec-b59a-3b6dc2e680b8",
-            securityToken: "1234567890",
-            alertRecurrence: AlertRecurrence.Once,
-            conditions: {
-              priceUsd: {
-                gt: "100",
-              },
-              networkId: {
-                eq: 1,
-              },
-              tokenAddress: {
-                eq: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-              },
-            },
-          },
-        ],
-      },
-    },
-  })
-  .then(console.log);
+// Uncomment to test createWebhooks mutation
+// sdk.mutations
+//   .createWebhooks({
+//     input: {
+//       priceWebhooksInput: {
+//         webhooks: [
+//           {
+//             name: "SDK test webhook",
+//             callbackUrl:
+//               "https://webhook.site/#!/697da597-6f40-4bec-b59a-3b6dc2e680b8",
+//             securityToken: "1234567890",
+//             alertRecurrence: AlertRecurrence.Once,
+//             conditions: {
+//               priceUsd: {
+//                 gt: "100",
+//               },
+//               networkId: {
+//                 eq: 1,
+//               },
+//               tokenAddress: {
+//                 eq: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+//               },
+//             },
+//           },
+//         ],
+//       },
+//     },
+//   })
+//   .then(console.log);
