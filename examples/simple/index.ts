@@ -8,7 +8,7 @@ const sdk = new Defined(process.env.DEFINED_API_KEY || "");
 sdk
   .send<{ getNetworks: Network[] }>(
     `query GetNetworks { getNetworks { id name } }`,
-    {}
+    {},
   )
   .then((res) => {
     console.log("Networks: ", res.getNetworks);
@@ -79,32 +79,46 @@ sdk.queries
   })
   .then(console.log);
 
-// Uncomment to test createWebhooks mutation
-// sdk.mutations
-//   .createWebhooks({
-//     input: {
-//       priceWebhooksInput: {
-//         webhooks: [
-//           {
-//             name: "SDK test webhook",
-//             callbackUrl:
-//               "https://webhook.site/#!/697da597-6f40-4bec-b59a-3b6dc2e680b8",
-//             securityToken: "1234567890",
-//             alertRecurrence: AlertRecurrence.Once,
-//             conditions: {
-//               priceUsd: {
-//                 gt: "100",
-//               },
-//               networkId: {
-//                 eq: 1,
-//               },
-//               tokenAddress: {
-//                 eq: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
-//               },
-//             },
-//           },
-//         ],
-//       },
-//     },
-//   })
-//   .then(console.log);
+// Mutations
+
+// Example showing how to create a webhook and how to delete it.
+sdk.mutations
+  .createWebhooks({
+    input: {
+      priceWebhooksInput: {
+        webhooks: [
+          {
+            name: "SDK test webhook",
+            callbackUrl:
+              "https://webhook.site/#!/697da597-6f40-4bec-b59a-3b6dc2e680b8",
+            securityToken: "1234567890",
+            alertRecurrence: AlertRecurrence.Once,
+            conditions: {
+              priceUsd: {
+                gt: "100",
+              },
+              networkId: {
+                eq: 1,
+              },
+              tokenAddress: {
+                eq: "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+              },
+            },
+          },
+        ],
+      },
+    },
+  })
+  .then((data) => {
+    console.log(data);
+    const webhookId = data?.createWebhooks?.priceWebhooks?.[0]?.id;
+    if (webhookId) {
+      sdk.mutations
+        .deleteWebhooks({
+          input: {
+            webhookIds: [webhookId],
+          },
+        })
+        .then(console.log);
+    }
+  });
