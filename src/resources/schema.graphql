@@ -12,6 +12,14 @@ directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on
 
 directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
 
+input AddEventsInput {
+  address: String!
+  networkId: Int!
+  id: String!
+  quoteToken: QuoteToken
+  events: [EventInputUnion]!
+}
+
 """Response returned by `onEventsCreated`."""
 type AddEventsOutput {
   """The contract address of the pair."""
@@ -30,6 +38,13 @@ type AddEventsOutput {
 
   """A list of transactions for the token."""
   events: [Event]!
+}
+
+input AddNftEventsInput {
+  address: String!
+  networkId: Int!
+  id: String!
+  events: [NftEventInput!]!
 }
 
 """Response returned by `onNftEventsCreated`."""
@@ -155,6 +170,40 @@ type BurnEventData {
 
   """The type of token event, `Burn`."""
   type: EventType!
+}
+
+input BurnEventDataInput {
+  amount0: String
+  amount1: String
+  amount0Shifted: String
+  amount1Shifted: String
+  tickLower: String
+  tickUpper: String
+  type: EventType!
+}
+
+input BurnEventInput {
+  address: String!
+  baseTokenPrice: String
+  blockHash: String!
+  blockNumber: Int!
+  data: BurnEventDataInput
+  id: String!
+  liquidityToken: String
+  logIndex: Int!
+  maker: String
+  networkId: Int!
+  quoteToken: QuoteToken
+  timestamp: Int!
+  token0ValueBase: String
+  token1ValueBase: String
+  token0SwapValueUsd: String
+  token1SwapValueUsd: String
+  token0PoolValueUsd: String
+  token1PoolValueUsd: String
+  transactionHash: String!
+  transactionIndex: Int!
+  eventDisplayType: EventDisplayType
 }
 
 """Input options for the chart image."""
@@ -384,6 +433,12 @@ type CurrencyBarData {
 
   """Bar chart data in the network's base token."""
   token: IndividualBarData!
+}
+
+input CurrencyBarInput {
+  t: Int!
+  usd: IndividualBarInput!
+  token: IndividualBarInput!
 }
 
 type DecodedCallWebhookCondition {
@@ -645,6 +700,9 @@ type DetailedStats {
 
   """The token of interest within the pair. Can be `token0` or `token1`."""
   tokenOfInterest: TokenOfInterest!
+
+  """The type of statistics used. Can be `Filtered` or `Unfiltered`."""
+  statsType: TokenPairStatisticsType!
 
   """The breakdown of stats over a 5 minute window."""
   stats_min5: WindowedDetailedStats
@@ -920,6 +978,12 @@ enum EventDisplayType {
   Sync
   Collect
   CollectProtocol
+}
+
+input EventInputUnion {
+  swapEventInput: SwapEventInput
+  mintEventInput: MintEventInput
+  burnEventInput: BurnEventInput
 }
 
 """Metadata for an event label."""
@@ -1293,7 +1357,7 @@ input GetDetailedPairsStatsInput {
   bucketCount: Int
 
   """docs: hide"""
-  filtered: Boolean
+  statsType: TokenPairStatisticsType
 }
 
 """Response returned by `getNftPoolCollectionsByExchange`."""
@@ -1391,6 +1455,17 @@ type IndividualBarData {
 
   """The volume in the network's base token"""
   volumeNativeToken: String!
+}
+
+input IndividualBarInput {
+  o: Float!
+  h: Float!
+  l: Float!
+  c: Float!
+  v: Int
+  t: Int!
+  volume: String!
+  volumeNativeToken: String
 }
 
 type IntEqualsCondition {
@@ -1614,6 +1689,40 @@ type MintEventData {
 
   """The type of token event, `Mint`."""
   type: EventType!
+}
+
+input MintEventDataInput {
+  amount0: String
+  amount1: String
+  amount0Shifted: String
+  amount1Shifted: String
+  tickLower: String
+  tickUpper: String
+  type: EventType!
+}
+
+input MintEventInput {
+  address: String!
+  baseTokenPrice: String
+  blockHash: String!
+  blockNumber: Int!
+  data: MintEventDataInput
+  id: String!
+  liquidityToken: String
+  logIndex: Int!
+  maker: String
+  networkId: Int!
+  quoteToken: QuoteToken
+  timestamp: Int!
+  token0ValueBase: String
+  token1ValueBase: String
+  token0SwapValueUsd: String
+  token1SwapValueUsd: String
+  token0PoolValueUsd: String
+  token1PoolValueUsd: String
+  transactionHash: String!
+  transactionIndex: Int!
+  eventDisplayType: EventDisplayType
 }
 
 type Mutation {
@@ -3040,12 +3149,61 @@ type NftEvent {
   orderDirection: NftEventOrderDirection
 }
 
+input NftEventDataInput {
+  buyHash: String
+  metadata: String
+  price: String
+  maker: String
+  taker: String
+  type: String!
+  sellHash: String
+}
+
 type NftEventFillSourceCondition {
   oneOf: [WebhookNftEventFillSource!]!
 }
 
 input NftEventFillSourceConditionInput {
   oneOf: [WebhookNftEventFillSource!]!
+}
+
+input NftEventInput {
+  id: String!
+  contractAddress: String!
+  networkId: Int!
+  tokenId: String!
+  maker: String!
+  taker: String!
+  tokenPrice: String!
+  totalPrice: String!
+  totalTradePrice: String
+  individualTokenPrice: String
+  individualPrice: String
+  individualTradePrice: String
+  baseTokenAddress: String!
+  paymentTokenAddress: String!
+  baseTokenPrice: String
+  totalPriceUsd: String
+  individualBaseTokenPrice: String
+  individualPriceUsd: String
+  networkBaseTokenPrice: String
+  totalPriceNetworkBaseToken: String
+  individualNetworkBaseTokenPrice: String
+  individualPriceNetworkBaseToken: String
+  eventType: String!
+  data: NftEventDataInput!
+  exchangeAddress: String!
+  blockNumber: Int!
+  transactionHash: String!
+  transactionIndex: Int!
+  logIndex: Int!
+  sortKey: String!
+  timestamp: Int!
+  numberOfTokens: String
+  aggregatorAddress: String
+  poolAddress: String
+  fillSource: String
+  priceError: String
 }
 
 """Details for an NFT offered or received as part of an nft trade."""
@@ -5102,6 +5260,9 @@ type OnBarsUpdatedResponse {
   """The unix timestamp for the new bar."""
   timestamp: Int!
 
+  """The type of statistics used. Can be `Filtered` or `Unfiltered`."""
+  statsType: TokenPairStatisticsType!
+
   """
   The sortKey for the bar (`blockNumber`#`transactionIndex`#`logIndex`, zero padded).
   For example, `0000000016414564#00000224#00000413`.
@@ -5541,6 +5702,9 @@ type PairMetadata {
 
   """The network ID that the pair is deployed on."""
   networkId: Int
+
+  """The type of statistics used. Can be `Filtered` or `Unfiltered`."""
+  statsType: TokenPairStatisticsType!
 
   """The amount of liquidity in the pair."""
   liquidity: String!
@@ -7418,7 +7582,7 @@ type Query {
     bucketCount: Int
 
     """docs: hide"""
-    filtered: Boolean
+    statsType: TokenPairStatisticsType
   ): DetailedPairStats
 
   """Returns bucketed stats for a given token within a list of pairs."""
@@ -7436,9 +7600,6 @@ type Query {
     The time frame for trending results. Can be `1`, `5`, `15`, `30`, `60`, `240`, `720`, or `1D`.
     """
     resolution: String
-
-    """docs: hide"""
-    filtered: Boolean
   ): [TokenWithMetadata!]
 
   """Returns metadata for a given pair."""
@@ -7513,7 +7674,7 @@ type Query {
     quoteToken: QuoteToken
 
     """docs: hide"""
-    filtered: Boolean
+    statsType: TokenPairStatisticsType
   ): BarsResponse
 
   """Returns a list of tokens matching a given query string."""
@@ -7587,6 +7748,9 @@ type Query {
 
     """The token of interest within the pair. Can be `token0` or `token1`."""
     quoteToken: QuoteToken
+
+    """docs: hide"""
+    statsType: TokenPairStatisticsType
   ): PairMetadata!
 
   """Returns new tokens listed over the last three days."""
@@ -7770,6 +7934,21 @@ type ResolutionBarData {
   r7D: CurrencyBarData
 }
 
+input ResolutionBarInput {
+  r1S: CurrencyBarInput
+  r5S: CurrencyBarInput
+  r15S: CurrencyBarInput
+  r1: CurrencyBarInput
+  r5: CurrencyBarInput
+  r15: CurrencyBarInput
+  r30: CurrencyBarInput
+  r60: CurrencyBarInput
+  r240: CurrencyBarInput
+  r720: CurrencyBarInput
+  r1D: CurrencyBarInput
+  r7D: CurrencyBarInput
+}
+
 type RetrySettings {
   maxTimeElapsed: Int
   minRetryDelay: Int
@@ -7817,6 +7996,7 @@ enum SandwichLabelForEventType {
 
 type SimulateTokenContractResult {
   result: Boolean!
+  simulationId: String
   error: String
 }
 
@@ -7971,6 +8151,9 @@ type Subscription {
 
     """The token of interest within the pair. Can be `token0` or `token1`."""
     quoteToken: QuoteToken
+
+    """docs: hide"""
+    statsType: TokenPairStatisticsType
   ): OnBarsUpdatedResponse
 
   """Live-streamed transactions for a token."""
@@ -8022,6 +8205,9 @@ type Subscription {
 
     """The token of interest within the pair. Can be `token0` or `token1`."""
     quoteToken: QuoteToken
+
+    """docs: hide"""
+    statsType: TokenPairStatisticsType
   ): PairMetadata
 
   """Live-streamed bucketed stats for a given token within a pair."""
@@ -8031,6 +8217,9 @@ type Subscription {
 
     """The token of interest within the pair. Can be `token0` or `token1`."""
     tokenOfInterest: TokenOfInterest
+
+    """docs: hide"""
+    statsType: TokenPairStatisticsType
   ): DetailedStats
 
   """Live-streamed updates for newly listed tokens."""
@@ -8112,6 +8301,46 @@ type SwapEventData {
 
   """The type of token event, `Swap`."""
   type: EventType!
+}
+
+input SwapEventDataInput {
+  amount0: String
+  amount0In: String
+  amount0Out: String
+  amount1: String
+  amount1In: String
+  amount1Out: String
+  amountNonLiquidityToken: String
+  priceBaseToken: String
+  priceBaseTokenTotal: String
+  priceUsd: String
+  priceUsdTotal: String
+  tick: String
+  type: EventType!
+}
+
+input SwapEventInput {
+  address: String!
+  baseTokenPrice: String
+  blockHash: String!
+  blockNumber: Int!
+  data: SwapEventDataInput
+  id: String!
+  liquidityToken: String
+  logIndex: Int!
+  maker: String
+  networkId: Int!
+  quoteToken: QuoteToken
+  timestamp: Int!
+  token0ValueBase: String
+  token1ValueBase: String
+  token0SwapValueUsd: String
+  token1SwapValueUsd: String
+  token0PoolValueUsd: String
+  token1PoolValueUsd: String
+  transactionHash: String!
+  transactionIndex: Int!
+  eventDisplayType: EventDisplayType
 }
 
 """Event data for swapping an NFT into a pool."""
@@ -8758,6 +8987,12 @@ input TokenPairEventWebhookConditionInput {
   eventType: TokenPairEventTypeConditionInput
 }
 
+"""The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
+enum TokenPairStatisticsType {
+  FILTERED
+  UNFILTERED
+}
+
 """Input type of `TokenRanking`."""
 input TokenRanking {
   """The attribute to rank tokens by."""
@@ -8967,6 +9202,24 @@ type TokenWithMetadata {
 
   """The unix timestamp for the token's last transaction."""
   lastTransaction: Int
+}
+
+input UpdateAggregateBatchInput {
+  pairAddress: String!
+  networkId: Int!
+  pairId: String!
+  timestamp: Int!
+  eventSortKey: String!
+  aggregates: ResolutionBarInput!
+  statsType: TokenPairStatisticsType!
+  quoteToken: QuoteToken
+}
+
+input UpdatePriceInput {
+  address: String!
+  networkId: Int!
+  priceUsd: Float!
+  timestamp: Int!
 }
 
 type WalletPnl {
