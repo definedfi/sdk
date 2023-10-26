@@ -34153,6 +34153,18 @@
                 "deprecationReason": null
               },
               {
+                "name": "statsType",
+                "description": "docs: hide",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "TokenPairStatisticsType",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
                 "name": "timestamp",
                 "description": "The unix timestamp for the stats. Defaults to current.",
                 "type": {
@@ -37726,57 +37738,6 @@
           {
             "name": "token1DrainedAmount",
             "description": "The amount of `token1` drained in the attack.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "SimulateTokenContractResult",
-        "description": null,
-        "fields": [
-          {
-            "name": "error",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "result",
-            "description": null,
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "Boolean",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "simulationId",
-            "description": null,
             "args": [],
             "type": {
               "kind": "SCALAR",
