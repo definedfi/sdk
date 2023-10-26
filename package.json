@@ -1,6 +1,9 @@
 {
   "name": "@definedfi/sdk",
   "version": "0.3.0",
+  "engines": {
+    "node": ">=17.5.0"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {
