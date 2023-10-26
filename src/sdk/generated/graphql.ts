@@ -5633,6 +5633,7 @@ export type QueryGetDetailedPairsStatsArgs = {
 export type QueryGetDetailedStatsArgs = {
   bucketCount?: InputMaybe<Scalars['Int']['input']>;
   pairId: Scalars['String']['input'];
+  statsType?: InputMaybe<TokenPairStatisticsType>;
   timestamp?: InputMaybe<Scalars['Int']['input']>;
   tokenOfInterest?: InputMaybe<TokenOfInterest>;
   windowSizes?: InputMaybe<Array<InputMaybe<DetailedStatsWindowSize>>>;
@@ -6075,13 +6076,6 @@ export type SandwichedLabelData = {
   token0DrainedAmount?: Maybe<Scalars['String']['output']>;
   /** The amount of `token1` drained in the attack. */
   token1DrainedAmount?: Maybe<Scalars['String']['output']>;
-};
-
-export type SimulateTokenContractResult = {
-  __typename?: 'SimulateTokenContractResult';
-  error?: Maybe<Scalars['String']['output']>;
-  result: Scalars['Boolean']['output'];
-  simulationId?: Maybe<Scalars['String']['output']>;
 };
 
 /** Community gathered social links of tokens/NFTs. */
