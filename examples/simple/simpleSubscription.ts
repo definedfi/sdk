@@ -1,18 +1,21 @@
-import { Defined } from '@definedfi/sdk/dist/sdk'
+import { Defined } from "@definedfi/sdk/dist/sdk";
 
-const sdk = new Defined(process.env.DEFINED_API_KEY || "")
+const sdk = new Defined(process.env.DEFINED_API_KEY || "");
 
-sdk.subscriptions.tokenPrices({
-  address: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
-  networkId: 56,
-}, {
-  next(value) {
-    console.log("Price update: ", value)
+sdk.subscriptions.tokenPrices(
+  {
+    address: "0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c",
+    networkId: 56,
   },
-  complete() {
-    console.log("Price subscription completed")
+  {
+    next(value) {
+      console.log("Price update: ", value);
+    },
+    complete() {
+      console.log("Price subscription completed");
+    },
+    error(error) {
+      console.error("Price subscription error: ", error);
+    },
   },
-  error(error) {
-    console.error("Price subscription error: ", error)
-  },
-})
+);
