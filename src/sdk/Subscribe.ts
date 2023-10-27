@@ -1,8 +1,10 @@
 import { print } from "graphql";
 import { Sink } from "graphql-ws";
 
+import { SubscriptionOnDetailedStatsUpdatedArgs } from "../resources/graphql";
 import {
   OnBarsUpdatedDocument,
+  OnDetailedStatsUpdatedDocument,
   OnEventsCreatedDocument,
   OnPriceUpdatedDocument,
   SubscriptionOnBarsUpdatedArgs,
@@ -19,4 +21,8 @@ export class Subscribe {
     this.sdk.subscribe(print(OnEventsCreatedDocument), vars, sink);
   bars = async (vars: SubscriptionOnBarsUpdatedArgs, sink: Sink) =>
     this.sdk.subscribe(print(OnBarsUpdatedDocument), vars, sink);
+  detailedPairStats = async (
+    vars: SubscriptionOnDetailedStatsUpdatedArgs,
+    sink: Sink,
+  ) => this.sdk.subscribe(print(OnDetailedStatsUpdatedDocument), vars, sink);
 }
