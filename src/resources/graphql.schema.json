@@ -491,11 +491,11 @@
       {
         "kind": "OBJECT",
         "name": "Balance",
-        "description": null,
+        "description": "Wallet balance of a token.",
         "fields": [
           {
             "name": "balance",
-            "description": null,
+            "description": "The balance held by the wallet.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -511,7 +511,7 @@
           },
           {
             "name": "shiftedBalance",
-            "description": null,
+            "description": "The balance held by the wallet, adjusted by the number of decimals in the token.",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -527,7 +527,7 @@
           },
           {
             "name": "tokenId",
-            "description": null,
+            "description": "The ID of the token (`tokenAddress:networkId`).",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -543,7 +543,7 @@
           },
           {
             "name": "walletId",
-            "description": null,
+            "description": "The ID of the wallet (`walletAddress:networkId`).",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -631,6 +631,18 @@
           {
             "name": "cursor",
             "description": null,
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "filterToken",
+            "description": "Optional token specifically request the balance for",
             "type": {
               "kind": "SCALAR",
               "name": "String",
@@ -1582,6 +1594,411 @@
       },
       {
         "kind": "OBJECT",
+        "name": "CommunityNote",
+        "description": "Community gathered proposals for an asset.",
+        "fields": [
+          {
+            "name": "address",
+            "description": "The contract address of the contract.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "contractType",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "ContractType",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "currentContract",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "UNION",
+              "name": "EnhancedContract",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "currentData",
+            "description": "The contract after the community note was applied.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "JSON",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "id",
+            "description": "The ID of the contract (`address:id`).",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "moderatedAt",
+            "description": "The unix timestamp of when the community note was moderated.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "networkId",
+            "description": "The network ID the contract is deployed on.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "previousData",
+            "description": "The contract before the community note was applied.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "JSON",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "proposalData",
+            "description": "The data of the community note.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "JSON",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "proposalNum",
+            "description": "The ordinal number of the community note.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "proposalType",
+            "description": "The type of the community note.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "CommunityNoteType",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "proposedAt",
+            "description": "The unix timestamp of when the community note was created.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "sortKey",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "CommunityNoteType",
+        "description": "Type of the community gathered note.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "ATTRIBUTE",
+            "description": "An contract attribute change.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "LOGO",
+            "description": "A logo change.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SCAM",
+            "description": "A scam report.",
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "CommunityNotesFilter",
+        "description": "Filters for community notes.",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "address",
+            "description": "The contract address of the contract.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "contractType",
+            "description": null,
+            "type": {
+              "kind": "ENUM",
+              "name": "ContractType",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "networkId",
+            "description": "The network ID the contract is deployed on.",
+            "type": {
+              "kind": "LIST",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "proposalType",
+            "description": "The type of the proposal.",
+            "type": {
+              "kind": "ENUM",
+              "name": "CommunityNoteType",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "CommunityNotesInput",
+        "description": "Input type of `getCommunityNotes`.",
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "cursor",
+            "description": "The cursor to use for pagination.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "filter",
+            "description": "A set of filters to apply",
+            "type": {
+              "kind": "INPUT_OBJECT",
+              "name": "CommunityNotesFilter",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "limit",
+            "description": "The maximum number of community notes to return.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "CommunityNotesResponse",
+        "description": "Community notes data",
+        "fields": [
+          {
+            "name": "count",
+            "description": "The number of community notes returned.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "items",
+            "description": "The list of community notes matching the filter parameters.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "CommunityNote",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "ComparisonOperator",
         "description": null,
         "fields": [
@@ -1826,6 +2243,29 @@
         "enumValues": [
           {
             "name": "Scam",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "ContractType",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "NFT",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "TOKEN",
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
@@ -4294,6 +4734,18 @@
         "description": "Detailed stats for a token within a pair.",
         "fields": [
           {
+            "name": "bucketCount",
+            "description": "Number of aggregated buckets specified in input",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "lastTransaction",
             "description": "The unix timestamp for the last transaction to happen on the pair.",
             "args": [],
@@ -4345,6 +4797,18 @@
                 "name": "String",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "queryTimestamp",
+            "description": "The timestamp specified as input to the query",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -4705,6 +5169,18 @@
         "description": "Detailed stats for a token.",
         "fields": [
           {
+            "name": "bucketCount",
+            "description": "Number of aggregated buckets specified in input",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "pairId",
             "description": "The ID of the pair (`address`:`networkId`).",
             "args": [],
@@ -4716,6 +5192,18 @@
                 "name": "String",
                 "ofType": null
               }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "queryTimestamp",
+            "description": "The timestamp specified as input to the query",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "Int",
+              "ofType": null
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -5061,6 +5549,27 @@
         "possibleTypes": null
       },
       {
+        "kind": "UNION",
+        "name": "EnhancedContract",
+        "description": "Metadata for a contract.",
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": [
+          {
+            "kind": "OBJECT",
+            "name": "EnhancedNftContract",
+            "ofType": null
+          },
+          {
+            "kind": "OBJECT",
+            "name": "EnhancedToken",
+            "ofType": null
+          }
+        ]
+      },
+      {
         "kind": "OBJECT",
         "name": "EnhancedNftContract",
         "description": "Metadata for an NFT collection.",
@@ -5370,7 +5879,7 @@
           },
           {
             "name": "info",
-            "description": "More metadata about the token such as images, description.",
+            "description": "More metadata about the token.",
             "args": [],
             "type": {
               "kind": "OBJECT",
@@ -5430,7 +5939,7 @@
               "ofType": null
             },
             "isDeprecated": true,
-            "deprecationReason": "pooled can be found on the pair instead"
+            "deprecationReason": "Pooled can be found on the pair instead"
           },
           {
             "name": "socialLinks",
@@ -7190,7 +7699,7 @@
           },
           {
             "name": "id",
-            "description": "The ID of the token (`address`: `networkId`).",
+            "description": "The ID of the token (`address:networkId`).",
             "args": [],
             "type": {
               "kind": "NON_NULL",
@@ -7925,11 +8434,50 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
+          },
+          {
+            "name": "status",
+            "description": null,
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "HoldersStatus",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
           }
         ],
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "HoldersStatus",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "DISABLED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "ENABLED",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -30179,6 +30727,69 @@
       },
       {
         "kind": "OBJECT",
+        "name": "PrimeHolders",
+        "description": "Response returned by `primeHolders`.",
+        "fields": [
+          {
+            "name": "count",
+            "description": "The number of holders returned.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cursor",
+            "description": "The cursor to use for pagination.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "items",
+            "description": "A list of holders of PRIME. Each request returns 50 results.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "Balance",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
         "name": "PrimePool",
         "description": "An Echelon Prime Pool.",
         "fields": [
@@ -33645,6 +34256,18 @@
                 "defaultValue": null,
                 "isDeprecated": false,
                 "deprecationReason": null
+              },
+              {
+                "name": "statsType",
+                "description": "docs: hide",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "TokenPairStatisticsType",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
               }
             ],
             "type": {
@@ -33718,6 +34341,18 @@
                     "name": "TokenRanking",
                     "ofType": null
                   }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              },
+              {
+                "name": "statsType",
+                "description": "docs: hide",
+                "type": {
+                  "kind": "ENUM",
+                  "name": "TokenPairStatisticsType",
+                  "ofType": null
                 },
                 "defaultValue": null,
                 "isDeprecated": false,
@@ -33869,6 +34504,35 @@
               "kind": "OBJECT",
               "name": "BarsResponse",
               "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "getCommunityNotes",
+            "description": "Returns community gathered notes.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "INPUT_OBJECT",
+                  "name": "CommunityNotesInput",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "CommunityNotesResponse",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -36402,6 +37066,68 @@
             "deprecationReason": null
           },
           {
+            "name": "primeBalance",
+            "description": "Fetch the balance of a wallet holding PRIME on ethereum",
+            "args": [
+              {
+                "name": "walletAddress",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "BalancesResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "primeHolders",
+            "description": "Returns a list of holders of the PRIME token on ethereum.",
+            "args": [
+              {
+                "name": "cursor",
+                "description": "Included in the results. Use the string as an argument to paginate through all the holders.",
+                "type": {
+                  "kind": "SCALAR",
+                  "name": "String",
+                  "ofType": null
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "PrimeHolders",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "searchNfts",
             "description": "Returns a list of NFT collections matching a given query string.",
             "args": [
@@ -37751,6 +38477,35 @@
         "inputFields": null,
         "interfaces": [],
         "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "ENUM",
+        "name": "SimulateTokenContractResultStatusEnum",
+        "description": null,
+        "fields": null,
+        "inputFields": null,
+        "interfaces": null,
+        "enumValues": [
+          {
+            "name": "FAILURE",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "PENDING",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "SUCCESS",
+            "description": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
         "possibleTypes": null
       },
       {
@@ -46263,6 +47018,24 @@
             "deprecationReason": null
           }
         ]
+      },
+      {
+        "name": "inaccessible",
+        "description": null,
+        "isRepeatable": false,
+        "locations": [
+          "ARGUMENT_DEFINITION",
+          "ENUM",
+          "ENUM_VALUE",
+          "FIELD_DEFINITION",
+          "INPUT_FIELD_DEFINITION",
+          "INPUT_OBJECT",
+          "INTERFACE",
+          "OBJECT",
+          "SCALAR",
+          "UNION"
+        ],
+        "args": []
       },
       {
         "name": "include",

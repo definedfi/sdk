@@ -1,3 +1,5 @@
+directive @inaccessible on FIELD_DEFINITION | OBJECT | INTERFACE | UNION | ARGUMENT_DEFINITION | SCALAR | ENUM | ENUM_VALUE | INPUT_OBJECT | INPUT_FIELD_DEFINITION
+
 directive @join__enumValue(graph: join__Graph!) repeatable on ENUM_VALUE
 
 directive @join__field(graph: join__Graph, requires: join__FieldSet, provides: join__FieldSet, type: String, external: Boolean, override: String, usedOverridden: Boolean) repeatable on FIELD_DEFINITION | INPUT_FIELD_DEFINITION
@@ -76,10 +78,20 @@ enum AlertRecurrence {
   ONCE
 }
 
+"""Wallet balance of a token."""
 type Balance {
+  """The ID of the wallet (`walletAddress:networkId`)."""
   walletId: String!
+
+  """The ID of the token (`tokenAddress:networkId`)."""
   tokenId: String!
+
+  """The balance held by the wallet."""
   balance: String!
+
+  """
+  The balance held by the wallet, adjusted by the number of decimals in the token.
+  """
   shiftedBalance: Float!
 }
 
@@ -93,6 +105,9 @@ input BalanceInput {
 input BalancesInput {
   walletId: String!
   cursor: String
+
+  """Optional token specifically request the balance for"""
+  filterToken: String
 }
 
 type BalancesResponse {
@@ -244,6 +259,91 @@ type ChartUrlsResponse {
   pair: ChartUrl!
 }
 
+"""Community gathered proposals for an asset."""
+type CommunityNote {
+  """The contract address of the contract."""
+  address: String!
+  contractType: ContractType!
+  currentContract: EnhancedContract
+
+  """The contract after the community note was applied."""
+  currentData: JSON
+
+  """The ID of the contract (`address:id`)."""
+  id: String!
+
+  """The unix timestamp of when the community note was moderated."""
+  moderatedAt: Int
+
+  """The network ID the contract is deployed on."""
+  networkId: Int!
+
+  """The contract before the community note was applied."""
+  previousData: JSON
+
+  """The data of the community note."""
+  proposalData: JSON!
+
+  """The ordinal number of the community note."""
+  proposalNum: Int!
+
+  """The type of the community note."""
+  proposalType: CommunityNoteType!
+
+  """The unix timestamp of when the community note was created."""
+  proposedAt: Int!
+  sortKey: String!
+}
+
+"""Filters for community notes."""
+input CommunityNotesFilter {
+  """The contract address of the contract."""
+  address: String
+  contractType: ContractType
+
+  """The network ID the contract is deployed on."""
+  networkId: [Int]
+
+  """The type of the proposal."""
+  proposalType: CommunityNoteType
+}
+
+"""Input type of `getCommunityNotes`."""
+input CommunityNotesInput {
+  """A set of filters to apply"""
+  filter: CommunityNotesFilter
+
+  """The maximum number of community notes to return."""
+  limit: Int
+
+  """The cursor to use for pagination."""
+  cursor: String
+}
+
+"""Community notes data"""
+type CommunityNotesResponse {
+  """The list of community notes matching the filter parameters."""
+  items: [CommunityNote!]!
+
+  """The number of community notes returned."""
+  count: Int!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+"""Type of the community gathered note."""
+enum CommunityNoteType {
+  """An contract attribute change."""
+  ATTRIBUTE
+
+  """A scam report."""
+  SCAM
+
+  """A logo change."""
+  LOGO
+}
+
 type ComparisonOperator {
   gt: String
   gte: String
@@ -285,6 +385,11 @@ enum ContractLabelSubType {
 """The contract label type."""
 enum ContractLabelType {
   Scam
+}
+
+enum ContractType {
+  TOKEN
+  NFT
 }
 
 enum CostBasisMethod {
@@ -635,6 +740,12 @@ type DetailedPairStats {
 
   """The breakdown of stats over a 30 day window."""
   stats_day30: WindowedDetailedPairStats
+
+  """Number of aggregated buckets specified in input"""
+  bucketCount: Int
+
+  """The timestamp specified as input to the query"""
+  queryTimestamp: Int
   pair: Pair
 }
 
@@ -718,6 +829,12 @@ type DetailedStats {
 
   """The breakdown of stats over a 24 hour window."""
   stats_day1: WindowedDetailedStats
+
+  """Number of aggregated buckets specified in input"""
+  bucketCount: Int
+
+  """The timestamp specified as input to the query"""
+  queryTimestamp: Int
 }
 
 """The start/end timestamp for a given bucket within the window."""
@@ -767,6 +884,9 @@ enum DetailedStatsWindowSize {
   hour1
   min5
 }
+
+"""Metadata for a contract."""
+union EnhancedContract = EnhancedToken | EnhancedNftContract
 
 """Metadata for an NFT collection."""
 type EnhancedNftContract {
@@ -838,7 +958,7 @@ type EnhancedToken {
   """Community gathered links for the socials of this token."""
   socialLinks: SocialLinks
 
-  """More metadata about the token such as images, description."""
+  """More metadata about the token."""
   info: TokenInfo
 
   """Information about the token from 3rd party sources."""
@@ -860,7 +980,7 @@ type EnhancedToken {
   circulatingSupply: String @deprecated(reason: "Use the TokenInfo type")
 
   """The amount of this token in the pair."""
-  pooled: String @deprecated(reason: "pooled can be found on the pair instead")
+  pooled: String @deprecated(reason: "Pooled can be found on the pair instead")
 }
 
 """A token transaction."""
@@ -1262,7 +1382,7 @@ enum ExchangeRankingAttribute {
 
 """Third party token data sourced from off chain."""
 type ExplorerTokenData {
-  """The ID of the token (`address`: `networkId`)."""
+  """The ID of the token (`address:networkId`)."""
   id: String!
 
   """Whether the token has been verified on CoinGecko."""
@@ -1428,6 +1548,12 @@ type HoldersResponse {
   items: [Balance!]!
   count: Int!
   cursor: String
+  status: HoldersStatus!
+}
+
+enum HoldersStatus {
+  ENABLED
+  DISABLED
 }
 
 """Bar chart data."""
@@ -6343,6 +6469,18 @@ input PriceEventWebhookConditionInput {
   priceUsd: ComparisonOperatorInput!
 }
 
+"""Response returned by `primeHolders`."""
+type PrimeHolders {
+  """A list of holders of PRIME. Each request returns 50 results."""
+  items: [Balance!]!
+
+  """The number of holders returned."""
+  count: Int!
+
+  """The cursor to use for pagination."""
+  cursor: String
+}
+
 """An Echelon Prime Pool."""
 type PrimePool {
   """
@@ -7437,6 +7575,9 @@ type Query {
     """A set of filters to apply."""
     filters: TokenFilters
 
+    """docs: hide"""
+    statsType: TokenPairStatisticsType
+
     """
     A phrase to search for. Can match a token contract address or partially match a token's name or symbol.
     """
@@ -7463,6 +7604,9 @@ type Query {
   filterPairs(
     """A set of filters to apply."""
     filters: PairFilters
+
+    """docs: hide"""
+    statsType: TokenPairStatisticsType
 
     """
     A phrase to search for. Can match a token or pair contract address or ID (`address:networkId`), or partially match a token name or symbol.
@@ -7827,6 +7971,20 @@ type Query {
   Returns list of wallets that hold a given token, ordered by holdings descending. Also has the unique count of holders for that token
   """
   holders(input: HoldersInput!): HoldersResponse!
+
+  """Returns a list of holders of the PRIME token on ethereum."""
+  primeHolders(
+    """
+    Included in the results. Use the string as an argument to paginate through all the holders.
+    """
+    cursor: String
+  ): PrimeHolders!
+
+  """Fetch the balance of a wallet holding PRIME on ethereum"""
+  primeBalance(walletAddress: String!): BalancesResponse!
+
+  """Returns community gathered notes."""
+  getCommunityNotes(input: CommunityNotesInput): CommunityNotesResponse!
 }
 
 enum QuoteCurrency {
@@ -7995,6 +8153,12 @@ enum SandwichLabelForEventType {
   sandwiched
   frontrun
   backrun
+}
+
+enum SimulateTokenContractResultStatusEnum {
+  SUCCESS
+  FAILURE
+  PENDING
 }
 
 """Community gathered social links of tokens/NFTs."""

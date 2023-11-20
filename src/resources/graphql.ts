@@ -75,11 +75,16 @@ export enum AlertRecurrence {
   Once = 'ONCE'
 }
 
+/** Wallet balance of a token. */
 export type Balance = {
   __typename?: 'Balance';
+  /** The balance held by the wallet. */
   balance: Scalars['String']['output'];
+  /** The balance held by the wallet, adjusted by the number of decimals in the token. */
   shiftedBalance: Scalars['Float']['output'];
+  /** The ID of the token (`tokenAddress:networkId`). */
   tokenId: Scalars['String']['output'];
+  /** The ID of the wallet (`walletAddress:networkId`). */
   walletId: Scalars['String']['output'];
 };
 
@@ -92,6 +97,8 @@ export type BalanceInput = {
 
 export type BalancesInput = {
   cursor?: InputMaybe<Scalars['String']['input']>;
+  /** Optional token specifically request the balance for */
+  filterToken?: InputMaybe<Scalars['String']['input']>;
   walletId: Scalars['String']['input'];
 };
 
@@ -221,6 +228,76 @@ export type ChartUrlsResponse = {
   pair: ChartUrl;
 };
 
+/** Community gathered proposals for an asset. */
+export type CommunityNote = {
+  __typename?: 'CommunityNote';
+  /** The contract address of the contract. */
+  address: Scalars['String']['output'];
+  contractType: ContractType;
+  currentContract?: Maybe<EnhancedContract>;
+  /** The contract after the community note was applied. */
+  currentData?: Maybe<Scalars['JSON']['output']>;
+  /** The ID of the contract (`address:id`). */
+  id: Scalars['String']['output'];
+  /** The unix timestamp of when the community note was moderated. */
+  moderatedAt?: Maybe<Scalars['Int']['output']>;
+  /** The network ID the contract is deployed on. */
+  networkId: Scalars['Int']['output'];
+  /** The contract before the community note was applied. */
+  previousData?: Maybe<Scalars['JSON']['output']>;
+  /** The data of the community note. */
+  proposalData: Scalars['JSON']['output'];
+  /** The ordinal number of the community note. */
+  proposalNum: Scalars['Int']['output'];
+  /** The type of the community note. */
+  proposalType: CommunityNoteType;
+  /** The unix timestamp of when the community note was created. */
+  proposedAt: Scalars['Int']['output'];
+  sortKey: Scalars['String']['output'];
+};
+
+/** Type of the community gathered note. */
+export enum CommunityNoteType {
+  /** An contract attribute change. */
+  Attribute = 'ATTRIBUTE',
+  /** A logo change. */
+  Logo = 'LOGO',
+  /** A scam report. */
+  Scam = 'SCAM'
+}
+
+/** Filters for community notes. */
+export type CommunityNotesFilter = {
+  /** The contract address of the contract. */
+  address?: InputMaybe<Scalars['String']['input']>;
+  contractType?: InputMaybe<ContractType>;
+  /** The network ID the contract is deployed on. */
+  networkId?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
+  /** The type of the proposal. */
+  proposalType?: InputMaybe<CommunityNoteType>;
+};
+
+/** Input type of `getCommunityNotes`. */
+export type CommunityNotesInput = {
+  /** The cursor to use for pagination. */
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  /** A set of filters to apply */
+  filter?: InputMaybe<CommunityNotesFilter>;
+  /** The maximum number of community notes to return. */
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+/** Community notes data */
+export type CommunityNotesResponse = {
+  __typename?: 'CommunityNotesResponse';
+  /** The number of community notes returned. */
+  count: Scalars['Int']['output'];
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** The list of community notes matching the filter parameters. */
+  items: Array<CommunityNote>;
+};
+
 export type ComparisonOperator = {
   __typename?: 'ComparisonOperator';
   eq?: Maybe<Scalars['String']['output']>;
@@ -260,6 +337,11 @@ export enum ContractLabelSubType {
 /** The contract label type. */
 export enum ContractLabelType {
   Scam = 'Scam'
+}
+
+export enum ContractType {
+  Nft = 'NFT',
+  Token = 'TOKEN'
 }
 
 export enum CostBasisMethod {
@@ -559,6 +641,8 @@ export type DetailedNftStatsStringMetrics = {
 /** Detailed stats for a token within a pair. */
 export type DetailedPairStats = {
   __typename?: 'DetailedPairStats';
+  /** Number of aggregated buckets specified in input */
+  bucketCount?: Maybe<Scalars['Int']['output']>;
   /** The unix timestamp for the last transaction to happen on the pair. */
   lastTransaction?: Maybe<Scalars['Int']['output']>;
   /** The network ID the pair is deployed on. */
@@ -566,6 +650,8 @@ export type DetailedPairStats = {
   pair?: Maybe<Pair>;
   /** The contract address of the pair. */
   pairAddress: Scalars['String']['output'];
+  /** The timestamp specified as input to the query */
+  queryTimestamp?: Maybe<Scalars['Int']['output']>;
   /** The breakdown of stats over a 24 hour window. */
   stats_day1?: Maybe<WindowedDetailedPairStats>;
   /** The breakdown of stats over a 30 day window. */
@@ -636,8 +722,12 @@ export type DetailedPairStatsStringMetrics = {
 /** Detailed stats for a token. */
 export type DetailedStats = {
   __typename?: 'DetailedStats';
+  /** Number of aggregated buckets specified in input */
+  bucketCount?: Maybe<Scalars['Int']['output']>;
   /** The ID of the pair (`address`:`networkId`). */
   pairId: Scalars['String']['output'];
+  /** The timestamp specified as input to the query */
+  queryTimestamp?: Maybe<Scalars['Int']['output']>;
   /** The type of statistics used. Can be `Filtered` or `Unfiltered`. */
   statsType: TokenPairStatisticsType;
   /** The breakdown of stats over a 24 hour window. */
@@ -697,6 +787,9 @@ export enum DetailedStatsWindowSize {
   Hour12 = 'hour12',
   Min5 = 'min5'
 }
+
+/** Metadata for a contract. */
+export type EnhancedContract = EnhancedNftContract | EnhancedToken;
 
 /** Metadata for an NFT collection. */
 export type EnhancedNftContract = {
@@ -760,7 +853,7 @@ export type EnhancedToken = {
    * @deprecated Use the TokenInfo type
    */
   imageThumbUrl?: Maybe<Scalars['String']['output']>;
-  /** More metadata about the token such as images, description. */
+  /** More metadata about the token. */
   info?: Maybe<TokenInfo>;
   /** Whether the token has been flagged as a scam. */
   isScam?: Maybe<Scalars['Boolean']['output']>;
@@ -770,7 +863,7 @@ export type EnhancedToken = {
   networkId: Scalars['Int']['output'];
   /**
    * The amount of this token in the pair.
-   * @deprecated pooled can be found on the pair instead
+   * @deprecated Pooled can be found on the pair instead
    */
   pooled?: Maybe<Scalars['String']['output']>;
   /** Community gathered links for the socials of this token. */
@@ -1087,7 +1180,7 @@ export type ExplorerTokenData = {
   description?: Maybe<Scalars['String']['output']>;
   /** The precision to which the token can be divided. */
   divisor?: Maybe<Scalars['String']['output']>;
-  /** The ID of the token (`address`: `networkId`). */
+  /** The ID of the token (`address:networkId`). */
   id: Scalars['String']['output'];
   /** The token price in USD. */
   tokenPriceUSD?: Maybe<Scalars['String']['output']>;
@@ -1218,7 +1311,13 @@ export type HoldersResponse = {
   count: Scalars['Int']['output'];
   cursor?: Maybe<Scalars['String']['output']>;
   items: Array<Balance>;
+  status: HoldersStatus;
 };
+
+export enum HoldersStatus {
+  Disabled = 'DISABLED',
+  Enabled = 'ENABLED'
+}
 
 /** Bar chart data. */
 export type IndividualBarData = {
@@ -4915,6 +5014,17 @@ export type PriceEventWebhookConditionInput = {
   tokenAddress: StringEqualsConditionInput;
 };
 
+/** Response returned by `primeHolders`. */
+export type PrimeHolders = {
+  __typename?: 'PrimeHolders';
+  /** The number of holders returned. */
+  count: Scalars['Int']['output'];
+  /** The cursor to use for pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** A list of holders of PRIME. Each request returns 50 results. */
+  items: Array<Balance>;
+};
+
 /** An Echelon Prime Pool. */
 export type PrimePool = {
   __typename?: 'PrimePool';
@@ -5419,6 +5529,8 @@ export type Query = {
   filterTokens?: Maybe<TokenFilterConnection>;
   /** Returns bar chart data to track price changes over time. */
   getBars?: Maybe<BarsResponse>;
+  /** Returns community gathered notes. */
+  getCommunityNotes: CommunityNotesResponse;
   /** Returns bucketed stats for a given NFT collection. */
   getDetailedNftStats?: Maybe<DetailedNftStats>;
   /** Returns bucketed stats for a given token within a pair. */
@@ -5499,6 +5611,10 @@ export type Query = {
   listTopTokens?: Maybe<Array<TokenWithMetadata>>;
   /** Returns metadata for a pair of tokens. */
   pairMetadata: PairMetadata;
+  /** Fetch the balance of a wallet holding PRIME on ethereum */
+  primeBalance: BalancesResponse;
+  /** Returns a list of holders of the PRIME token on ethereum. */
+  primeHolders: PrimeHolders;
   /** Returns a list of NFT collections matching a given query string. */
   searchNfts?: Maybe<NftSearchResponse>;
   /** Returns a list of tokens matching a given query string. */
@@ -5577,6 +5693,7 @@ export type QueryFilterPairsArgs = {
   pairs?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   phrase?: InputMaybe<Scalars['String']['input']>;
   rankings?: InputMaybe<Array<InputMaybe<PairRanking>>>;
+  statsType?: InputMaybe<TokenPairStatisticsType>;
 };
 
 
@@ -5586,6 +5703,7 @@ export type QueryFilterTokensArgs = {
   offset?: InputMaybe<Scalars['Int']['input']>;
   phrase?: InputMaybe<Scalars['String']['input']>;
   rankings?: InputMaybe<Array<InputMaybe<TokenRanking>>>;
+  statsType?: InputMaybe<TokenPairStatisticsType>;
   tokens?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
 };
 
@@ -5599,6 +5717,11 @@ export type QueryGetBarsArgs = {
   statsType?: InputMaybe<TokenPairStatisticsType>;
   symbol: Scalars['String']['input'];
   to: Scalars['Int']['input'];
+};
+
+
+export type QueryGetCommunityNotesArgs = {
+  input?: InputMaybe<CommunityNotesInput>;
 };
 
 
@@ -5882,6 +6005,16 @@ export type QueryPairMetadataArgs = {
 };
 
 
+export type QueryPrimeBalanceArgs = {
+  walletAddress: Scalars['String']['input'];
+};
+
+
+export type QueryPrimeHoldersArgs = {
+  cursor?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QuerySearchNftsArgs = {
   filterWashTrading?: InputMaybe<Scalars['Boolean']['input']>;
   include?: InputMaybe<Array<NftSearchable>>;
@@ -6075,6 +6208,12 @@ export type SandwichedLabelData = {
   /** The amount of `token1` drained in the attack. */
   token1DrainedAmount?: Maybe<Scalars['String']['output']>;
 };
+
+export enum SimulateTokenContractResultStatusEnum {
+  Failure = 'FAILURE',
+  Pending = 'PENDING',
+  Success = 'SUCCESS'
+}
 
 /** Community gathered social links of tokens/NFTs. */
 export type SocialLinks = {
