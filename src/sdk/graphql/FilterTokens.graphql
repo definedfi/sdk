@@ -64,8 +64,15 @@ query FilterTokens(
       volume12
       volume24
       pair {
+        address
+        exchangeHash
+        fee
+        id
+        networkId
+        tickSpacing
         token0
         token1
+        createdAt
         pooled {
           token0
           token1
