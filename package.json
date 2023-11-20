@@ -1,6 +1,6 @@
 {
   "name": "@definedfi/sdk",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "engines": {
     "node": ">=17.5.0"
   },
