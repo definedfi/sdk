@@ -82,7 +82,9 @@ query FilterPairs(
         networkId
         symbol
         info {
+          imageThumbUrl
           imageSmallUrl
+          imageLargeUrl
           circulatingSupply
           totalSupply
         }
@@ -94,7 +96,9 @@ query FilterPairs(
         networkId
         symbol
         info {
+          imageThumbUrl
           imageSmallUrl
+          imageLargeUrl
           circulatingSupply
           totalSupply
         }

@@ -85,7 +85,9 @@ query FilterTokens(
         networkId
         symbol
         info {
+          imageThumbUrl
           imageSmallUrl
+          imageLargeUrl
           circulatingSupply
           totalSupply
         }

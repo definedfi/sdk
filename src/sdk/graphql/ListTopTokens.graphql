@@ -15,13 +15,34 @@ query ListTopTokens($limit: Int, $networkFilter: [Int!], $resolution: String) {
     name
     networkId
     price
+    priceChange
+    isScam
+    priceChange1
+    priceChange4
+    priceChange12
+    priceChange24
+    quoteToken
+    marketCap
+    txnCount1
+    txnCount12
+    txnCount24
+    txnCount4
+    uniqueBuys1
+    uniqueBuys12
+    uniqueBuys24
+    uniqueBuys4
+    uniqueSells1
+    uniqueSells12
+    uniqueSells24
+    uniqueSells4
     resolution
     symbol
     topPairId
     volume
-    uniqueBuys24
-    uniqueSells24
-    txnCount24
-    priceChange24
+    imageThumbUrl
+    imageSmallUrl
+    imageLargeUrl
+    createdAt
+    lastTransaction
   }
 }
