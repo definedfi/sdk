@@ -885,15 +885,6 @@ type EnhancedToken {
   """The token ID on CoinMarketCap."""
   cmcId: Int
 
-  """The block height the token was created at."""
-  createBlockNumber: Int
-
-  """The unix timestamp for the creation of the token."""
-  createdAt: Int	
-
-  """The transaction hash of the token's creation."""
-  createTransactionHash: String
-
   """
   The precision to which the token can be divided. For example, the smallest unit for USDC is 0.000001 (6 decimals).
   """

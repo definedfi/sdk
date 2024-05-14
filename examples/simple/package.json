@@ -7,6 +7,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@definedfi/sdk": "^0.5.1"
+    "@definedfi/sdk": "^0.5.3"
   }
 }
