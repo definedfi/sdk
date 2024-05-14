@@ -14,14 +14,6 @@ directive @join__unionMember(graph: join__Graph!, member: String!) repeatable on
 
 directive @link(url: String, as: String, for: link__Purpose, import: [link__Import]) repeatable on SCHEMA
 
-input AddEventsInput {
-  address: String!
-  networkId: Int!
-  id: String!
-  quoteToken: QuoteToken
-  events: [EventInputUnion]!
-}
-
 """Response returned by `onEventsCreated`."""
 type AddEventsOutput {
   """The contract address of the pair."""
@@ -40,13 +32,6 @@ type AddEventsOutput {
 
   """A list of transactions for the token."""
   events: [Event]!
-}
-
-input AddNftEventsInput {
-  address: String!
-  networkId: Int!
-  id: String!
-  events: [NftEventInput!]!
 }
 
 """Response returned by `onNftEventsCreated`."""
@@ -95,15 +80,11 @@ type Balance {
   shiftedBalance: Float!
 }
 
-"""Optional way to provide current balance to the PnL calculator"""
-input BalanceInput {
-  walletId: String!
-  tokenId: String!
-  balance: String!
-}
-
 input BalancesInput {
+  """The ID of the wallet (`walletAddress:networkId`)."""
   walletId: String!
+
+  """A cursor for use in pagination."""
   cursor: String
 
   """Optional token specifically request the balance for"""
@@ -111,7 +92,10 @@ input BalancesInput {
 }
 
 type BalancesResponse {
+  """The list of token balances that a wallet has."""
   items: [Balance!]!
+
+  """A cursor for use in pagination."""
   cursor: String
 }
 
@@ -135,7 +119,9 @@ type BarsResponse {
   """The timestamp for the bar."""
   t: [Int!]!
 
-  """The status code for the bar. `200` responses are `ok`."""
+  """
+  The status code for the batch: `ok` for successful data retrieval and `no_data` for empty responses signaling the end of server data.
+  """
   s: String!
 
   """The volume with higher precision."""
@@ -143,6 +129,33 @@ type BarsResponse {
 
   """The volume in the native token for the network"""
   volumeNativeToken: [String]
+
+  """The number of unique buyers"""
+  buyers: [Int]!
+
+  """The number of buys"""
+  buys: [Int]!
+
+  """The buy volume in USD"""
+  buyVolume: [String]!
+
+  """The number of unique sellers"""
+  sellers: [Int]!
+
+  """The number of sells"""
+  sells: [Int]!
+
+  """The sell volume in USD"""
+  sellVolume: [String]!
+
+  """Liqudity in USD"""
+  liquidity: [String]!
+
+  """The number of traders"""
+  traders: [Int]!
+
+  """The number of transactions"""
+  transactions: [Int]!
 }
 
 """
@@ -185,40 +198,6 @@ type BurnEventData {
 
   """The type of token event, `Burn`."""
   type: EventType!
-}
-
-input BurnEventDataInput {
-  amount0: String
-  amount1: String
-  amount0Shifted: String
-  amount1Shifted: String
-  tickLower: String
-  tickUpper: String
-  type: EventType!
-}
-
-input BurnEventInput {
-  address: String!
-  baseTokenPrice: String
-  blockHash: String!
-  blockNumber: Int!
-  data: BurnEventDataInput
-  id: String!
-  liquidityToken: String
-  logIndex: Int!
-  maker: String
-  networkId: Int!
-  quoteToken: QuoteToken
-  timestamp: Int!
-  token0ValueBase: String
-  token1ValueBase: String
-  token0SwapValueUsd: String
-  token1SwapValueUsd: String
-  token0PoolValueUsd: String
-  token1PoolValueUsd: String
-  transactionHash: String!
-  transactionIndex: Int!
-  eventDisplayType: EventDisplayType
 }
 
 """Input options for the chart image."""
@@ -528,6 +507,11 @@ type CreateWebhooksOutput {
   rawTransactionWebhooks: [Webhook]!
 }
 
+enum CreationContext {
+  WEB
+  TELEGRAM
+}
+
 """Price data for a bar at a specific resolution."""
 type CurrencyBarData {
   """The timestamp for the bar."""
@@ -538,12 +522,6 @@ type CurrencyBarData {
 
   """Bar chart data in the network's base token."""
   token: IndividualBarData!
-}
-
-input CurrencyBarInput {
-  t: Int!
-  usd: IndividualBarInput!
-  token: IndividualBarInput!
 }
 
 type DecodedCallWebhookCondition {
@@ -641,38 +619,6 @@ enum DetailedNftStatsDuration {
   hour1
 }
 
-input DetailedNftStatsInput {
-  """The contract address of the NFT collection."""
-  collectionAddress: String!
-
-  """The network ID the NFT collection is deployed on."""
-  networkId: Int!
-
-  """
-  The marketplace address to filter by. Can be used to get marketplace-specific metrics, otherwise uses all.
-  """
-  grouping: String
-
-  """The unix timestamp for the stats. Defaults to current."""
-  timestamp: Int
-
-  """The list of durations to get detailed pair stats for."""
-  durations: [DetailedNftStatsDuration]
-
-  """
-  The number of aggregated values to receive.
-  Note: Each duration has predetermined bucket sizes.
-  The first n-1 buckets are historical. The last bucket is a snapshot of current data.
-  duration `day1`: 6 buckets (4 hours each) plus 1 partial bucket
-  duration `hour12`: 12 buckets (1 hour each) plus 1 partial bucket
-  duration `hour4`: 8 buckets (30 min each) plus 1 partial bucket
-  duration `hour1`: 12 buckets (5 min each) plus 1 partial bucket
-  duration `min5`: 5 buckets (1 min each) plus 1 partial bucket
-  For example, requesting 11 buckets for a `min5` duration will return the last 10 minutes worth of data plus a snapshot for the current minute.
-  """
-  bucketCount: Int
-}
-
 """Number metrics for detailed NFT stats."""
 type DetailedNftStatsNumberMetrics {
   """The percent change between the `currentValue` and `previousValue`."""
@@ -716,6 +662,9 @@ type DetailedPairStats {
 
   """The unix timestamp for the last transaction to happen on the pair."""
   lastTransaction: Int
+
+  """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
+  statsType: TokenPairStatisticsType!
 
   """The breakdown of stats over a 5 minute window."""
   stats_min5: WindowedDetailedPairStats
@@ -804,21 +753,21 @@ type DetailedPairStatsStringMetrics {
   buckets: [String]!
 }
 
-"""Detailed stats for a token."""
+"""Detailed stats for a token within a pair."""
 type DetailedStats {
-  """The ID of the pair (`address`:`networkId`)."""
+  """The ID of the pair (`pairAddress:networkId`)."""
   pairId: String!
 
-  """The token of interest within the pair. Can be `token0` or `token1`."""
+  """The token of interest used to calculate token-specific stats."""
   tokenOfInterest: TokenOfInterest!
 
-  """The type of statistics used. Can be `Filtered` or `Unfiltered`."""
+  """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
   statsType: TokenPairStatisticsType!
 
   """The breakdown of stats over a 5 minute window."""
   stats_min5: WindowedDetailedStats
 
-  """The breakdown of stats over a 1 hour window."""
+  """The breakdown of stats over an hour window."""
   stats_hour1: WindowedDetailedStats
 
   """The breakdown of stats over a 4 hour window."""
@@ -839,44 +788,48 @@ type DetailedStats {
 
 """The start/end timestamp for a given bucket within the window."""
 type DetailedStatsBucketTimestamp {
-  """The unix timestamp for the start of the window."""
+  """The unix timestamp for the start of the bucket."""
   start: Int!
 
-  """The unix timestamp for the end of the window."""
+  """The unix timestamp for the start of the bucket."""
   end: Int!
 }
 
-"""Number metrics for detailed token stats."""
+"""Number metrics for detailed stats."""
 type DetailedStatsNumberMetrics {
-  """The percent change between the `currentValue` and `previousValue`."""
+  """
+  The percent change between the `currentValue` and `previousValue`. Decimal format.
+  """
   change: Float!
 
-  """The total value for the most recent duration."""
+  """The total value for the most recent window."""
   currentValue: Int!
 
-  """The total value for the previous duration."""
+  """The total value for the previous window."""
   previousValue: Int!
 
   """The list of aggregated values for each bucket."""
   buckets: [Int]!
 }
 
-"""String metrics for detailed token stats."""
+"""String metrics for detailed stats."""
 type DetailedStatsStringMetrics {
-  """The percent change between the `currentValue` and `previousValue`."""
+  """
+  The percent change between the `currentValue` and `previousValue`. Decimal format.
+  """
   change: Float!
 
-  """The total value for the most recent duration."""
+  """The total value for the most recent window."""
   currentValue: String!
 
-  """The total value for the previous duration."""
+  """The total value for the previous window."""
   previousValue: String!
 
   """The list of aggregated values for each bucket."""
   buckets: [String]!
 }
 
-"""Window sizes for detailed token stats."""
+"""The window size used to request detailed stats."""
 enum DetailedStatsWindowSize {
   day1
   hour12
@@ -981,6 +934,18 @@ type EnhancedToken {
 
   """The amount of this token in the pair."""
   pooled: String @deprecated(reason: "Pooled can be found on the pair instead")
+
+  """The token creator's wallet address."""
+  creatorAddress: String
+
+  """The block height the token was created at."""
+  createBlockNumber: Int
+
+  """The transaction hash of the token's creation."""
+  createTransactionHash: String
+
+  """The unix timestamp for the creation of the token."""
+  createdAt: Int
 }
 
 """A token transaction."""
@@ -1008,7 +973,7 @@ type Event {
   eventType: EventType!
 
   """
-  The ID of the event (`address`:`networkId`). For example, `0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2:1`.
+  The ID of the event (`address:networkId`). For example, `0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2:1`.
   """
   id: String!
 
@@ -1071,7 +1036,7 @@ type Event {
   """
   eventDisplayType: EventDisplayType
 
-  """Labels attributed to the Event"""
+  """Labels attributed to the event."""
   labels: LabelsForEvent
 }
 
@@ -1085,7 +1050,7 @@ type EventConnection {
 }
 
 """Event-specific data for a token transaction."""
-union EventData = BurnEventData | MintEventData | SwapEventData
+union EventData = BurnEventData | MintEventData | SwapEventData | PoolBalanceChangedEventData
 
 """
 A more specific breakdown of `EventType`. Splits `Swap` into `Buy` and `Sell`.
@@ -1100,18 +1065,12 @@ enum EventDisplayType {
   CollectProtocol
 }
 
-input EventInputUnion {
-  swapEventInput: SwapEventInput
-  mintEventInput: MintEventInput
-  burnEventInput: BurnEventInput
-}
-
 """Metadata for an event label."""
 type EventLabel {
   """Specific data for the event label type."""
   data: EventLabelData!
 
-  """The ID of the pair (`address`:`networkId`)."""
+  """The ID of the pair (`address:networkId`)."""
   id: String!
 
   """The event label type."""
@@ -1213,6 +1172,7 @@ enum EventType {
   Sync
   Collect
   CollectProtocol
+  PoolBalanceChanged
 }
 
 """Metadata for a decentralized exchange."""
@@ -1401,6 +1361,11 @@ type ExplorerTokenData {
   tokenType: String
 }
 
+type Feature {
+  name: String!
+  enabled: Boolean!
+}
+
 """Filter for fillsource based NFT stats."""
 input FillsourceStatsFilter {
   """The fillsource to target for the current window."""
@@ -1440,7 +1405,7 @@ type FilterExchange {
   tradeUrl: String
 }
 
-"""Metadata for a front-run label"""
+"""Metadata for a front-run label."""
 type FrontRunLabelData {
   """The index of the front-run label. Can be 0 or 1."""
   index: Int
@@ -1450,6 +1415,29 @@ type FrontRunLabelData {
 
   """The amount of `token1` drained in the attack."""
   token1DrainedAmount: String!
+}
+
+type GasEstimate {
+  gasLimitEstimate: String
+  error: String
+  approveTxHash: String
+}
+
+type GasFee {
+  gasPrice: String!
+  confirmationTime: Float!
+}
+
+type GasFees {
+  high: GasFee
+  medium: GasFee
+  low: GasFee
+}
+
+enum GasPrice {
+  LOW
+  MEDIUM
+  HIGH
 }
 
 """Input type of `getDetailedPairsStats`."""
@@ -1476,8 +1464,21 @@ input GetDetailedPairsStatsInput {
   """
   bucketCount: Int
 
-  """docs: hide"""
+  """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
   statsType: TokenPairStatisticsType
+}
+
+input GetGasEstimateInput {
+  gasPrice: GasPrice
+  inputTokenAddress: String!
+  inputTokenAmount: String!
+  networkId: Int!
+  outputTokenAddress: String!
+  poolAddress: String
+  exchangeAddress: String
+  userId: Int
+  walletId: Int
+  customGas: String
 }
 
 """Response returned by `getNftPoolCollectionsByExchange`."""
@@ -1519,6 +1520,22 @@ input GetPriceInput {
   maxDeviations: Float @deprecated(reason: "This isn't taken into account anymore.")
 }
 
+input GetQuoteInput {
+  inputTokenAddress: String!
+  inputTokenAmount: String!
+  networkId: Int!
+  outputTokenAddress: String!
+  poolAddress: String
+  exchangeAddress: String
+  userId: Int
+  customGas: String
+}
+
+type GetSimulateTokenContractResultsConnection {
+  results: [SimulateTokenContractResult!]!
+  cursor: String
+}
+
 """Input type of `getTokensInfo`."""
 input GetTokensInfoInput {
   """The contract address of the token."""
@@ -1540,14 +1557,26 @@ enum GraphQlNftPoolVariant {
 }
 
 input HoldersInput {
+  """The ID of the token (`tokenAddress:networkId`)."""
   tokenId: String!
+
+  """A cursor for use in pagination."""
   cursor: String
 }
 
 type HoldersResponse {
+  """The list wallets for a token."""
   items: [Balance!]!
+
+  """the unique count of holders for the token."""
   count: Int!
+
+  """A cursor for use in pagination."""
   cursor: String
+
+  """
+  Status of holder. Disabled if on unsupported network or there is insufficient holder data.
+  """
   status: HoldersStatus!
 }
 
@@ -1581,17 +1610,33 @@ type IndividualBarData {
 
   """The volume in the network's base token"""
   volumeNativeToken: String!
-}
 
-input IndividualBarInput {
-  o: Float!
-  h: Float!
-  l: Float!
-  c: Float!
-  v: Int
-  t: Int!
-  volume: String!
-  volumeNativeToken: String
+  """The number of unique buyers"""
+  buyers: Int!
+
+  """The number of buys"""
+  buys: Int!
+
+  """The buy volume in USD"""
+  buyVolume: String!
+
+  """The number of unique sellers"""
+  sellers: Int!
+
+  """The number of sells"""
+  sells: Int!
+
+  """The sell volume in USD"""
+  sellVolume: String!
+
+  """Liqudity in USD"""
+  liquidity: String!
+
+  """The number of traders"""
+  traders: Int!
+
+  """The number of transactions"""
+  transactions: Int!
 }
 
 type IntEqualsCondition {
@@ -1608,7 +1653,6 @@ enum join__Graph {
   DECODINGS
   META
   NFTS
-  SUBSCRIPTIONS
   TOKENS
   USERS
 }
@@ -1629,7 +1673,7 @@ type LatestPair {
   """The contract address for the exchange."""
   exchangeHash: String!
 
-  """The ID of the pair (`address`:`networkId`)."""
+  """The ID of the pair (`address:networkId`)."""
   id: String!
 
   """The listing price, or first known price for the pair, in USD."""
@@ -1702,7 +1746,7 @@ type LatestPairToken {
   """
   decimals: Int!
 
-  """The ID of the token (`address`:`networkId`)."""
+  """The ID of the token (`address:networkId`)."""
   id: String!
 
   """The initial amount of `token` added to the pair."""
@@ -1714,7 +1758,7 @@ type LatestPairToken {
   """The network ID the token is deployed on."""
   networkId: Int!
 
-  """The ID of the pair (`pairAddress`:`networkId`)."""
+  """The ID of the pair (`pairAddress:networkId`)."""
   pairId: String!
 
   """
@@ -1724,6 +1768,115 @@ type LatestPairToken {
 
   """The symbol for the token."""
   symbol: String!
+}
+
+"""Metadata for a newly created token."""
+type LatestToken {
+  """The id of the new token. (tokenAddress:networkId)"""
+  id: String!
+
+  """The contract address of the new token."""
+  tokenAddress: String!
+
+  """The network ID the token is deployed on."""
+  networkId: Int!
+
+  """The block number of the token contract's creation."""
+  blockNumber: Int!
+
+  """The index of the transaction within the block."""
+  transactionIndex: Int!
+
+  """
+  The index of the trace within the token contract's creation transaction.
+  """
+  traceIndex: Int!
+
+  """The unique hash for the token contract's creation transaction."""
+  transactionHash: String!
+
+  """The unique hash for the token contract's creation block."""
+  blockHash: String!
+
+  """The unix timestamp for the creation of the token."""
+  timeCreated: Int!
+
+  """The address of the token creator."""
+  creatorAddress: String!
+
+  """The token creator's network token balance."""
+  creatorBalance: String!
+
+  """The name of the token."""
+  tokenName: String!
+
+  """The total supply of the token."""
+  totalSupply: String!
+
+  """The symbol of the token."""
+  tokenSymbol: String!
+
+  """The token's number of decimals."""
+  decimals: Int!
+
+  """Simulated token contract results, if available."""
+  simulationResults: [LatestTokenSimResults!]!
+}
+
+"""Response returned by `getLatestTokens`."""
+type LatestTokenConnection {
+  """A list of newly created tokens."""
+  items: [LatestToken!]!
+}
+
+type LatestTokenSimResults {
+  """
+  Whether or not a token was able to be succesfully bought during simulation.
+  """
+  buySuccess: Boolean
+
+  """Tax paid for a buy transaction during simulation."""
+  buyTax: String
+
+  """Gas used for a buy transaction during simulation."""
+  buyGasUsed: String
+
+  """The maximum token amount an address can buy during simulation."""
+  maxBuyAmount: String
+
+  """
+  Whether or not a token was able to be succesfully sold during simulation.
+  """
+  sellSuccess: Boolean
+
+  """Tax paid for a sell transaction during simulation."""
+  sellTax: String
+
+  """Gas used for a sell transaction during simulation."""
+  sellGasUsed: String
+
+  """The maximum token amount an address can sell during simulation."""
+  maxSellAmount: String
+
+  """
+  Whether or not the contract ownership was able to be transferred during simulation.
+  """
+  canTransferOwnership: Boolean
+
+  """
+  Whether or not the contract ownership was able to be renounced during simulation.
+  """
+  canRenounceOwnership: Boolean
+
+  """
+  Whether or not the contract ownership is already renounced during simulation (owner is 0x0).
+  """
+  isOwnerRenounced: Boolean
+
+  """
+  If a call was found to trigger liquidity & trading, this is the call name.
+  """
+  openTradingCall: String
 }
 
 scalar link__Import
@@ -1743,7 +1896,7 @@ enum link__Purpose {
 """Response returned by `listPairsWithMetadataForToken`."""
 type ListPairsForTokenResponse {
   """A list of pairs containing a given token."""
-  results: [ListPairsForTokenValue]!
+  results: [ListPairsForTokenValue!]!
 }
 
 """Metadata for a pair containing a given token."""
@@ -1817,40 +1970,6 @@ type MintEventData {
   type: EventType!
 }
 
-input MintEventDataInput {
-  amount0: String
-  amount1: String
-  amount0Shifted: String
-  amount1Shifted: String
-  tickLower: String
-  tickUpper: String
-  type: EventType!
-}
-
-input MintEventInput {
-  address: String!
-  baseTokenPrice: String
-  blockHash: String!
-  blockNumber: Int!
-  data: MintEventDataInput
-  id: String!
-  liquidityToken: String
-  logIndex: Int!
-  maker: String
-  networkId: Int!
-  quoteToken: QuoteToken
-  timestamp: Int!
-  token0ValueBase: String
-  token1ValueBase: String
-  token0SwapValueUsd: String
-  token1SwapValueUsd: String
-  token0PoolValueUsd: String
-  token1PoolValueUsd: String
-  transactionHash: String!
-  transactionIndex: Int!
-  eventDisplayType: EventDisplayType
-}
-
 type Mutation {
   createWebhooks(input: CreateWebhooksInput!): CreateWebhooksOutput!
   deleteWebhooks(input: DeleteWebhooksInput!): DeleteWebhooksOutput
@@ -1863,6 +1982,7 @@ type Network {
 
   """The network ID. For example, `42161` for `arbitrum`."""
   id: Int!
+  networkShortName: String
 }
 
 """Event data for creating a new NFT pool."""
@@ -2011,6 +2131,11 @@ type NewPoolEventDataV2 {
   """The amount of each NFT token initially deposited."""
   nftTokenQuantities: [String]!
 
+  """
+  *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.
+  """
+  nftAssets: [NftAsset]
+
   """The type of NFT in the pool."""
   poolNftType: PoolNftType!
 
@@ -2025,7 +2150,7 @@ type NewPoolEventDataV2 {
 
 """An NFT asset."""
 type NftAsset {
-  """The ID of the NFT asset (`address`:`tokenId`)."""
+  """The ID of the NFT asset (`address`:`networkId`)."""
   id: String!
 
   """The contract address of the NFT collection."""
@@ -2108,6 +2233,31 @@ enum NftAssetAttributeType {
   Array
 }
 
+type NftAssetError {
+  """The ID of the NFT asset (`address`:`networkId`)."""
+  id: String!
+
+  """The contract address of the NFT collection."""
+  address: String!
+
+  """The token ID of the NFT asset."""
+  tokenId: String!
+
+  """The network ID the NFT collection is deployed on."""
+  networkId: Int!
+
+  """The status of the asset error."""
+  status: NftAssetErrorStatus!
+
+  """The message of the asset error."""
+  message: String!
+}
+
+enum NftAssetErrorStatus {
+  NOT_FOUND
+  INDEXING_IN_PROGRESS
+}
+
 """NFT asset media."""
 type NftAssetMedia {
   """The URL for a full size image of the NFT asset."""
@@ -2123,24 +2273,15 @@ type NftAssetMedia {
   processed: Boolean
 }
 
-input NftAssetMediaInput {
-  """The URL for a full size image of the NFT asset."""
-  image: String
-
-  """The URL for small generated thumbnail of the NFT asset."""
-  thumbSm: String
-
-  """The URL for large generated thumbnail of the NFT asset."""
-  thumbLg: String
-
-  """Whether the NFT asset media has finished processing."""
-  processed: Boolean
-}
-
 """Response returned by `getNftAssets`."""
 type NftAssetsConnection {
   """A list of NFT assets."""
   items: [NftAsset]
+
+  """
+  A list of errors encountered while fetching the NFT assets. Errors correspond to null values in `items` by array index.
+  """
+  itemErrors: [NftAssetError]
 
   """A cursor for use in pagination."""
   cursor: String
@@ -2175,18 +2316,6 @@ type NftCollectionCurrencyStats {
 
   """The highest sale price in the time frame."""
   highestSale: NftStatsStringMetrics
-
-  """The lowest listing price for the time frame."""
-  listingFloor: NftStatsStringMetrics
-
-  """The opening floor listing price for the time frame."""
-  openListingFloor: NftStatsStringMetrics
-
-  """The closing floor listing price for the time frame."""
-  closeListingFloor: NftStatsStringMetrics
-
-  """The highest listing price in the time frame."""
-  highestListingFloor: NftStatsStringMetrics
 }
 
 """Stat and change for a string based fillsource amount."""
@@ -2372,19 +2501,11 @@ type NftCollectionPriceStats {
   """The highest sale price."""
   ceiling: String!
 
-  """The lowest listing price."""
-  listingFloor: String
-
   """The change in volume between the previous and current time frame."""
   volumeChange: Float
 
   """The change in floor price between the previous and current time frame."""
   floorChange: Float
-
-  """
-  The change in floor listing price between the previous and current time frame.
-  """
-  listingFloorChange: Float
 
   """
   The change in average price between the previous and current time frame.
@@ -2475,18 +2596,6 @@ enum NftCollectionRankingAttribute {
   stats1hUsdHighestSaleCurrent
   stats1hUsdHighestSalePrevious
   stats1hUsdHighestSaleChange
-  stats1hUsdListingFloorCurrent
-  stats1hUsdListingFloorPrevious
-  stats1hUsdListingFloorChange
-  stats1hUsdOpenListingFloorCurrent
-  stats1hUsdOpenListingFloorPrevious
-  stats1hUsdOpenListingFloorChange
-  stats1hUsdCloseListingFloorCurrent
-  stats1hUsdCloseListingFloorPrevious
-  stats1hUsdCloseListingFloorChange
-  stats1hUsdHighestListingFloorCurrent
-  stats1hUsdHighestListingFloorPrevious
-  stats1hUsdHighestListingFloorChange
   stats1hNetworkBaseTokenVolumeCurrent
   stats1hNetworkBaseTokenVolumePrevious
   stats1hNetworkBaseTokenVolumeChange
@@ -2544,18 +2653,6 @@ enum NftCollectionRankingAttribute {
   stats1hNetworkBaseTokenHighestSaleCurrent
   stats1hNetworkBaseTokenHighestSalePrevious
   stats1hNetworkBaseTokenHighestSaleChange
-  stats1hNetworkBaseTokenListingFloorCurrent
-  stats1hNetworkBaseTokenListingFloorPrevious
-  stats1hNetworkBaseTokenListingFloorChange
-  stats1hNetworkBaseTokenOpenListingFloorCurrent
-  stats1hNetworkBaseTokenOpenListingFloorPrevious
-  stats1hNetworkBaseTokenOpenListingFloorChange
-  stats1hNetworkBaseTokenCloseListingFloorCurrent
-  stats1hNetworkBaseTokenCloseListingFloorPrevious
-  stats1hNetworkBaseTokenCloseListingFloorChange
-  stats1hNetworkBaseTokenHighestListingFloorCurrent
-  stats1hNetworkBaseTokenHighestListingFloorPrevious
-  stats1hNetworkBaseTokenHighestListingFloorChange
   stats1hNonCurrencyMintsCurrent
   stats1hNonCurrencyMintsPrevious
   stats1hNonCurrencyMintsChange
@@ -2637,18 +2734,6 @@ enum NftCollectionRankingAttribute {
   stats4hUsdHighestSaleCurrent
   stats4hUsdHighestSalePrevious
   stats4hUsdHighestSaleChange
-  stats4hUsdListingFloorCurrent
-  stats4hUsdListingFloorPrevious
-  stats4hUsdListingFloorChange
-  stats4hUsdOpenListingFloorCurrent
-  stats4hUsdOpenListingFloorPrevious
-  stats4hUsdOpenListingFloorChange
-  stats4hUsdCloseListingFloorCurrent
-  stats4hUsdCloseListingFloorPrevious
-  stats4hUsdCloseListingFloorChange
-  stats4hUsdHighestListingFloorCurrent
-  stats4hUsdHighestListingFloorPrevious
-  stats4hUsdHighestListingFloorChange
   stats4hNetworkBaseTokenVolumeCurrent
   stats4hNetworkBaseTokenVolumePrevious
   stats4hNetworkBaseTokenVolumeChange
@@ -2706,18 +2791,6 @@ enum NftCollectionRankingAttribute {
   stats4hNetworkBaseTokenHighestSaleCurrent
   stats4hNetworkBaseTokenHighestSalePrevious
   stats4hNetworkBaseTokenHighestSaleChange
-  stats4hNetworkBaseTokenListingFloorCurrent
-  stats4hNetworkBaseTokenListingFloorPrevious
-  stats4hNetworkBaseTokenListingFloorChange
-  stats4hNetworkBaseTokenOpenListingFloorCurrent
-  stats4hNetworkBaseTokenOpenListingFloorPrevious
-  stats4hNetworkBaseTokenOpenListingFloorChange
-  stats4hNetworkBaseTokenCloseListingFloorCurrent
-  stats4hNetworkBaseTokenCloseListingFloorPrevious
-  stats4hNetworkBaseTokenCloseListingFloorChange
-  stats4hNetworkBaseTokenHighestListingFloorCurrent
-  stats4hNetworkBaseTokenHighestListingFloorPrevious
-  stats4hNetworkBaseTokenHighestListingFloorChange
   stats4hNonCurrencyMintsCurrent
   stats4hNonCurrencyMintsPrevious
   stats4hNonCurrencyMintsChange
@@ -2799,18 +2872,6 @@ enum NftCollectionRankingAttribute {
   stats12hUsdHighestSaleCurrent
   stats12hUsdHighestSalePrevious
   stats12hUsdHighestSaleChange
-  stats12hUsdListingFloorCurrent
-  stats12hUsdListingFloorPrevious
-  stats12hUsdListingFloorChange
-  stats12hUsdOpenListingFloorCurrent
-  stats12hUsdOpenListingFloorPrevious
-  stats12hUsdOpenListingFloorChange
-  stats12hUsdCloseListingFloorCurrent
-  stats12hUsdCloseListingFloorPrevious
-  stats12hUsdCloseListingFloorChange
-  stats12hUsdHighestListingFloorCurrent
-  stats12hUsdHighestListingFloorPrevious
-  stats12hUsdHighestListingFloorChange
   stats12hNetworkBaseTokenVolumeCurrent
   stats12hNetworkBaseTokenVolumePrevious
   stats12hNetworkBaseTokenVolumeChange
@@ -2868,18 +2929,6 @@ enum NftCollectionRankingAttribute {
   stats12hNetworkBaseTokenHighestSaleCurrent
   stats12hNetworkBaseTokenHighestSalePrevious
   stats12hNetworkBaseTokenHighestSaleChange
-  stats12hNetworkBaseTokenListingFloorCurrent
-  stats12hNetworkBaseTokenListingFloorPrevious
-  stats12hNetworkBaseTokenListingFloorChange
-  stats12hNetworkBaseTokenOpenListingFloorCurrent
-  stats12hNetworkBaseTokenOpenListingFloorPrevious
-  stats12hNetworkBaseTokenOpenListingFloorChange
-  stats12hNetworkBaseTokenCloseListingFloorCurrent
-  stats12hNetworkBaseTokenCloseListingFloorPrevious
-  stats12hNetworkBaseTokenCloseListingFloorChange
-  stats12hNetworkBaseTokenHighestListingFloorCurrent
-  stats12hNetworkBaseTokenHighestListingFloorPrevious
-  stats12hNetworkBaseTokenHighestListingFloorChange
   stats12hNonCurrencyMintsCurrent
   stats12hNonCurrencyMintsPrevious
   stats12hNonCurrencyMintsChange
@@ -2961,18 +3010,6 @@ enum NftCollectionRankingAttribute {
   stats24hUsdHighestSaleCurrent
   stats24hUsdHighestSalePrevious
   stats24hUsdHighestSaleChange
-  stats24hUsdListingFloorCurrent
-  stats24hUsdListingFloorPrevious
-  stats24hUsdListingFloorChange
-  stats24hUsdOpenListingFloorCurrent
-  stats24hUsdOpenListingFloorPrevious
-  stats24hUsdOpenListingFloorChange
-  stats24hUsdCloseListingFloorCurrent
-  stats24hUsdCloseListingFloorPrevious
-  stats24hUsdCloseListingFloorChange
-  stats24hUsdHighestListingFloorCurrent
-  stats24hUsdHighestListingFloorPrevious
-  stats24hUsdHighestListingFloorChange
   stats24hNetworkBaseTokenVolumeCurrent
   stats24hNetworkBaseTokenVolumePrevious
   stats24hNetworkBaseTokenVolumeChange
@@ -3030,18 +3067,6 @@ enum NftCollectionRankingAttribute {
   stats24hNetworkBaseTokenHighestSaleCurrent
   stats24hNetworkBaseTokenHighestSalePrevious
   stats24hNetworkBaseTokenHighestSaleChange
-  stats24hNetworkBaseTokenListingFloorCurrent
-  stats24hNetworkBaseTokenListingFloorPrevious
-  stats24hNetworkBaseTokenListingFloorChange
-  stats24hNetworkBaseTokenOpenListingFloorCurrent
-  stats24hNetworkBaseTokenOpenListingFloorPrevious
-  stats24hNetworkBaseTokenOpenListingFloorChange
-  stats24hNetworkBaseTokenCloseListingFloorCurrent
-  stats24hNetworkBaseTokenCloseListingFloorPrevious
-  stats24hNetworkBaseTokenCloseListingFloorChange
-  stats24hNetworkBaseTokenHighestListingFloorCurrent
-  stats24hNetworkBaseTokenHighestListingFloorPrevious
-  stats24hNetworkBaseTokenHighestListingFloorChange
   stats24hNonCurrencyMintsCurrent
   stats24hNonCurrencyMintsPrevious
   stats24hNonCurrencyMintsChange
@@ -3275,61 +3300,12 @@ type NftEvent {
   orderDirection: NftEventOrderDirection
 }
 
-input NftEventDataInput {
-  buyHash: String
-  metadata: String
-  price: String
-  maker: String
-  taker: String
-  type: String!
-  sellHash: String
-}
-
 type NftEventFillSourceCondition {
   oneOf: [WebhookNftEventFillSource!]!
 }
 
 input NftEventFillSourceConditionInput {
   oneOf: [WebhookNftEventFillSource!]!
-}
-
-input NftEventInput {
-  id: String!
-  contractAddress: String!
-  networkId: Int!
-  tokenId: String!
-  maker: String!
-  taker: String!
-  tokenPrice: String!
-  totalPrice: String!
-  totalTradePrice: String
-  individualTokenPrice: String
-  individualPrice: String
-  individualTradePrice: String
-  baseTokenAddress: String!
-  paymentTokenAddress: String!
-  baseTokenPrice: String
-  totalPriceUsd: String
-  individualBaseTokenPrice: String
-  individualPriceUsd: String
-  networkBaseTokenPrice: String
-  totalPriceNetworkBaseToken: String
-  individualNetworkBaseTokenPrice: String
-  individualPriceNetworkBaseToken: String
-  eventType: String!
-  data: NftEventDataInput!
-  exchangeAddress: String!
-  blockNumber: Int!
-  transactionHash: String!
-  transactionIndex: Int!
-  logIndex: Int!
-  sortKey: String!
-  timestamp: Int!
-  numberOfTokens: String
-  aggregatorAddress: String
-  poolAddress: String
-  fillSource: String
-  priceError: String
 }
 
 """Details for an NFT offered or received as part of an nft trade."""
@@ -3459,6 +3435,7 @@ type NftEventWebhookCondition {
   individualBaseTokenPrice: ComparisonOperator
   eventType: NftEventTypeCondition
   fillSource: NftEventFillSourceCondition
+  ignoreTransfers: Boolean
 }
 
 input NftEventWebhookConditionInput {
@@ -3469,6 +3446,7 @@ input NftEventWebhookConditionInput {
   tokenId: StringEqualsConditionInput
   eventType: NftEventTypeConditionInput
   fillSource: NftEventFillSourceConditionInput
+  ignoreTransfers: Boolean
 }
 
 """NFT marketplaces."""
@@ -4137,6 +4115,11 @@ type NftPoolCollectionResponse {
   volumeAllTimeNBT: String
 
   """
+  The total volume of the collection in USD over the collection's lifetime.
+  """
+  volumeAllTimeUSD: String
+
+  """
   The total number of NFTs bought and sold over the collection's lifetime.
   """
   nftVolumeAllTime: Int @deprecated(reason: "nftVolumeAllTime is changing from Int to String - use nftVolumeAllTimeV2 instead.")
@@ -4148,6 +4131,36 @@ type NftPoolCollectionResponse {
 
   """The media for one of the assets within the NFT collection."""
   media: NftAssetMedia @deprecated(reason: "Use `image` from `NftContract` instead.")
+
+  """
+  The sum of protocol fees generated by the collection in the network's base token over the collection's lifetime.
+  """
+  protocolFeesNBTAll: String
+
+  """
+  The sum of protocol fees generated by the collection in USD over the collection's lifetime.
+  """
+  protocolFeesUSDAll: String
+
+  """
+  The sum of pool fees generated by the collection in the network's base token over the collection's lifetime.
+  """
+  poolFeesNBTAll: String
+
+  """
+  The sum of pool fees generated by the collection in USD over the collection's lifetime.
+  """
+  poolFeesUSDAll: String
+
+  """
+  As estimated sum in the network's base token of the collection's royalties paid to creators by pool swaps over the collection's lifetime.
+  """
+  royaltiesNBTAllEstimate: String
+
+  """
+  An estimated sum in USD of the collection's royalties paid to creators by pool swaps over the collection's lifetime.
+  """
+  royaltiesUSDAllEstimate: String
 }
 
 """The NFT pool contract version."""
@@ -4241,7 +4254,10 @@ type NftPoolEventNftTransferV2 {
   nftTokenId: String!
 
   """The number of tokens involved in the transfer."""
-  nftTokenQuantity: String!
+  nftQuantity: String!
+
+  """The number of tokens involved in the transfer."""
+  nftTokenQuantity: String! @deprecated(reason: "nftTokenQuantity is no longer supported - use nftQuantity instead.")
 
   """The value of the token at the time of transfer."""
   amountT: String!
@@ -4751,6 +4767,11 @@ type NftPoolNftDepositEventDataV2 {
   nftTokenAmounts: [String!]!
 
   """
+  *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.
+  """
+  nftAssets: [NftAsset]
+
+  """
   The amount of token in the contract after the block has processed in the pool's liquidity token.
   """
   tokenBalanceT: String!
@@ -4788,6 +4809,11 @@ type NftPoolNftWithdrawalEventDataV2 {
   The amount of token in the contract after the block has processed in the pool's liquidity token.
   """
   tokenBalanceT: String!
+
+  """
+  *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.
+  """
+  nftAssets: [NftAsset]
 }
 
 """Input type of `NftPoolNumberFilter`."""
@@ -5812,143 +5838,52 @@ input PairFilters {
   volumeUSD4: NumberFilter
 }
 
-"""Response returned by `onPairMetadataUpdated`."""
 type PairMetadata {
-  """The ID of the exchange (`exchangeAddress`:`networkId`)."""
   exchangeId: String
-
-  """The exchange fee for swaps."""
   fee: Int
-
-  """The ID for the pair (`pairAddress`:`networkId`)."""
   id: String!
-
-  """The token of interest within the pair."""
   quoteToken: QuoteToken
-
-  """The network ID that the pair is deployed on."""
   networkId: Int
-
-  """The type of statistics used. Can be `Filtered` or `Unfiltered`."""
-  statsType: TokenPairStatisticsType!
-
-  """The amount of liquidity in the pair."""
   liquidity: String!
-
-  """
-  The token with higher liquidity in the pair. Can be `token0` or `token1`.
-  """
   liquidityToken: String
-
-  """
-  The token with lower liquidity in the pair. Can be `token0` or `token1`.
-  """
   nonLiquidityToken: String
-
-  """The contract address for the pair."""
   pairAddress: String!
-
-  """The token price in USD."""
+  statsType: TokenPairStatisticsType!
   price: String!
-
-  """The percent price change in the past hour."""
+  priceChange5m: Float
   priceChange1: Float
-
-  """The percent price change in the past 4 hours."""
   priceChange4: Float
-
-  """The percent price change in the past 12 hours."""
   priceChange12: Float
-
-  """The percent price change in the past 24 hours."""
   priceChange24: Float
-
-  """The percent price change in the past week."""
   priceChange1w: Float
-
-  """
-  The amount of required tick separation. Only applicable for pairs on UniswapV3.
-  """
   tickSpacing: Int
-
-  """Metadata for `token0`."""
   token0: PairMetadataToken!
-
-  """Metadata for `token1`."""
   token1: PairMetadataToken!
-
-  """The trade volume in USD in the past hour."""
   volume1: String
-
-  """The trade volume in USD in the past 4 hours."""
   volume4: String
-
-  """The trade volume in USD in the past 12 hours."""
   volume12: String
-
-  """The trade volume in USD in the past 24 hours."""
   volume24: String
-
-  """The trade volume in USD in the past week."""
   volume1w: String
-
-  """The highest price in USD in the past hour."""
   highPrice1: String
-
-  """The highest price in USD in the past 4 hours."""
   highPrice4: String
-
-  """The highest price in USD in the past 12 hours."""
   highPrice12: String
-
-  """The highest price in USD in the past 24 hours."""
   highPrice24: String
-
-  """The highest price in USD in the past week."""
   highPrice1w: String
-
-  """The lowest price in USD in the past hour."""
   lowPrice1: String
-
-  """The lowest price in USD in the 12 hours."""
   lowPrice12: String
-
-  """The lowest price in USD in the 24 hours."""
   lowPrice24: String
-
-  """The lowest price in USD in the 4 hours."""
   lowPrice4: String
-
-  """The lowest price in USD in the past week."""
   lowPrice1w: String
 }
 
-"""Metadata for a token within a pair."""
 type PairMetadataToken {
-  """The contract address of the token."""
   address: String!
-
-  """
-  The precision to which the token can be divided. For example, the smallest unit for USDC is 0.000001 (6 decimals).
-  """
   decimals: Int
-
-  """The token name. For example, `ApeCoin`."""
   name: String!
-
-  """The network ID the token is deployed on."""
   networkId: Int!
-
-  """The amount of this token in the pair."""
   pooled: String!
-
-  """The token price in USD."""
   price: String!
-
-  """The token symbol. For example, `APE`."""
   symbol: String!
-
-  """A list of labels for the token."""
   labels: [ContractLabel]
 }
 
@@ -6408,25 +6343,50 @@ enum Plan {
   ENTERPRISE
   DEFINED
   STANDARD
+  FREE
 }
 
-type Pnl {
-  realized: Float!
-  unrealized: Float!
-}
+"""Event data for a BalancerV2 Pool Balance Changed event."""
+type PoolBalanceChangedEventData {
+  """The amount of `token0` added or removed from the pair."""
+  amount0: String
 
-input PnlInput {
-  """The wallet address(es) in question"""
-  walletAddresses: [String!]!
+  """The amount of `token1` added or from the pair."""
+  amount1: String
 
-  """docs: hide"""
-  balances: [BalanceInput!]
+  """
+  The amount of `token0` added or removed from the pair, adjusted by the number of decimals in the token. For example, if `amount0` is in WEI, `amount0Shifted` will be in ETH.
+  """
+  amount0Shifted: String
 
-  """The tokenIds"""
-  tokenIds: [String!]!
+  """
+  The amount of `token1` added or removed from the pair, adjusted by the number of decimals in the token. For example, USDC `amount1Shifted` will be by 6 decimals.
+  """
+  amount1Shifted: String
 
-  """Cost basis calculation method, defaults to FIFO"""
-  costBasisMethod: CostBasisMethod
+  """The address of `token0` in the pair."""
+  token0: String
+
+  """The address of `token1` in the pair."""
+  token1: String
+
+  """The address of account that added or removed liquidity."""
+  sender: String
+
+  """The amount of token0 captured by the protocol."""
+  protocolFeeAmount0: String
+
+  """The amount of token1 captured by the protocol."""
+  protocolFeeAmount1: String
+
+  """The amount of token0 now in the pool."""
+  liquidity0: String
+
+  """The amount of token1 now in the pool."""
+  liquidity1: String
+
+  """The type of token event, `Burn`."""
+  type: EventType!
 }
 
 type PooledTokenValues {
@@ -6442,7 +6402,7 @@ enum PoolNftType {
   ERC1155ERC20
 }
 
-"""Current or historical prices for a token."""
+"""Real-time or historical prices for a token."""
 type Price {
   """The contract address of the token."""
   address: String!
@@ -6455,6 +6415,9 @@ type Price {
 
   """The unix timestamp for the price."""
   timestamp: Int!
+
+  """Ratio of how confident we are in the price"""
+  confidence: Float
 }
 
 type PriceEventWebhookCondition {
@@ -7161,14 +7124,17 @@ type Query {
   Returns transactions for an NFT collection across all NFT pools or within a given pool.
   """
   getNftPoolEvents(
-    """The contract address of the NFT collection."""
-    collectionAddress: String!
-
     """The network ID the NFT collection is deployed on."""
     networkId: Int!
 
+    """The contract address of the NFT collection."""
+    collectionAddress: String
+
     """The NFT pool address to filter by."""
     poolAddress: String
+
+    """The NFT AMM marketplace address to filter by."""
+    exchangeAddress: String
 
     """The event types to filter by."""
     eventTypes: [NftPoolEventType!]
@@ -7387,6 +7353,11 @@ type Query {
     """An optional list of token IDs to filter by."""
     tokenIds: [String]
 
+    """
+    Whether to trigger fetching onchain metadata for missing assets. Defaults to false. Fetch results are delayed and can be ingested realtime via onNftAssetsCreated subscription. Free tier API users are limited to 1 missing asset fetch per request, and may only retry fetching a missing asset once per week. To remove these limitations, please upgrade your API plan at https://www.dashboard.defined.fi/plan.
+    """
+    fetchMissingAssets: Boolean
+
     """The cursor to use for pagination."""
     cursor: String
 
@@ -7575,7 +7546,7 @@ type Query {
     """A set of filters to apply."""
     filters: TokenFilters
 
-    """docs: hide"""
+    """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
 
     """
@@ -7605,7 +7576,7 @@ type Query {
     """A set of filters to apply."""
     filters: PairFilters
 
-    """docs: hide"""
+    """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
 
     """
@@ -7671,6 +7642,23 @@ type Query {
   """
   getTokenCount: String!
 
+  """Returns tick data for a given Uniswap V3-style pool."""
+  getUniV3Ticks(
+    """The contract address of the pool."""
+    poolAddress: String!
+
+    """
+    The network ID the pool is deployed on. Currently `getUniV3Ticks` is only supported on Ethereum mainnet (1).
+    """
+    networkId: Int!
+
+    """The maximum number of ticks to return. Max is `1000`."""
+    limit: Int
+
+    """Offset for pagination of ticks."""
+    offset: Int
+  ): UniV3TickConnection
+
   """Returns metadata for a list of given tokens."""
   getTokensInfo(
     """
@@ -7700,7 +7688,7 @@ type Query {
     """
     bucketCount: Int
 
-    """docs: hide"""
+    """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
   ): DetailedStats @deprecated(reason: "Use `getDetailedPairStats` instead, it has more resolutions and better support")
 
@@ -7728,7 +7716,7 @@ type Query {
     """
     bucketCount: Int
 
-    """docs: hide"""
+    """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
   ): DetailedPairStats
 
@@ -7811,16 +7799,19 @@ type Query {
     currencyCode: String
 
     """
-    Whether to remove leading null values from the response. Only valid with `1D` resolution. To fetch a token's entire history, set the `from` value to `0` and set `removeLeadingNullValues` to `true. Default is `false`.
+    Whether to remove leading null values from the response. To fetch a token's entire history, set resolution to `1D`, `from` value to `0` and `removeLeadingNullValues` to `true`. Default is `false`.
     """
     removeLeadingNullValues: Boolean
+
+    """Whether to remove empty bars from the response. Default is `false`."""
+    removeEmptyBars: Boolean
 
     """
     The token of interest within the token's top pair. Can be `token0` or `token1`.
     """
     quoteToken: QuoteToken
 
-    """docs: hide"""
+    """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
   ): BarsResponse
 
@@ -7849,7 +7840,10 @@ type Query {
   ): TokenSearchResponse
 
   """Returns a list of decentralized exchange metadata."""
-  getExchanges: [Exchange!]!
+  getExchanges(
+    """Get exchanges with missing fields. Default is `false`."""
+    showNameless: Boolean
+  ): [Exchange!]!
 
   """Returns a URL for a pair chart."""
   chartUrls(
@@ -7896,7 +7890,7 @@ type Query {
     """The token of interest within the pair. Can be `token0` or `token1`."""
     quoteToken: QuoteToken
 
-    """docs: hide"""
+    """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
   ): PairMetadata!
 
@@ -7956,9 +7950,6 @@ type Query {
     tokenAddress: String!
   ): ListPairsForTokenResponse!
 
-  """Get the wallet profit and loss based on their dex trades"""
-  getWalletPnl(input: PnlInput!): [WalletPnl]!
-
   """
   Returns a list of token simple chart data (sparklines) for the given tokens.
   """
@@ -7971,6 +7962,7 @@ type Query {
   Returns list of wallets that hold a given token, ordered by holdings descending. Also has the unique count of holders for that token
   """
   holders(input: HoldersInput!): HoldersResponse!
+  getSimulateTokenContractResults(contractAddress: String!, networkId: Int!, simulationId: String, cursor: String, limit: Int): GetSimulateTokenContractResultsConnection!
 
   """Returns a list of holders of the PRIME token on ethereum."""
   primeHolders(
@@ -7982,9 +7974,30 @@ type Query {
 
   """Fetch the balance of a wallet holding PRIME on ethereum"""
   primeBalance(walletAddress: String!): BalancesResponse!
+  getLatestTokens(
+    """
+    The maximum number of tokens to return. Maximum number of tokens is 50.
+    """
+    limit: Int
+
+    """The list of network IDs to filter by."""
+    networkFilter: [Int!]
+
+    """The offset to use for pagination."""
+    offset: Int
+  ): LatestTokenConnection
 
   """Returns community gathered notes."""
   getCommunityNotes(input: CommunityNotesInput): CommunityNotesResponse!
+}
+
+type Quote {
+  poolFee: String
+  poolFeeBps: Float
+  quotedAmount: String!
+  quoteType: QuoteType!
+  tradeFee: String!
+  tradeFeeBps: Float!
 }
 
 enum QuoteCurrency {
@@ -7992,10 +8005,15 @@ enum QuoteCurrency {
   TOKEN
 }
 
-"""The token of interest within a pair."""
+"""The quote token within the pair."""
 enum QuoteToken {
   token0
   token1
+}
+
+enum QuoteType {
+  INPUT
+  OUTPUT
 }
 
 """The order of ranking."""
@@ -8095,21 +8113,6 @@ type ResolutionBarData {
   r7D: CurrencyBarData
 }
 
-input ResolutionBarInput {
-  r1S: CurrencyBarInput
-  r5S: CurrencyBarInput
-  r15S: CurrencyBarInput
-  r1: CurrencyBarInput
-  r5: CurrencyBarInput
-  r15: CurrencyBarInput
-  r30: CurrencyBarInput
-  r60: CurrencyBarInput
-  r240: CurrencyBarInput
-  r720: CurrencyBarInput
-  r1D: CurrencyBarInput
-  r7D: CurrencyBarInput
-}
-
 type RetrySettings {
   maxTimeElapsed: Int
   minRetryDelay: Int
@@ -8124,7 +8127,7 @@ input RetrySettingsInput {
   maxRetries: Int
 }
 
-"""Metadata for a sandwich label"""
+"""Metadata for a sandwich label."""
 type SandwichedLabelData {
   """The amount of `token0` drained in the attack."""
   token0DrainedAmount: String
@@ -8155,10 +8158,229 @@ enum SandwichLabelForEventType {
   backrun
 }
 
+input SessionMetadata {
+  shouldNotify: Boolean
+}
+
+type SimulateContractBalanceErrorsType {
+  tokenContractTokenBalanceError: String
+  tokenContractEthBalanceError: String
+}
+
+type SimulateContractBalanceType {
+  tokenContractTokenBalance: String
+  tokenContractEthBalance: String
+}
+
+input SimulateCreateTransactionInput {
+  """
+  The network ID the token is deployed on. Currently only supports 1 (mainnet).
+  """
+  networkId: Int!
+
+  """The block number to simulate the contract at."""
+  blockNumber: Int!
+
+  """The contract creation transaction hash from the live network."""
+  createTransactionHash: String!
+
+  """The contract address of the token."""
+  contractAddress: String!
+}
+
+type SimulateCreatorErrorsType {
+  creatorTokenBalanceError: String
+  creatorEthBalanceError: String
+}
+
+type SimulateCreatorType {
+  creatorAddress: String
+  creatorTokenBalance: String
+  creatorEthBalance: String
+}
+
+type SimulateDeployErrorsType {
+  deployError: String
+  tokenMintedToDeployerError: String
+}
+
+input SimulateDeployInput {
+  """
+  The network ID the token is deployed on. Currently only supports 1 (mainnet).
+  """
+  networkId: Int!
+
+  """The block number to simulate the contract at."""
+  blockNumber: Int!
+
+  """The contract address of the token."""
+  contractAddress: String!
+
+  """The contract creation transaction input to simulate."""
+  contractInput: String!
+}
+
+type SimulateDeployType {
+  deploySuccess: Boolean
+  tokenMintedToDeployer: String
+}
+
+type SimulateLiquidityErrorsType {
+  lpTotalSupplyError: String
+  preLiquidityEnableTradingError: String
+  postLiquidityEnableTradingError: String
+  addLiquidityError: String
+}
+
+type SimulateLiquidityType {
+  pairAddress: String
+  lpTotalSupply: String
+  preLiquidityEnableTradingCall: String
+  preLiquidityEnableTradingSuccess: Boolean
+  preLiquidityEnableTradingSupportsTransfer: Boolean
+  liquiditySetByPreLiquidityOpenTradingCall: Boolean
+  postLiquidityEnableTradingCall: String
+  postLiquidityEnableTradingSuccess: Boolean
+  addLiquiditySuccess: Boolean
+}
+
+input SimulateLiveContractInput {
+  """
+  The network ID the token is deployed on. Currently only supports 1 (mainnet).
+  """
+  networkId: Int!
+
+  """The block number to simulate the contract at."""
+  blockNumber: Int
+
+  """The contract address of the token."""
+  contractAddress: String!
+}
+
+type SimulateOwnerErrorsType {
+  ownerAddressError: String
+  ownerTokenBalanceError: String
+  ownerEthBalanceError: String
+}
+
+type SimulateOwnerType {
+  ownerAddress: String
+  ownerTokenBalance: String
+  ownerEthBalance: String
+}
+
+type SimulateSwapErrorsType {
+  buyError: String
+  buyErrorEnum: SimulateTokenContractBuySellErrorEnum
+  sellError: String
+  sellErrorEnum: SimulateTokenContractBuySellErrorEnum
+}
+
+type SimulateSwapType {
+  buySuccess: Boolean
+  buyTax: String
+  buyGasUsed: String
+  maxBuyAmount: String
+  sellSuccess: Boolean
+  sellTax: String
+  sellGasUsed: String
+  maxSellAmount: String
+}
+
+enum SimulateTokenContractBuySellErrorEnum {
+  INSUFFICIENT_OUTPUT_AMOUNT
+  INSUFFICIENT_LIQUIDITY
+  TRANSFER_FAILED
+  UNKNOWN_ERROR
+}
+
+type SimulateTokenContractErrors {
+  simulatorError: String
+  tokenErrors: SimulateTokenErrorsType!
+  deployErrors: SimulateDeployErrorsType!
+  contractBalanceErrors: SimulateContractBalanceErrorsType!
+  liquidityErrors: SimulateLiquidityErrorsType!
+  transferErrors: SimulateTransferErrorsType!
+  swapErrors: SimulateSwapErrorsType!
+  ownerErrors: SimulateOwnerErrorsType!
+  creatorErrors: SimulateCreatorErrorsType!
+}
+
+input SimulateTokenContractInput {
+  """Input for a token contract deploy simulation."""
+  simulateDeployInput: SimulateDeployInput
+
+  """Input for a token contract create transaction simulation."""
+  simulateCreateTransactionInput: SimulateCreateTransactionInput
+
+  """Input for a live token contract simulation."""
+  simulateLiveContractInput: SimulateLiveContractInput
+}
+
+type SimulateTokenContractResponse {
+  result: Boolean!
+  simulationId: String
+  error: String
+}
+
+type SimulateTokenContractResult {
+  id: String!
+  sortKey: String!
+  contractHashKey: String!
+  uuidHashKey: String!
+  blockNumber: String!
+  networkId: Int!
+  analysisType: Int!
+  timestamp: Int!
+  status: SimulateTokenContractResultStatusEnum!
+  errors: SimulateTokenContractErrors!
+  uuid: String!
+  token: SimulateTokenType!
+  deploy: SimulateDeployType!
+  contractBalance: SimulateContractBalanceType!
+  liquidity: SimulateLiquidityType!
+  transfer: SimulateTransferType!
+  swap: SimulateSwapType!
+  owner: SimulateOwnerType!
+  creator: SimulateCreatorType!
+}
+
 enum SimulateTokenContractResultStatusEnum {
   SUCCESS
   FAILURE
   PENDING
+}
+
+type SimulateTokenErrorsType {
+  tokenSymbolError: String
+  decimalsError: String
+  tokenNameError: String
+  totalSupplyError: String
+  canTransferOwnershipError: String
+  canRenounceOwnershipError: String
+}
+
+type SimulateTokenType {
+  contractAddress: String!
+  tokenSymbol: String
+  decimals: Int
+  tokenName: String
+  totalSupply: String
+  canTransferOwnership: Boolean
+  canRenounceOwnership: Boolean
+  isOwnerRenounced: Boolean
+}
+
+type SimulateTransferErrorsType {
+  tokenContractApprovalError: String
+  tokenTransferredToContractError: String
+  userApprovalError: String
+}
+
+type SimulateTransferType {
+  tokenContractApprovalSuccess: Boolean
+  tokenTransferredToContractSuccess: Boolean
+  userApprovalSuccess: Boolean
 }
 
 """Community gathered social links of tokens/NFTs."""
@@ -8218,18 +8440,6 @@ input statsCurrency {
 
   """The highest sale price in the time frame."""
   highestSale: StatsFilter
-
-  """The lowest listing price for the time frame."""
-  listingFloor: StatsFilter
-
-  """The opening floor listing price for the time frame."""
-  openListingFloor: StatsFilter
-
-  """The closing floor listing price for the time frame."""
-  closeListingFloor: StatsFilter
-
-  """The highest listing price in the time frame."""
-  highestListingFloor: StatsFilter
 }
 
 """Filter for NFT stats."""
@@ -8305,6 +8515,32 @@ input StringFilter {
 }
 
 type Subscription {
+  """Live-streamed transactions for an NFT collection."""
+  onNftEventsCreated(
+    """The contract address for the NFT collection."""
+    address: String
+
+    """The network ID the NFT collection is deployed on."""
+    networkId: Int
+  ): AddNftEventsOutput
+
+  """Live-streamed transactions for an NFT asset."""
+  onNftAssetsCreated(
+    """The contract address for the NFT collection"""
+    address: String
+
+    """The network ID the NFT collection is deployed on."""
+    networkId: Int
+
+    """The token ID of the NFT asset."""
+    tokenId: String
+  ): NftAsset
+
+  """
+  Live streamed nft pool events for a given pool address or collection address
+  """
+  onNftPoolEventsCreated(poolAddress: String, networkId: Int, collectionAddress: String, exchangeAddress: String): AddNftPoolEventsOutput
+
   """Live-streamed bar chart data to track price changes over time."""
   onBarsUpdated(
     """The ID of the pair (`address`:`networkId`)."""
@@ -8338,27 +8574,6 @@ type Subscription {
     networkId: Int
   ): Price
 
-  """Live-streamed transactions for an NFT collection."""
-  onNftEventsCreated(
-    """The contract address for the NFT collection."""
-    address: String
-
-    """The network ID the NFT collection is deployed on."""
-    networkId: Int
-  ): AddNftEventsOutput
-
-  """Live-streamed transactions for an NFT asset."""
-  onNftAssetsCreated(
-    """The contract address for the NFT collection"""
-    address: String
-
-    """The network ID the NFT collection is deployed on."""
-    networkId: Int
-
-    """The token ID of the NFT asset."""
-    tokenId: String
-  ): NftAsset
-
   """Live-streamed stat updates for a given token within a pair."""
   onPairMetadataUpdated(
     """The ID of the pair (`address`:`networkId`)."""
@@ -8383,19 +8598,31 @@ type Subscription {
     statsType: TokenPairStatisticsType
   ): DetailedStats
 
-  """Live-streamed updates for newly listed tokens."""
-  onLatestPairUpdated: LatestPair
+  """Live-streamed updates for newly listed pairs."""
+  onLatestPairUpdated(
+    """The ID of the pair (`address`:`networkId`)."""
+    id: String
+
+    """The network ID the pair is deployed on."""
+    networkId: Int
+  ): LatestPair
+  onLatestTokens(
+    """The ID of the token (`tokenAddress`:`networkId`)."""
+    id: String
+
+    """The network ID the token is deployed on."""
+    networkId: Int
+
+    """The address of the token contract."""
+    tokenAddress: String
+  ): LatestToken
 
   """Live-streamed event labels for a token."""
   onEventLabelCreated(
     """The ID of the pair (`address`:`networkId`)."""
     id: String
   ): EventLabel
-
-  """
-  Live streamed nft pool events for a given pool address or collection address
-  """
-  onNftPoolEventsCreated(poolAddress: String, networkId: Int, collectionAddress: String, exchangeAddress: String): AddNftPoolEventsOutput
+  onSimulateTokenContract(contractAddress: String, networkId: Int!, simulationId: String): SimulateTokenContractResult!
 }
 
 """Event data for a token swap event."""
@@ -8462,46 +8689,6 @@ type SwapEventData {
 
   """The type of token event, `Swap`."""
   type: EventType!
-}
-
-input SwapEventDataInput {
-  amount0: String
-  amount0In: String
-  amount0Out: String
-  amount1: String
-  amount1In: String
-  amount1Out: String
-  amountNonLiquidityToken: String
-  priceBaseToken: String
-  priceBaseTokenTotal: String
-  priceUsd: String
-  priceUsdTotal: String
-  tick: String
-  type: EventType!
-}
-
-input SwapEventInput {
-  address: String!
-  baseTokenPrice: String
-  blockHash: String!
-  blockNumber: Int!
-  data: SwapEventDataInput
-  id: String!
-  liquidityToken: String
-  logIndex: Int!
-  maker: String
-  networkId: Int!
-  quoteToken: QuoteToken
-  timestamp: Int!
-  token0ValueBase: String
-  token1ValueBase: String
-  token0SwapValueUsd: String
-  token1SwapValueUsd: String
-  token0PoolValueUsd: String
-  token1PoolValueUsd: String
-  transactionHash: String!
-  transactionIndex: Int!
-  eventDisplayType: EventDisplayType
 }
 
 """Event data for swapping an NFT into a pool."""
@@ -8576,6 +8763,11 @@ type SwapNftInPoolEventDataV2 {
 
   """Metadata for each of the NFTs involved in the swap."""
   nftsTransfered: [NftPoolEventNftTransferV2]
+
+  """
+  *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.
+  """
+  nftAssets: [NftAsset]
 
   """The updated spot price in the pool's liquidity token."""
   newSpotPriceT: String!
@@ -8679,6 +8871,11 @@ type SwapNftOutPoolEventDataV2 {
 
   """Metadata for each of the NFTs involved in the swap."""
   nftsTransfered: [NftPoolEventNftTransferV2]
+
+  """
+  *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.
+  """
+  nftAssets: [NftAsset]
 
   """The updated spot price in the pool's liquidity token."""
   newSpotPriceT: String!
@@ -8905,6 +9102,9 @@ type TokenFilterResult {
 
   """Whether the token has been flagged as a scam."""
   isScam: Boolean
+
+  """The number of different wallets holding the token."""
+  holders: Int
 }
 
 """Input type of `TokenFilters`."""
@@ -8939,6 +9139,14 @@ input TokenFilters {
 
   """The percent price change in the past 4 hours. Decimal format."""
   change4: NumberFilter
+
+  """
+  The list of exchange contract IDs to filter by. Applied in conjunction with `network` filter using an OR condition. When used together, the query returns results that match either the specified exchanges or the specified network.
+  """
+  exchangeId: [String]
+
+  """The list of exchange contract addresses to filter by."""
+  exchangeAddress: [String]
   fdv: NumberFilter @deprecated(reason: "FDV isn't supported - use marketCap instead")
 
   """The highest price in USD in the past hour."""
@@ -8971,8 +9179,13 @@ input TokenFilters {
   """The market cap of circulating supply."""
   marketCap: NumberFilter
 
-  """The network ID."""
+  """
+  The list of network IDs to filter by. Applied in conjunction with `exchangeId` filter using an OR condition. When used together, the query returns results that match either the specified exchanges or the specified network.
+  """
   network: [Int]
+
+  """The number of different wallets holding the token."""
+  holders: NumberFilter
 
   """The token price in USD."""
   priceUSD: NumberFilter
@@ -9180,6 +9393,7 @@ enum TokenRankingAttribute {
   high4
   high12
   high24
+  holders
   liquidity
   low1
   low4
@@ -9365,41 +9579,26 @@ type TokenWithMetadata {
   lastTransaction: Int
 }
 
-input UpdateAggregateBatchInput {
-  pairAddress: String!
-  networkId: Int!
-  pairId: String!
-  timestamp: Int!
-  eventSortKey: String!
-  aggregates: ResolutionBarInput!
-  statsType: TokenPairStatisticsType!
-  quoteToken: QuoteToken
+type UniV3Tick {
+  tick: Int
+  liquidityNet: String
+  price0: String
+  price1: String
 }
 
-input UpdatePriceInput {
-  address: String!
-  networkId: Int!
-  priceUsd: Float!
-  timestamp: Int!
+"""Response returned by `getUniV3Ticks`."""
+type UniV3TickConnection {
+  """The list of Uni V3 ticks matching the filter parameters."""
+  results: [UniV3Tick]
+
+  """The number of ticks returned."""
+  count: Int
+
+  """Where in the list the server started when returning items."""
+  offset: Int
 }
 
-type WalletPnl {
-  address: String!
-  pnl: Pnl!
-  tokens: [WalletTokenPnl!]!
-}
-
-type WalletTokenPnl {
-  id: String!
-  tokenAddress: String!
-  pnl: Pnl!
-
-  """The average buy price for the token"""
-  averageEntry: Float
-
-  """How much your investment has gained or lost in a percentage"""
-  percentChange: Float
-}
+scalar Void
 
 """Metadata for a washtrade label."""
 type WashtradeLabelForEvent {
@@ -9506,18 +9705,6 @@ type WindowedDetailedNftCurrencyStats {
 
   """The closing price for the time frame."""
   close: DetailedNftStatsStringMetrics
-
-  """The lowest listing price for the time frame."""
-  listingFloor: DetailedNftStatsStringMetrics
-
-  """The opening floor listing price for the time frame."""
-  openListingFloor: DetailedNftStatsStringMetrics
-
-  """The closing floor listing price for the time frame."""
-  closeListingFloor: DetailedNftStatsStringMetrics
-
-  """The highest listing price in the time frame."""
-  highestListingFloor: DetailedNftStatsStringMetrics
 }
 
 """Numerical stats for an NFT collection over a time frame."""
@@ -9617,9 +9804,9 @@ type WindowedDetailedPairStats {
   statsNonCurrency: WindowedDetailedNonCurrencyPairStats!
 }
 
-"""Detailed token stats over a time frame."""
+"""Detailed stats over a window."""
 type WindowedDetailedStats {
-  """The window size used to request detailed token stats."""
+  """The window size used to request detailed stats."""
   windowSize: DetailedStatsWindowSize!
 
   """The unix timestamp for the start of the window."""
@@ -9633,30 +9820,30 @@ type WindowedDetailedStats {
   """
   buckets: [DetailedStatsBucketTimestamp]!
 
-  """The number of transactions over the time frame."""
+  """The transaction count over the window."""
   transactions: DetailedStatsNumberMetrics!
 
-  """The trade volume in USD over the time frame."""
+  """The volume over the window."""
   volume: DetailedStatsStringMetrics!
 
-  """The number of buys over the time frame."""
+  """The number of buys over the window."""
   buys: DetailedStatsNumberMetrics!
 
-  """The number of sells over the time frame."""
+  """The number of sells over the window."""
   sells: DetailedStatsNumberMetrics!
 
-  """The number of unique buyers over the time frame."""
+  """The number of unique buyers over the window."""
   buyers: DetailedStatsNumberMetrics!
 
-  """The number of unique sellers over the time frame."""
+  """The number of unique sellers over the window."""
   sellers: DetailedStatsNumberMetrics!
 
-  """The number of unique traders over the time frame."""
+  """The number of unique traders over the window."""
   traders: DetailedStatsNumberMetrics
 
-  """The buy volume in USD over the time frame."""
+  """The buy volume over the window."""
   buyVolume: DetailedStatsStringMetrics
 
-  """The sell volume in USD over the time frame."""
+  """The sell volume over the window."""
   sellVolume: DetailedStatsStringMetrics
 }

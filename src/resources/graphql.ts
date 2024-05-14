@@ -13,16 +13,9 @@ export type Scalars = {
   Int: { input: number; output: number; }
   Float: { input: number; output: number; }
   JSON: { input: any; output: any; }
+  Void: { input: any; output: any; }
   join__FieldSet: { input: any; output: any; }
   link__Import: { input: any; output: any; }
-};
-
-export type AddEventsInput = {
-  address: Scalars['String']['input'];
-  events: Array<InputMaybe<EventInputUnion>>;
-  id: Scalars['String']['input'];
-  networkId: Scalars['Int']['input'];
-  quoteToken?: InputMaybe<QuoteToken>;
 };
 
 /** Response returned by `onEventsCreated`. */
@@ -38,13 +31,6 @@ export type AddEventsOutput = {
   networkId: Scalars['Int']['output'];
   /** The token of interest within the pair. Can be `token0` or `token1`. */
   quoteToken?: Maybe<QuoteToken>;
-};
-
-export type AddNftEventsInput = {
-  address: Scalars['String']['input'];
-  events: Array<NftEventInput>;
-  id: Scalars['String']['input'];
-  networkId: Scalars['Int']['input'];
 };
 
 /** Response returned by `onNftEventsCreated`. */
@@ -88,41 +74,56 @@ export type Balance = {
   walletId: Scalars['String']['output'];
 };
 
-/** Optional way to provide current balance to the PnL calculator */
-export type BalanceInput = {
-  balance: Scalars['String']['input'];
-  tokenId: Scalars['String']['input'];
-  walletId: Scalars['String']['input'];
-};
-
 export type BalancesInput = {
+  /** A cursor for use in pagination. */
   cursor?: InputMaybe<Scalars['String']['input']>;
   /** Optional token specifically request the balance for */
   filterToken?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the wallet (`walletAddress:networkId`). */
   walletId: Scalars['String']['input'];
 };
 
 export type BalancesResponse = {
   __typename?: 'BalancesResponse';
+  /** A cursor for use in pagination. */
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The list of token balances that a wallet has. */
   items: Array<Balance>;
 };
 
 /** Bar chart data to track price changes over time. */
 export type BarsResponse = {
   __typename?: 'BarsResponse';
+  /** The buy volume in USD */
+  buyVolume: Array<Maybe<Scalars['String']['output']>>;
+  /** The number of unique buyers */
+  buyers: Array<Maybe<Scalars['Int']['output']>>;
+  /** The number of buys */
+  buys: Array<Maybe<Scalars['Int']['output']>>;
   /** The closing price. */
   c: Array<Maybe<Scalars['Float']['output']>>;
   /** The high price. */
   h: Array<Maybe<Scalars['Float']['output']>>;
   /** The low price. */
   l: Array<Maybe<Scalars['Float']['output']>>;
+  /** Liqudity in USD */
+  liquidity: Array<Maybe<Scalars['String']['output']>>;
   /** The opening price. */
   o: Array<Maybe<Scalars['Float']['output']>>;
-  /** The status code for the bar. `200` responses are `ok`. */
+  /** The status code for the batch: `ok` for successful data retrieval and `no_data` for empty responses signaling the end of server data. */
   s: Scalars['String']['output'];
+  /** The sell volume in USD */
+  sellVolume: Array<Maybe<Scalars['String']['output']>>;
+  /** The number of unique sellers */
+  sellers: Array<Maybe<Scalars['Int']['output']>>;
+  /** The number of sells */
+  sells: Array<Maybe<Scalars['Int']['output']>>;
   /** The timestamp for the bar. */
   t: Array<Scalars['Int']['output']>;
+  /** The number of traders */
+  traders: Array<Maybe<Scalars['Int']['output']>>;
+  /** The number of transactions */
+  transactions: Array<Maybe<Scalars['Int']['output']>>;
   /** The volume. */
   v: Array<Maybe<Scalars['Int']['output']>>;
   /** The volume with higher precision. */
@@ -156,40 +157,6 @@ export type BurnEventData = {
   tickUpper?: Maybe<Scalars['String']['output']>;
   /** The type of token event, `Burn`. */
   type: EventType;
-};
-
-export type BurnEventDataInput = {
-  amount0?: InputMaybe<Scalars['String']['input']>;
-  amount0Shifted?: InputMaybe<Scalars['String']['input']>;
-  amount1?: InputMaybe<Scalars['String']['input']>;
-  amount1Shifted?: InputMaybe<Scalars['String']['input']>;
-  tickLower?: InputMaybe<Scalars['String']['input']>;
-  tickUpper?: InputMaybe<Scalars['String']['input']>;
-  type: EventType;
-};
-
-export type BurnEventInput = {
-  address: Scalars['String']['input'];
-  baseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  blockHash: Scalars['String']['input'];
-  blockNumber: Scalars['Int']['input'];
-  data?: InputMaybe<BurnEventDataInput>;
-  eventDisplayType?: InputMaybe<EventDisplayType>;
-  id: Scalars['String']['input'];
-  liquidityToken?: InputMaybe<Scalars['String']['input']>;
-  logIndex: Scalars['Int']['input'];
-  maker?: InputMaybe<Scalars['String']['input']>;
-  networkId: Scalars['Int']['input'];
-  quoteToken?: InputMaybe<QuoteToken>;
-  timestamp: Scalars['Int']['input'];
-  token0PoolValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token0SwapValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token0ValueBase?: InputMaybe<Scalars['String']['input']>;
-  token1PoolValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token1SwapValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token1ValueBase?: InputMaybe<Scalars['String']['input']>;
-  transactionHash: Scalars['String']['input'];
-  transactionIndex: Scalars['Int']['input'];
 };
 
 /** Input options for the chart image. */
@@ -481,6 +448,11 @@ export type CreateWebhooksOutput = {
   tokenPairEventWebhooks: Array<Maybe<Webhook>>;
 };
 
+export enum CreationContext {
+  Telegram = 'TELEGRAM',
+  Web = 'WEB'
+}
+
 /** Price data for a bar at a specific resolution. */
 export type CurrencyBarData = {
   __typename?: 'CurrencyBarData';
@@ -490,12 +462,6 @@ export type CurrencyBarData = {
   token: IndividualBarData;
   /** Bar chart data in USD. */
   usd: IndividualBarData;
-};
-
-export type CurrencyBarInput = {
-  t: Scalars['Int']['input'];
-  token: IndividualBarInput;
-  usd: IndividualBarInput;
 };
 
 export type DecodedCallWebhookCondition = {
@@ -587,31 +553,6 @@ export enum DetailedNftStatsDuration {
   Week1 = 'week1'
 }
 
-export type DetailedNftStatsInput = {
-  /**
-   * The number of aggregated values to receive.
-   * Note: Each duration has predetermined bucket sizes.
-   * The first n-1 buckets are historical. The last bucket is a snapshot of current data.
-   * duration `day1`: 6 buckets (4 hours each) plus 1 partial bucket
-   * duration `hour12`: 12 buckets (1 hour each) plus 1 partial bucket
-   * duration `hour4`: 8 buckets (30 min each) plus 1 partial bucket
-   * duration `hour1`: 12 buckets (5 min each) plus 1 partial bucket
-   * duration `min5`: 5 buckets (1 min each) plus 1 partial bucket
-   * For example, requesting 11 buckets for a `min5` duration will return the last 10 minutes worth of data plus a snapshot for the current minute.
-   */
-  bucketCount?: InputMaybe<Scalars['Int']['input']>;
-  /** The contract address of the NFT collection. */
-  collectionAddress: Scalars['String']['input'];
-  /** The list of durations to get detailed pair stats for. */
-  durations?: InputMaybe<Array<InputMaybe<DetailedNftStatsDuration>>>;
-  /** The marketplace address to filter by. Can be used to get marketplace-specific metrics, otherwise uses all. */
-  grouping?: InputMaybe<Scalars['String']['input']>;
-  /** The network ID the NFT collection is deployed on. */
-  networkId: Scalars['Int']['input'];
-  /** The unix timestamp for the stats. Defaults to current. */
-  timestamp?: InputMaybe<Scalars['Int']['input']>;
-};
-
 /** Number metrics for detailed NFT stats. */
 export type DetailedNftStatsNumberMetrics = {
   __typename?: 'DetailedNftStatsNumberMetrics';
@@ -652,6 +593,8 @@ export type DetailedPairStats = {
   pairAddress: Scalars['String']['output'];
   /** The timestamp specified as input to the query */
   queryTimestamp?: Maybe<Scalars['Int']['output']>;
+  /** The type of statistics returned. Can be `FILTERED` or `UNFILTERED` */
+  statsType: TokenPairStatisticsType;
   /** The breakdown of stats over a 24 hour window. */
   stats_day1?: Maybe<WindowedDetailedPairStats>;
   /** The breakdown of stats over a 30 day window. */
@@ -719,20 +662,20 @@ export type DetailedPairStatsStringMetrics = {
   previousValue?: Maybe<Scalars['String']['output']>;
 };
 
-/** Detailed stats for a token. */
+/** Detailed stats for a token within a pair. */
 export type DetailedStats = {
   __typename?: 'DetailedStats';
   /** Number of aggregated buckets specified in input */
   bucketCount?: Maybe<Scalars['Int']['output']>;
-  /** The ID of the pair (`address`:`networkId`). */
+  /** The ID of the pair (`pairAddress:networkId`). */
   pairId: Scalars['String']['output'];
   /** The timestamp specified as input to the query */
   queryTimestamp?: Maybe<Scalars['Int']['output']>;
-  /** The type of statistics used. Can be `Filtered` or `Unfiltered`. */
+  /** The type of statistics returned. Can be `FILTERED` or `UNFILTERED` */
   statsType: TokenPairStatisticsType;
   /** The breakdown of stats over a 24 hour window. */
   stats_day1?: Maybe<WindowedDetailedStats>;
-  /** The breakdown of stats over a 1 hour window. */
+  /** The breakdown of stats over an hour window. */
   stats_hour1?: Maybe<WindowedDetailedStats>;
   /** The breakdown of stats over a 4 hour window. */
   stats_hour4?: Maybe<WindowedDetailedStats>;
@@ -740,46 +683,46 @@ export type DetailedStats = {
   stats_hour12?: Maybe<WindowedDetailedStats>;
   /** The breakdown of stats over a 5 minute window. */
   stats_min5?: Maybe<WindowedDetailedStats>;
-  /** The token of interest within the pair. Can be `token0` or `token1`. */
+  /** The token of interest used to calculate token-specific stats. */
   tokenOfInterest: TokenOfInterest;
 };
 
 /** The start/end timestamp for a given bucket within the window. */
 export type DetailedStatsBucketTimestamp = {
   __typename?: 'DetailedStatsBucketTimestamp';
-  /** The unix timestamp for the end of the window. */
+  /** The unix timestamp for the start of the bucket. */
   end: Scalars['Int']['output'];
-  /** The unix timestamp for the start of the window. */
+  /** The unix timestamp for the start of the bucket. */
   start: Scalars['Int']['output'];
 };
 
-/** Number metrics for detailed token stats. */
+/** Number metrics for detailed stats. */
 export type DetailedStatsNumberMetrics = {
   __typename?: 'DetailedStatsNumberMetrics';
   /** The list of aggregated values for each bucket. */
   buckets: Array<Maybe<Scalars['Int']['output']>>;
-  /** The percent change between the `currentValue` and `previousValue`. */
+  /** The percent change between the `currentValue` and `previousValue`. Decimal format. */
   change: Scalars['Float']['output'];
-  /** The total value for the most recent duration. */
+  /** The total value for the most recent window. */
   currentValue: Scalars['Int']['output'];
-  /** The total value for the previous duration. */
+  /** The total value for the previous window. */
   previousValue: Scalars['Int']['output'];
 };
 
-/** String metrics for detailed token stats. */
+/** String metrics for detailed stats. */
 export type DetailedStatsStringMetrics = {
   __typename?: 'DetailedStatsStringMetrics';
   /** The list of aggregated values for each bucket. */
   buckets: Array<Maybe<Scalars['String']['output']>>;
-  /** The percent change between the `currentValue` and `previousValue`. */
+  /** The percent change between the `currentValue` and `previousValue`. Decimal format. */
   change: Scalars['Float']['output'];
-  /** The total value for the most recent duration. */
+  /** The total value for the most recent window. */
   currentValue: Scalars['String']['output'];
-  /** The total value for the previous duration. */
+  /** The total value for the previous window. */
   previousValue: Scalars['String']['output'];
 };
 
-/** Window sizes for detailed token stats. */
+/** The window size used to request detailed stats. */
 export enum DetailedStatsWindowSize {
   Day1 = 'day1',
   Hour1 = 'hour1',
@@ -830,6 +773,14 @@ export type EnhancedToken = {
   circulatingSupply?: Maybe<Scalars['String']['output']>;
   /** The token ID on CoinMarketCap. */
   cmcId?: Maybe<Scalars['Int']['output']>;
+  /** The block height the token was created at. */
+  createBlockNumber?: Maybe<Scalars['Int']['output']>;
+  /** The transaction hash of the token's creation. */
+  createTransactionHash?: Maybe<Scalars['String']['output']>;
+  /** The unix timestamp for the creation of the token. */
+  createdAt?: Maybe<Scalars['Int']['output']>;
+  /** The token creator's wallet address. */
+  creatorAddress?: Maybe<Scalars['String']['output']>;
   /** The precision to which the token can be divided. For example, the smallest unit for USDC is 0.000001 (6 decimals). */
   decimals: Scalars['Int']['output'];
   /** A list of exchanges where the token has been traded. */
@@ -894,9 +845,9 @@ export type Event = {
   eventDisplayType?: Maybe<EventDisplayType>;
   /** The type of transaction event. Can be `Burn`, `Mint`, `Swap`, `Sync`, `Collect`, or `CollectProtocol`. */
   eventType: EventType;
-  /** The ID of the event (`address`:`networkId`). For example, `0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2:1`. */
+  /** The ID of the event (`address:networkId`). For example, `0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2:1`. */
   id: Scalars['String']['output'];
-  /** Labels attributed to the Event */
+  /** Labels attributed to the event. */
   labels?: Maybe<LabelsForEvent>;
   /** The contract address of the token with higher liquidity in the token's top pair. */
   liquidityToken?: Maybe<Scalars['String']['output']>;
@@ -938,7 +889,7 @@ export type EventConnection = {
 };
 
 /** Event-specific data for a token transaction. */
-export type EventData = BurnEventData | MintEventData | SwapEventData;
+export type EventData = BurnEventData | MintEventData | PoolBalanceChangedEventData | SwapEventData;
 
 /** A more specific breakdown of `EventType`. Splits `Swap` into `Buy` and `Sell`. */
 export enum EventDisplayType {
@@ -951,18 +902,12 @@ export enum EventDisplayType {
   Sync = 'Sync'
 }
 
-export type EventInputUnion = {
-  burnEventInput?: InputMaybe<BurnEventInput>;
-  mintEventInput?: InputMaybe<MintEventInput>;
-  swapEventInput?: InputMaybe<SwapEventInput>;
-};
-
 /** Metadata for an event label. */
 export type EventLabel = {
   __typename?: 'EventLabel';
   /** Specific data for the event label type. */
   data: EventLabelData;
-  /** The ID of the pair (`address`:`networkId`). */
+  /** The ID of the pair (`address:networkId`). */
   id: Scalars['String']['output'];
   /** The event label type. */
   label: EventLabelType;
@@ -1010,6 +955,7 @@ export enum EventType {
   Collect = 'Collect',
   CollectProtocol = 'CollectProtocol',
   Mint = 'Mint',
+  PoolBalanceChanged = 'PoolBalanceChanged',
   Swap = 'Swap',
   Sync = 'Sync'
 }
@@ -1188,6 +1134,12 @@ export type ExplorerTokenData = {
   tokenType?: Maybe<Scalars['String']['output']>;
 };
 
+export type Feature = {
+  __typename?: 'Feature';
+  enabled: Scalars['Boolean']['output'];
+  name: Scalars['String']['output'];
+};
+
 /** Filter for fillsource based NFT stats. */
 export type FillsourceStatsFilter = {
   /** The percent change between the `current` and `previous`. */
@@ -1219,7 +1171,7 @@ export type FilterExchange = {
   tradeUrl?: Maybe<Scalars['String']['output']>;
 };
 
-/** Metadata for a front-run label */
+/** Metadata for a front-run label. */
 export type FrontRunLabelData = {
   __typename?: 'FrontRunLabelData';
   /** The index of the front-run label. Can be 0 or 1. */
@@ -1229,6 +1181,32 @@ export type FrontRunLabelData = {
   /** The amount of `token1` drained in the attack. */
   token1DrainedAmount: Scalars['String']['output'];
 };
+
+export type GasEstimate = {
+  __typename?: 'GasEstimate';
+  approveTxHash?: Maybe<Scalars['String']['output']>;
+  error?: Maybe<Scalars['String']['output']>;
+  gasLimitEstimate?: Maybe<Scalars['String']['output']>;
+};
+
+export type GasFee = {
+  __typename?: 'GasFee';
+  confirmationTime: Scalars['Float']['output'];
+  gasPrice: Scalars['String']['output'];
+};
+
+export type GasFees = {
+  __typename?: 'GasFees';
+  high?: Maybe<GasFee>;
+  low?: Maybe<GasFee>;
+  medium?: Maybe<GasFee>;
+};
+
+export enum GasPrice {
+  High = 'HIGH',
+  Low = 'LOW',
+  Medium = 'MEDIUM'
+}
 
 /** Input type of `getDetailedPairsStats`. */
 export type GetDetailedPairsStatsInput = {
@@ -1240,12 +1218,25 @@ export type GetDetailedPairsStatsInput = {
   networkId: Scalars['Int']['input'];
   /** The contract address of the pair. */
   pairAddress: Scalars['String']['input'];
-  /** docs: hide */
+  /** The type of statistics returned. Can be `FILTERED` or `UNFILTERED` */
   statsType?: InputMaybe<TokenPairStatisticsType>;
   /** The unix timestamp for the stats. Defaults to current. */
   timestamp?: InputMaybe<Scalars['Int']['input']>;
   /** The token of interest used to calculate token-specific stats for the pair. Can be `token0` or `token1`. */
   tokenOfInterest?: InputMaybe<TokenOfInterest>;
+};
+
+export type GetGasEstimateInput = {
+  customGas?: InputMaybe<Scalars['String']['input']>;
+  exchangeAddress?: InputMaybe<Scalars['String']['input']>;
+  gasPrice?: InputMaybe<GasPrice>;
+  inputTokenAddress: Scalars['String']['input'];
+  inputTokenAmount: Scalars['String']['input'];
+  networkId: Scalars['Int']['input'];
+  outputTokenAddress: Scalars['String']['input'];
+  poolAddress?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['Int']['input']>;
+  walletId?: InputMaybe<Scalars['Int']['input']>;
 };
 
 /** Response returned by `getNftPoolCollectionsByExchange`. */
@@ -1281,6 +1272,23 @@ export type GetPriceInput = {
   timestamp?: InputMaybe<Scalars['Int']['input']>;
 };
 
+export type GetQuoteInput = {
+  customGas?: InputMaybe<Scalars['String']['input']>;
+  exchangeAddress?: InputMaybe<Scalars['String']['input']>;
+  inputTokenAddress: Scalars['String']['input'];
+  inputTokenAmount: Scalars['String']['input'];
+  networkId: Scalars['Int']['input'];
+  outputTokenAddress: Scalars['String']['input'];
+  poolAddress?: InputMaybe<Scalars['String']['input']>;
+  userId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type GetSimulateTokenContractResultsConnection = {
+  __typename?: 'GetSimulateTokenContractResultsConnection';
+  cursor?: Maybe<Scalars['String']['output']>;
+  results: Array<SimulateTokenContractResult>;
+};
+
 /** Input type of `getTokensInfo`. */
 export type GetTokensInfoInput = {
   /** The contract address of the token. */
@@ -1302,15 +1310,21 @@ export enum GraphQlNftPoolVariant {
 }
 
 export type HoldersInput = {
+  /** A cursor for use in pagination. */
   cursor?: InputMaybe<Scalars['String']['input']>;
+  /** The ID of the token (`tokenAddress:networkId`). */
   tokenId: Scalars['String']['input'];
 };
 
 export type HoldersResponse = {
   __typename?: 'HoldersResponse';
+  /** the unique count of holders for the token. */
   count: Scalars['Int']['output'];
+  /** A cursor for use in pagination. */
   cursor?: Maybe<Scalars['String']['output']>;
+  /** The list wallets for a token. */
   items: Array<Balance>;
+  /** Status of holder. Disabled if on unsupported network or there is insufficient holder data. */
   status: HoldersStatus;
 };
 
@@ -1322,33 +1336,40 @@ export enum HoldersStatus {
 /** Bar chart data. */
 export type IndividualBarData = {
   __typename?: 'IndividualBarData';
+  /** The buy volume in USD */
+  buyVolume: Scalars['String']['output'];
+  /** The number of unique buyers */
+  buyers: Scalars['Int']['output'];
+  /** The number of buys */
+  buys: Scalars['Int']['output'];
   /** The closing price. */
   c: Scalars['Float']['output'];
   /** The high price. */
   h: Scalars['Float']['output'];
   /** The low price. */
   l: Scalars['Float']['output'];
+  /** Liqudity in USD */
+  liquidity: Scalars['String']['output'];
   /** The opening price. */
   o: Scalars['Float']['output'];
+  /** The sell volume in USD */
+  sellVolume: Scalars['String']['output'];
+  /** The number of unique sellers */
+  sellers: Scalars['Int']['output'];
+  /** The number of sells */
+  sells: Scalars['Int']['output'];
   /** The timestamp for the bar. */
   t: Scalars['Int']['output'];
+  /** The number of traders */
+  traders: Scalars['Int']['output'];
+  /** The number of transactions */
+  transactions: Scalars['Int']['output'];
   /** The volume. */
   v?: Maybe<Scalars['Int']['output']>;
   /** The volume with higher precision. */
   volume: Scalars['String']['output'];
   /** The volume in the network's base token */
   volumeNativeToken: Scalars['String']['output'];
-};
-
-export type IndividualBarInput = {
-  c: Scalars['Float']['input'];
-  h: Scalars['Float']['input'];
-  l: Scalars['Float']['input'];
-  o: Scalars['Float']['input'];
-  t: Scalars['Int']['input'];
-  v?: InputMaybe<Scalars['Int']['input']>;
-  volume: Scalars['String']['input'];
-  volumeNativeToken?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IntEqualsCondition = {
@@ -1374,7 +1395,7 @@ export type LatestPair = {
   address: Scalars['String']['output'];
   /** The contract address for the exchange. */
   exchangeHash: Scalars['String']['output'];
-  /** The ID of the pair (`address`:`networkId`). */
+  /** The ID of the pair (`address:networkId`). */
   id: Scalars['String']['output'];
   /** The listing price, or first known price for the pair, in USD. */
   initialPriceUsd: Scalars['String']['output'];
@@ -1422,7 +1443,7 @@ export type LatestPairToken = {
   currentPoolAmount: Scalars['String']['output'];
   /** The precision to which the token can be divided. For example, the smallest unit for USDC is 0.000001 (6 decimals). */
   decimals: Scalars['Int']['output'];
-  /** The ID of the token (`address`:`networkId`). */
+  /** The ID of the token (`address:networkId`). */
   id: Scalars['String']['output'];
   /** The initial amount of `token` added to the pair. */
   initialPoolAmount: Scalars['String']['output'];
@@ -1430,7 +1451,7 @@ export type LatestPairToken = {
   name: Scalars['String']['output'];
   /** The network ID the token is deployed on. */
   networkId: Scalars['Int']['output'];
-  /** The ID of the pair (`pairAddress`:`networkId`). */
+  /** The ID of the pair (`pairAddress:networkId`). */
   pairId: Scalars['String']['output'];
   /** The percent change `token` remaining in the pair since the initial add. */
   poolVariation: Scalars['Float']['output'];
@@ -1438,11 +1459,83 @@ export type LatestPairToken = {
   symbol: Scalars['String']['output'];
 };
 
+/** Metadata for a newly created token. */
+export type LatestToken = {
+  __typename?: 'LatestToken';
+  /** The unique hash for the token contract's creation block. */
+  blockHash: Scalars['String']['output'];
+  /** The block number of the token contract's creation. */
+  blockNumber: Scalars['Int']['output'];
+  /** The address of the token creator. */
+  creatorAddress: Scalars['String']['output'];
+  /** The token creator's network token balance. */
+  creatorBalance: Scalars['String']['output'];
+  /** The token's number of decimals. */
+  decimals: Scalars['Int']['output'];
+  /** The id of the new token. (tokenAddress:networkId) */
+  id: Scalars['String']['output'];
+  /** The network ID the token is deployed on. */
+  networkId: Scalars['Int']['output'];
+  /** Simulated token contract results, if available. */
+  simulationResults: Array<LatestTokenSimResults>;
+  /** The unix timestamp for the creation of the token. */
+  timeCreated: Scalars['Int']['output'];
+  /** The contract address of the new token. */
+  tokenAddress: Scalars['String']['output'];
+  /** The name of the token. */
+  tokenName: Scalars['String']['output'];
+  /** The symbol of the token. */
+  tokenSymbol: Scalars['String']['output'];
+  /** The total supply of the token. */
+  totalSupply: Scalars['String']['output'];
+  /** The index of the trace within the token contract's creation transaction. */
+  traceIndex: Scalars['Int']['output'];
+  /** The unique hash for the token contract's creation transaction. */
+  transactionHash: Scalars['String']['output'];
+  /** The index of the transaction within the block. */
+  transactionIndex: Scalars['Int']['output'];
+};
+
+/** Response returned by `getLatestTokens`. */
+export type LatestTokenConnection = {
+  __typename?: 'LatestTokenConnection';
+  /** A list of newly created tokens. */
+  items: Array<LatestToken>;
+};
+
+export type LatestTokenSimResults = {
+  __typename?: 'LatestTokenSimResults';
+  /** Gas used for a buy transaction during simulation. */
+  buyGasUsed?: Maybe<Scalars['String']['output']>;
+  /** Whether or not a token was able to be succesfully bought during simulation. */
+  buySuccess?: Maybe<Scalars['Boolean']['output']>;
+  /** Tax paid for a buy transaction during simulation. */
+  buyTax?: Maybe<Scalars['String']['output']>;
+  /** Whether or not the contract ownership was able to be renounced during simulation. */
+  canRenounceOwnership?: Maybe<Scalars['Boolean']['output']>;
+  /** Whether or not the contract ownership was able to be transferred during simulation. */
+  canTransferOwnership?: Maybe<Scalars['Boolean']['output']>;
+  /** Whether or not the contract ownership is already renounced during simulation (owner is 0x0). */
+  isOwnerRenounced?: Maybe<Scalars['Boolean']['output']>;
+  /** The maximum token amount an address can buy during simulation. */
+  maxBuyAmount?: Maybe<Scalars['String']['output']>;
+  /** The maximum token amount an address can sell during simulation. */
+  maxSellAmount?: Maybe<Scalars['String']['output']>;
+  /** If a call was found to trigger liquidity & trading, this is the call name. */
+  openTradingCall?: Maybe<Scalars['String']['output']>;
+  /** Gas used for a sell transaction during simulation. */
+  sellGasUsed?: Maybe<Scalars['String']['output']>;
+  /** Whether or not a token was able to be succesfully sold during simulation. */
+  sellSuccess?: Maybe<Scalars['Boolean']['output']>;
+  /** Tax paid for a sell transaction during simulation. */
+  sellTax?: Maybe<Scalars['String']['output']>;
+};
+
 /** Response returned by `listPairsWithMetadataForToken`. */
 export type ListPairsForTokenResponse = {
   __typename?: 'ListPairsForTokenResponse';
   /** A list of pairs containing a given token. */
-  results: Array<Maybe<ListPairsForTokenValue>>;
+  results: Array<ListPairsForTokenValue>;
 };
 
 /** Metadata for a pair containing a given token. */
@@ -1496,40 +1589,6 @@ export type MintEventData = {
   type: EventType;
 };
 
-export type MintEventDataInput = {
-  amount0?: InputMaybe<Scalars['String']['input']>;
-  amount0Shifted?: InputMaybe<Scalars['String']['input']>;
-  amount1?: InputMaybe<Scalars['String']['input']>;
-  amount1Shifted?: InputMaybe<Scalars['String']['input']>;
-  tickLower?: InputMaybe<Scalars['String']['input']>;
-  tickUpper?: InputMaybe<Scalars['String']['input']>;
-  type: EventType;
-};
-
-export type MintEventInput = {
-  address: Scalars['String']['input'];
-  baseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  blockHash: Scalars['String']['input'];
-  blockNumber: Scalars['Int']['input'];
-  data?: InputMaybe<MintEventDataInput>;
-  eventDisplayType?: InputMaybe<EventDisplayType>;
-  id: Scalars['String']['input'];
-  liquidityToken?: InputMaybe<Scalars['String']['input']>;
-  logIndex: Scalars['Int']['input'];
-  maker?: InputMaybe<Scalars['String']['input']>;
-  networkId: Scalars['Int']['input'];
-  quoteToken?: InputMaybe<QuoteToken>;
-  timestamp: Scalars['Int']['input'];
-  token0PoolValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token0SwapValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token0ValueBase?: InputMaybe<Scalars['String']['input']>;
-  token1PoolValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token1SwapValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token1ValueBase?: InputMaybe<Scalars['String']['input']>;
-  transactionHash: Scalars['String']['input'];
-  transactionIndex: Scalars['Int']['input'];
-};
-
 export type Mutation = {
   __typename?: 'Mutation';
   createWebhooks: CreateWebhooksOutput;
@@ -1553,6 +1612,7 @@ export type Network = {
   id: Scalars['Int']['output'];
   /** The name of the network. For example, `arbitrum`. */
   name: Scalars['String']['output'];
+  networkShortName?: Maybe<Scalars['String']['output']>;
 };
 
 /** Event data for creating a new NFT pool. */
@@ -1621,6 +1681,8 @@ export type NewPoolEventDataV2 = {
   nbtRatio: Scalars['String']['output'];
   /** The network ID the NFT collection is deployed on. */
   networkId: Scalars['Int']['output'];
+  /** *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds. */
+  nftAssets?: Maybe<Array<Maybe<NftAsset>>>;
   /** The list of NFT token IDs initially deposited. */
   nftTokenIds: Array<Scalars['String']['output']>;
   /** The amount of each NFT token initially deposited. */
@@ -1658,7 +1720,7 @@ export type NftAsset = {
   attributes?: Maybe<Array<NftAssetAttribute>>;
   /** The description of the NFT asset. */
   description?: Maybe<Scalars['String']['output']>;
-  /** The ID of the NFT asset (`address`:`tokenId`). */
+  /** The ID of the NFT asset (`address`:`networkId`). */
   id: Scalars['String']['output'];
   /** The NFT asset media. */
   media?: Maybe<NftAssetMedia>;
@@ -1712,6 +1774,27 @@ export enum NftAssetAttributeType {
   String = 'String'
 }
 
+export type NftAssetError = {
+  __typename?: 'NftAssetError';
+  /** The contract address of the NFT collection. */
+  address: Scalars['String']['output'];
+  /** The ID of the NFT asset (`address`:`networkId`). */
+  id: Scalars['String']['output'];
+  /** The message of the asset error. */
+  message: Scalars['String']['output'];
+  /** The network ID the NFT collection is deployed on. */
+  networkId: Scalars['Int']['output'];
+  /** The status of the asset error. */
+  status: NftAssetErrorStatus;
+  /** The token ID of the NFT asset. */
+  tokenId: Scalars['String']['output'];
+};
+
+export enum NftAssetErrorStatus {
+  IndexingInProgress = 'INDEXING_IN_PROGRESS',
+  NotFound = 'NOT_FOUND'
+}
+
 /** NFT asset media. */
 export type NftAssetMedia = {
   __typename?: 'NftAssetMedia';
@@ -1725,22 +1808,13 @@ export type NftAssetMedia = {
   thumbSm: Scalars['String']['output'];
 };
 
-export type NftAssetMediaInput = {
-  /** The URL for a full size image of the NFT asset. */
-  image?: InputMaybe<Scalars['String']['input']>;
-  /** Whether the NFT asset media has finished processing. */
-  processed?: InputMaybe<Scalars['Boolean']['input']>;
-  /** The URL for large generated thumbnail of the NFT asset. */
-  thumbLg?: InputMaybe<Scalars['String']['input']>;
-  /** The URL for small generated thumbnail of the NFT asset. */
-  thumbSm?: InputMaybe<Scalars['String']['input']>;
-};
-
 /** Response returned by `getNftAssets`. */
 export type NftAssetsConnection = {
   __typename?: 'NftAssetsConnection';
   /** A cursor for use in pagination. */
   cursor?: Maybe<Scalars['String']['output']>;
+  /** A list of errors encountered while fetching the NFT assets. Errors correspond to null values in `items` by array index. */
+  itemErrors?: Maybe<Array<Maybe<NftAssetError>>>;
   /** A list of NFT assets. */
   items?: Maybe<Array<Maybe<NftAsset>>>;
 };
@@ -1752,20 +1826,12 @@ export type NftCollectionCurrencyStats = {
   average?: Maybe<NftStatsStringMetrics>;
   /** The closing price for the time frame. */
   close?: Maybe<NftStatsStringMetrics>;
-  /** The closing floor listing price for the time frame. */
-  closeListingFloor?: Maybe<NftStatsStringMetrics>;
-  /** The highest listing price in the time frame. */
-  highestListingFloor?: Maybe<NftStatsStringMetrics>;
   /** The highest sale price in the time frame. */
   highestSale?: Maybe<NftStatsStringMetrics>;
-  /** The lowest listing price for the time frame. */
-  listingFloor?: Maybe<NftStatsStringMetrics>;
   /** The lowest sale price in the time frame. */
   lowestSale?: Maybe<NftStatsStringMetrics>;
   /** The opening price for the time frame. */
   open?: Maybe<NftStatsStringMetrics>;
-  /** The opening floor listing price for the time frame. */
-  openListingFloor?: Maybe<NftStatsStringMetrics>;
   /** The volume over the time frame. */
   volume?: Maybe<NftStatsStringMetrics>;
   /** The volume partitioned by fillsource over the time frame */
@@ -1911,10 +1977,6 @@ export type NftCollectionPriceStats = {
   floor: Scalars['String']['output'];
   /** The change in floor price between the previous and current time frame. */
   floorChange?: Maybe<Scalars['Float']['output']>;
-  /** The lowest listing price. */
-  listingFloor?: Maybe<Scalars['String']['output']>;
-  /** The change in floor listing price between the previous and current time frame. */
-  listingFloorChange?: Maybe<Scalars['Float']['output']>;
   /** The trade volume. */
   volume: Scalars['String']['output'];
   /** The volume partitioned by fillsource over the time frame */
@@ -1941,27 +2003,15 @@ export enum NftCollectionRankingAttribute {
   Stats1hNetworkBaseTokenAveragePrevious = 'stats1hNetworkBaseTokenAveragePrevious',
   Stats1hNetworkBaseTokenCloseChange = 'stats1hNetworkBaseTokenCloseChange',
   Stats1hNetworkBaseTokenCloseCurrent = 'stats1hNetworkBaseTokenCloseCurrent',
-  Stats1hNetworkBaseTokenCloseListingFloorChange = 'stats1hNetworkBaseTokenCloseListingFloorChange',
-  Stats1hNetworkBaseTokenCloseListingFloorCurrent = 'stats1hNetworkBaseTokenCloseListingFloorCurrent',
-  Stats1hNetworkBaseTokenCloseListingFloorPrevious = 'stats1hNetworkBaseTokenCloseListingFloorPrevious',
   Stats1hNetworkBaseTokenClosePrevious = 'stats1hNetworkBaseTokenClosePrevious',
-  Stats1hNetworkBaseTokenHighestListingFloorChange = 'stats1hNetworkBaseTokenHighestListingFloorChange',
-  Stats1hNetworkBaseTokenHighestListingFloorCurrent = 'stats1hNetworkBaseTokenHighestListingFloorCurrent',
-  Stats1hNetworkBaseTokenHighestListingFloorPrevious = 'stats1hNetworkBaseTokenHighestListingFloorPrevious',
   Stats1hNetworkBaseTokenHighestSaleChange = 'stats1hNetworkBaseTokenHighestSaleChange',
   Stats1hNetworkBaseTokenHighestSaleCurrent = 'stats1hNetworkBaseTokenHighestSaleCurrent',
   Stats1hNetworkBaseTokenHighestSalePrevious = 'stats1hNetworkBaseTokenHighestSalePrevious',
-  Stats1hNetworkBaseTokenListingFloorChange = 'stats1hNetworkBaseTokenListingFloorChange',
-  Stats1hNetworkBaseTokenListingFloorCurrent = 'stats1hNetworkBaseTokenListingFloorCurrent',
-  Stats1hNetworkBaseTokenListingFloorPrevious = 'stats1hNetworkBaseTokenListingFloorPrevious',
   Stats1hNetworkBaseTokenLowestSaleChange = 'stats1hNetworkBaseTokenLowestSaleChange',
   Stats1hNetworkBaseTokenLowestSaleCurrent = 'stats1hNetworkBaseTokenLowestSaleCurrent',
   Stats1hNetworkBaseTokenLowestSalePrevious = 'stats1hNetworkBaseTokenLowestSalePrevious',
   Stats1hNetworkBaseTokenOpenChange = 'stats1hNetworkBaseTokenOpenChange',
   Stats1hNetworkBaseTokenOpenCurrent = 'stats1hNetworkBaseTokenOpenCurrent',
-  Stats1hNetworkBaseTokenOpenListingFloorChange = 'stats1hNetworkBaseTokenOpenListingFloorChange',
-  Stats1hNetworkBaseTokenOpenListingFloorCurrent = 'stats1hNetworkBaseTokenOpenListingFloorCurrent',
-  Stats1hNetworkBaseTokenOpenListingFloorPrevious = 'stats1hNetworkBaseTokenOpenListingFloorPrevious',
   Stats1hNetworkBaseTokenOpenPrevious = 'stats1hNetworkBaseTokenOpenPrevious',
   Stats1hNetworkBaseTokenVolumeByFillsourceBlendChange = 'stats1hNetworkBaseTokenVolumeByFillsourceBlendChange',
   Stats1hNetworkBaseTokenVolumeByFillsourceBlendCurrent = 'stats1hNetworkBaseTokenVolumeByFillsourceBlendCurrent',
@@ -2034,27 +2084,15 @@ export enum NftCollectionRankingAttribute {
   Stats1hUsdAveragePrevious = 'stats1hUsdAveragePrevious',
   Stats1hUsdCloseChange = 'stats1hUsdCloseChange',
   Stats1hUsdCloseCurrent = 'stats1hUsdCloseCurrent',
-  Stats1hUsdCloseListingFloorChange = 'stats1hUsdCloseListingFloorChange',
-  Stats1hUsdCloseListingFloorCurrent = 'stats1hUsdCloseListingFloorCurrent',
-  Stats1hUsdCloseListingFloorPrevious = 'stats1hUsdCloseListingFloorPrevious',
   Stats1hUsdClosePrevious = 'stats1hUsdClosePrevious',
-  Stats1hUsdHighestListingFloorChange = 'stats1hUsdHighestListingFloorChange',
-  Stats1hUsdHighestListingFloorCurrent = 'stats1hUsdHighestListingFloorCurrent',
-  Stats1hUsdHighestListingFloorPrevious = 'stats1hUsdHighestListingFloorPrevious',
   Stats1hUsdHighestSaleChange = 'stats1hUsdHighestSaleChange',
   Stats1hUsdHighestSaleCurrent = 'stats1hUsdHighestSaleCurrent',
   Stats1hUsdHighestSalePrevious = 'stats1hUsdHighestSalePrevious',
-  Stats1hUsdListingFloorChange = 'stats1hUsdListingFloorChange',
-  Stats1hUsdListingFloorCurrent = 'stats1hUsdListingFloorCurrent',
-  Stats1hUsdListingFloorPrevious = 'stats1hUsdListingFloorPrevious',
   Stats1hUsdLowestSaleChange = 'stats1hUsdLowestSaleChange',
   Stats1hUsdLowestSaleCurrent = 'stats1hUsdLowestSaleCurrent',
   Stats1hUsdLowestSalePrevious = 'stats1hUsdLowestSalePrevious',
   Stats1hUsdOpenChange = 'stats1hUsdOpenChange',
   Stats1hUsdOpenCurrent = 'stats1hUsdOpenCurrent',
-  Stats1hUsdOpenListingFloorChange = 'stats1hUsdOpenListingFloorChange',
-  Stats1hUsdOpenListingFloorCurrent = 'stats1hUsdOpenListingFloorCurrent',
-  Stats1hUsdOpenListingFloorPrevious = 'stats1hUsdOpenListingFloorPrevious',
   Stats1hUsdOpenPrevious = 'stats1hUsdOpenPrevious',
   Stats1hUsdVolumeByFillsourceBlendChange = 'stats1hUsdVolumeByFillsourceBlendChange',
   Stats1hUsdVolumeByFillsourceBlendCurrent = 'stats1hUsdVolumeByFillsourceBlendCurrent',
@@ -2103,27 +2141,15 @@ export enum NftCollectionRankingAttribute {
   Stats4hNetworkBaseTokenAveragePrevious = 'stats4hNetworkBaseTokenAveragePrevious',
   Stats4hNetworkBaseTokenCloseChange = 'stats4hNetworkBaseTokenCloseChange',
   Stats4hNetworkBaseTokenCloseCurrent = 'stats4hNetworkBaseTokenCloseCurrent',
-  Stats4hNetworkBaseTokenCloseListingFloorChange = 'stats4hNetworkBaseTokenCloseListingFloorChange',
-  Stats4hNetworkBaseTokenCloseListingFloorCurrent = 'stats4hNetworkBaseTokenCloseListingFloorCurrent',
-  Stats4hNetworkBaseTokenCloseListingFloorPrevious = 'stats4hNetworkBaseTokenCloseListingFloorPrevious',
   Stats4hNetworkBaseTokenClosePrevious = 'stats4hNetworkBaseTokenClosePrevious',
-  Stats4hNetworkBaseTokenHighestListingFloorChange = 'stats4hNetworkBaseTokenHighestListingFloorChange',
-  Stats4hNetworkBaseTokenHighestListingFloorCurrent = 'stats4hNetworkBaseTokenHighestListingFloorCurrent',
-  Stats4hNetworkBaseTokenHighestListingFloorPrevious = 'stats4hNetworkBaseTokenHighestListingFloorPrevious',
   Stats4hNetworkBaseTokenHighestSaleChange = 'stats4hNetworkBaseTokenHighestSaleChange',
   Stats4hNetworkBaseTokenHighestSaleCurrent = 'stats4hNetworkBaseTokenHighestSaleCurrent',
   Stats4hNetworkBaseTokenHighestSalePrevious = 'stats4hNetworkBaseTokenHighestSalePrevious',
-  Stats4hNetworkBaseTokenListingFloorChange = 'stats4hNetworkBaseTokenListingFloorChange',
-  Stats4hNetworkBaseTokenListingFloorCurrent = 'stats4hNetworkBaseTokenListingFloorCurrent',
-  Stats4hNetworkBaseTokenListingFloorPrevious = 'stats4hNetworkBaseTokenListingFloorPrevious',
   Stats4hNetworkBaseTokenLowestSaleChange = 'stats4hNetworkBaseTokenLowestSaleChange',
   Stats4hNetworkBaseTokenLowestSaleCurrent = 'stats4hNetworkBaseTokenLowestSaleCurrent',
   Stats4hNetworkBaseTokenLowestSalePrevious = 'stats4hNetworkBaseTokenLowestSalePrevious',
   Stats4hNetworkBaseTokenOpenChange = 'stats4hNetworkBaseTokenOpenChange',
   Stats4hNetworkBaseTokenOpenCurrent = 'stats4hNetworkBaseTokenOpenCurrent',
-  Stats4hNetworkBaseTokenOpenListingFloorChange = 'stats4hNetworkBaseTokenOpenListingFloorChange',
-  Stats4hNetworkBaseTokenOpenListingFloorCurrent = 'stats4hNetworkBaseTokenOpenListingFloorCurrent',
-  Stats4hNetworkBaseTokenOpenListingFloorPrevious = 'stats4hNetworkBaseTokenOpenListingFloorPrevious',
   Stats4hNetworkBaseTokenOpenPrevious = 'stats4hNetworkBaseTokenOpenPrevious',
   Stats4hNetworkBaseTokenVolumeByFillsourceBlendChange = 'stats4hNetworkBaseTokenVolumeByFillsourceBlendChange',
   Stats4hNetworkBaseTokenVolumeByFillsourceBlendCurrent = 'stats4hNetworkBaseTokenVolumeByFillsourceBlendCurrent',
@@ -2196,27 +2222,15 @@ export enum NftCollectionRankingAttribute {
   Stats4hUsdAveragePrevious = 'stats4hUsdAveragePrevious',
   Stats4hUsdCloseChange = 'stats4hUsdCloseChange',
   Stats4hUsdCloseCurrent = 'stats4hUsdCloseCurrent',
-  Stats4hUsdCloseListingFloorChange = 'stats4hUsdCloseListingFloorChange',
-  Stats4hUsdCloseListingFloorCurrent = 'stats4hUsdCloseListingFloorCurrent',
-  Stats4hUsdCloseListingFloorPrevious = 'stats4hUsdCloseListingFloorPrevious',
   Stats4hUsdClosePrevious = 'stats4hUsdClosePrevious',
-  Stats4hUsdHighestListingFloorChange = 'stats4hUsdHighestListingFloorChange',
-  Stats4hUsdHighestListingFloorCurrent = 'stats4hUsdHighestListingFloorCurrent',
-  Stats4hUsdHighestListingFloorPrevious = 'stats4hUsdHighestListingFloorPrevious',
   Stats4hUsdHighestSaleChange = 'stats4hUsdHighestSaleChange',
   Stats4hUsdHighestSaleCurrent = 'stats4hUsdHighestSaleCurrent',
   Stats4hUsdHighestSalePrevious = 'stats4hUsdHighestSalePrevious',
-  Stats4hUsdListingFloorChange = 'stats4hUsdListingFloorChange',
-  Stats4hUsdListingFloorCurrent = 'stats4hUsdListingFloorCurrent',
-  Stats4hUsdListingFloorPrevious = 'stats4hUsdListingFloorPrevious',
   Stats4hUsdLowestSaleChange = 'stats4hUsdLowestSaleChange',
   Stats4hUsdLowestSaleCurrent = 'stats4hUsdLowestSaleCurrent',
   Stats4hUsdLowestSalePrevious = 'stats4hUsdLowestSalePrevious',
   Stats4hUsdOpenChange = 'stats4hUsdOpenChange',
   Stats4hUsdOpenCurrent = 'stats4hUsdOpenCurrent',
-  Stats4hUsdOpenListingFloorChange = 'stats4hUsdOpenListingFloorChange',
-  Stats4hUsdOpenListingFloorCurrent = 'stats4hUsdOpenListingFloorCurrent',
-  Stats4hUsdOpenListingFloorPrevious = 'stats4hUsdOpenListingFloorPrevious',
   Stats4hUsdOpenPrevious = 'stats4hUsdOpenPrevious',
   Stats4hUsdVolumeByFillsourceBlendChange = 'stats4hUsdVolumeByFillsourceBlendChange',
   Stats4hUsdVolumeByFillsourceBlendCurrent = 'stats4hUsdVolumeByFillsourceBlendCurrent',
@@ -2265,27 +2279,15 @@ export enum NftCollectionRankingAttribute {
   Stats12hNetworkBaseTokenAveragePrevious = 'stats12hNetworkBaseTokenAveragePrevious',
   Stats12hNetworkBaseTokenCloseChange = 'stats12hNetworkBaseTokenCloseChange',
   Stats12hNetworkBaseTokenCloseCurrent = 'stats12hNetworkBaseTokenCloseCurrent',
-  Stats12hNetworkBaseTokenCloseListingFloorChange = 'stats12hNetworkBaseTokenCloseListingFloorChange',
-  Stats12hNetworkBaseTokenCloseListingFloorCurrent = 'stats12hNetworkBaseTokenCloseListingFloorCurrent',
-  Stats12hNetworkBaseTokenCloseListingFloorPrevious = 'stats12hNetworkBaseTokenCloseListingFloorPrevious',
   Stats12hNetworkBaseTokenClosePrevious = 'stats12hNetworkBaseTokenClosePrevious',
-  Stats12hNetworkBaseTokenHighestListingFloorChange = 'stats12hNetworkBaseTokenHighestListingFloorChange',
-  Stats12hNetworkBaseTokenHighestListingFloorCurrent = 'stats12hNetworkBaseTokenHighestListingFloorCurrent',
-  Stats12hNetworkBaseTokenHighestListingFloorPrevious = 'stats12hNetworkBaseTokenHighestListingFloorPrevious',
   Stats12hNetworkBaseTokenHighestSaleChange = 'stats12hNetworkBaseTokenHighestSaleChange',
   Stats12hNetworkBaseTokenHighestSaleCurrent = 'stats12hNetworkBaseTokenHighestSaleCurrent',
   Stats12hNetworkBaseTokenHighestSalePrevious = 'stats12hNetworkBaseTokenHighestSalePrevious',
-  Stats12hNetworkBaseTokenListingFloorChange = 'stats12hNetworkBaseTokenListingFloorChange',
-  Stats12hNetworkBaseTokenListingFloorCurrent = 'stats12hNetworkBaseTokenListingFloorCurrent',
-  Stats12hNetworkBaseTokenListingFloorPrevious = 'stats12hNetworkBaseTokenListingFloorPrevious',
   Stats12hNetworkBaseTokenLowestSaleChange = 'stats12hNetworkBaseTokenLowestSaleChange',
   Stats12hNetworkBaseTokenLowestSaleCurrent = 'stats12hNetworkBaseTokenLowestSaleCurrent',
   Stats12hNetworkBaseTokenLowestSalePrevious = 'stats12hNetworkBaseTokenLowestSalePrevious',
   Stats12hNetworkBaseTokenOpenChange = 'stats12hNetworkBaseTokenOpenChange',
   Stats12hNetworkBaseTokenOpenCurrent = 'stats12hNetworkBaseTokenOpenCurrent',
-  Stats12hNetworkBaseTokenOpenListingFloorChange = 'stats12hNetworkBaseTokenOpenListingFloorChange',
-  Stats12hNetworkBaseTokenOpenListingFloorCurrent = 'stats12hNetworkBaseTokenOpenListingFloorCurrent',
-  Stats12hNetworkBaseTokenOpenListingFloorPrevious = 'stats12hNetworkBaseTokenOpenListingFloorPrevious',
   Stats12hNetworkBaseTokenOpenPrevious = 'stats12hNetworkBaseTokenOpenPrevious',
   Stats12hNetworkBaseTokenVolumeByFillsourceBlendChange = 'stats12hNetworkBaseTokenVolumeByFillsourceBlendChange',
   Stats12hNetworkBaseTokenVolumeByFillsourceBlendCurrent = 'stats12hNetworkBaseTokenVolumeByFillsourceBlendCurrent',
@@ -2358,27 +2360,15 @@ export enum NftCollectionRankingAttribute {
   Stats12hUsdAveragePrevious = 'stats12hUsdAveragePrevious',
   Stats12hUsdCloseChange = 'stats12hUsdCloseChange',
   Stats12hUsdCloseCurrent = 'stats12hUsdCloseCurrent',
-  Stats12hUsdCloseListingFloorChange = 'stats12hUsdCloseListingFloorChange',
-  Stats12hUsdCloseListingFloorCurrent = 'stats12hUsdCloseListingFloorCurrent',
-  Stats12hUsdCloseListingFloorPrevious = 'stats12hUsdCloseListingFloorPrevious',
   Stats12hUsdClosePrevious = 'stats12hUsdClosePrevious',
-  Stats12hUsdHighestListingFloorChange = 'stats12hUsdHighestListingFloorChange',
-  Stats12hUsdHighestListingFloorCurrent = 'stats12hUsdHighestListingFloorCurrent',
-  Stats12hUsdHighestListingFloorPrevious = 'stats12hUsdHighestListingFloorPrevious',
   Stats12hUsdHighestSaleChange = 'stats12hUsdHighestSaleChange',
   Stats12hUsdHighestSaleCurrent = 'stats12hUsdHighestSaleCurrent',
   Stats12hUsdHighestSalePrevious = 'stats12hUsdHighestSalePrevious',
-  Stats12hUsdListingFloorChange = 'stats12hUsdListingFloorChange',
-  Stats12hUsdListingFloorCurrent = 'stats12hUsdListingFloorCurrent',
-  Stats12hUsdListingFloorPrevious = 'stats12hUsdListingFloorPrevious',
   Stats12hUsdLowestSaleChange = 'stats12hUsdLowestSaleChange',
   Stats12hUsdLowestSaleCurrent = 'stats12hUsdLowestSaleCurrent',
   Stats12hUsdLowestSalePrevious = 'stats12hUsdLowestSalePrevious',
   Stats12hUsdOpenChange = 'stats12hUsdOpenChange',
   Stats12hUsdOpenCurrent = 'stats12hUsdOpenCurrent',
-  Stats12hUsdOpenListingFloorChange = 'stats12hUsdOpenListingFloorChange',
-  Stats12hUsdOpenListingFloorCurrent = 'stats12hUsdOpenListingFloorCurrent',
-  Stats12hUsdOpenListingFloorPrevious = 'stats12hUsdOpenListingFloorPrevious',
   Stats12hUsdOpenPrevious = 'stats12hUsdOpenPrevious',
   Stats12hUsdVolumeByFillsourceBlendChange = 'stats12hUsdVolumeByFillsourceBlendChange',
   Stats12hUsdVolumeByFillsourceBlendCurrent = 'stats12hUsdVolumeByFillsourceBlendCurrent',
@@ -2427,27 +2417,15 @@ export enum NftCollectionRankingAttribute {
   Stats24hNetworkBaseTokenAveragePrevious = 'stats24hNetworkBaseTokenAveragePrevious',
   Stats24hNetworkBaseTokenCloseChange = 'stats24hNetworkBaseTokenCloseChange',
   Stats24hNetworkBaseTokenCloseCurrent = 'stats24hNetworkBaseTokenCloseCurrent',
-  Stats24hNetworkBaseTokenCloseListingFloorChange = 'stats24hNetworkBaseTokenCloseListingFloorChange',
-  Stats24hNetworkBaseTokenCloseListingFloorCurrent = 'stats24hNetworkBaseTokenCloseListingFloorCurrent',
-  Stats24hNetworkBaseTokenCloseListingFloorPrevious = 'stats24hNetworkBaseTokenCloseListingFloorPrevious',
   Stats24hNetworkBaseTokenClosePrevious = 'stats24hNetworkBaseTokenClosePrevious',
-  Stats24hNetworkBaseTokenHighestListingFloorChange = 'stats24hNetworkBaseTokenHighestListingFloorChange',
-  Stats24hNetworkBaseTokenHighestListingFloorCurrent = 'stats24hNetworkBaseTokenHighestListingFloorCurrent',
-  Stats24hNetworkBaseTokenHighestListingFloorPrevious = 'stats24hNetworkBaseTokenHighestListingFloorPrevious',
   Stats24hNetworkBaseTokenHighestSaleChange = 'stats24hNetworkBaseTokenHighestSaleChange',
   Stats24hNetworkBaseTokenHighestSaleCurrent = 'stats24hNetworkBaseTokenHighestSaleCurrent',
   Stats24hNetworkBaseTokenHighestSalePrevious = 'stats24hNetworkBaseTokenHighestSalePrevious',
-  Stats24hNetworkBaseTokenListingFloorChange = 'stats24hNetworkBaseTokenListingFloorChange',
-  Stats24hNetworkBaseTokenListingFloorCurrent = 'stats24hNetworkBaseTokenListingFloorCurrent',
-  Stats24hNetworkBaseTokenListingFloorPrevious = 'stats24hNetworkBaseTokenListingFloorPrevious',
   Stats24hNetworkBaseTokenLowestSaleChange = 'stats24hNetworkBaseTokenLowestSaleChange',
   Stats24hNetworkBaseTokenLowestSaleCurrent = 'stats24hNetworkBaseTokenLowestSaleCurrent',
   Stats24hNetworkBaseTokenLowestSalePrevious = 'stats24hNetworkBaseTokenLowestSalePrevious',
   Stats24hNetworkBaseTokenOpenChange = 'stats24hNetworkBaseTokenOpenChange',
   Stats24hNetworkBaseTokenOpenCurrent = 'stats24hNetworkBaseTokenOpenCurrent',
-  Stats24hNetworkBaseTokenOpenListingFloorChange = 'stats24hNetworkBaseTokenOpenListingFloorChange',
-  Stats24hNetworkBaseTokenOpenListingFloorCurrent = 'stats24hNetworkBaseTokenOpenListingFloorCurrent',
-  Stats24hNetworkBaseTokenOpenListingFloorPrevious = 'stats24hNetworkBaseTokenOpenListingFloorPrevious',
   Stats24hNetworkBaseTokenOpenPrevious = 'stats24hNetworkBaseTokenOpenPrevious',
   Stats24hNetworkBaseTokenVolumeByFillsourceBlendChange = 'stats24hNetworkBaseTokenVolumeByFillsourceBlendChange',
   Stats24hNetworkBaseTokenVolumeByFillsourceBlendCurrent = 'stats24hNetworkBaseTokenVolumeByFillsourceBlendCurrent',
@@ -2520,27 +2498,15 @@ export enum NftCollectionRankingAttribute {
   Stats24hUsdAveragePrevious = 'stats24hUsdAveragePrevious',
   Stats24hUsdCloseChange = 'stats24hUsdCloseChange',
   Stats24hUsdCloseCurrent = 'stats24hUsdCloseCurrent',
-  Stats24hUsdCloseListingFloorChange = 'stats24hUsdCloseListingFloorChange',
-  Stats24hUsdCloseListingFloorCurrent = 'stats24hUsdCloseListingFloorCurrent',
-  Stats24hUsdCloseListingFloorPrevious = 'stats24hUsdCloseListingFloorPrevious',
   Stats24hUsdClosePrevious = 'stats24hUsdClosePrevious',
-  Stats24hUsdHighestListingFloorChange = 'stats24hUsdHighestListingFloorChange',
-  Stats24hUsdHighestListingFloorCurrent = 'stats24hUsdHighestListingFloorCurrent',
-  Stats24hUsdHighestListingFloorPrevious = 'stats24hUsdHighestListingFloorPrevious',
   Stats24hUsdHighestSaleChange = 'stats24hUsdHighestSaleChange',
   Stats24hUsdHighestSaleCurrent = 'stats24hUsdHighestSaleCurrent',
   Stats24hUsdHighestSalePrevious = 'stats24hUsdHighestSalePrevious',
-  Stats24hUsdListingFloorChange = 'stats24hUsdListingFloorChange',
-  Stats24hUsdListingFloorCurrent = 'stats24hUsdListingFloorCurrent',
-  Stats24hUsdListingFloorPrevious = 'stats24hUsdListingFloorPrevious',
   Stats24hUsdLowestSaleChange = 'stats24hUsdLowestSaleChange',
   Stats24hUsdLowestSaleCurrent = 'stats24hUsdLowestSaleCurrent',
   Stats24hUsdLowestSalePrevious = 'stats24hUsdLowestSalePrevious',
   Stats24hUsdOpenChange = 'stats24hUsdOpenChange',
   Stats24hUsdOpenCurrent = 'stats24hUsdOpenCurrent',
-  Stats24hUsdOpenListingFloorChange = 'stats24hUsdOpenListingFloorChange',
-  Stats24hUsdOpenListingFloorCurrent = 'stats24hUsdOpenListingFloorCurrent',
-  Stats24hUsdOpenListingFloorPrevious = 'stats24hUsdOpenListingFloorPrevious',
   Stats24hUsdOpenPrevious = 'stats24hUsdOpenPrevious',
   Stats24hUsdVolumeByFillsourceBlendChange = 'stats24hUsdVolumeByFillsourceBlendChange',
   Stats24hUsdVolumeByFillsourceBlendCurrent = 'stats24hUsdVolumeByFillsourceBlendCurrent',
@@ -2753,16 +2719,6 @@ export type NftEvent = {
   transactionIndex: Scalars['Int']['output'];
 };
 
-export type NftEventDataInput = {
-  buyHash?: InputMaybe<Scalars['String']['input']>;
-  maker?: InputMaybe<Scalars['String']['input']>;
-  metadata?: InputMaybe<Scalars['String']['input']>;
-  price?: InputMaybe<Scalars['String']['input']>;
-  sellHash?: InputMaybe<Scalars['String']['input']>;
-  taker?: InputMaybe<Scalars['String']['input']>;
-  type: Scalars['String']['input'];
-};
-
 export type NftEventFillSourceCondition = {
   __typename?: 'NftEventFillSourceCondition';
   oneOf: Array<WebhookNftEventFillSource>;
@@ -2770,45 +2726,6 @@ export type NftEventFillSourceCondition = {
 
 export type NftEventFillSourceConditionInput = {
   oneOf: Array<WebhookNftEventFillSource>;
-};
-
-export type NftEventInput = {
-  aggregatorAddress?: InputMaybe<Scalars['String']['input']>;
-  baseTokenAddress: Scalars['String']['input'];
-  baseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  blockNumber: Scalars['Int']['input'];
-  contractAddress: Scalars['String']['input'];
-  data: NftEventDataInput;
-  eventType: Scalars['String']['input'];
-  exchangeAddress: Scalars['String']['input'];
-  fillSource?: InputMaybe<Scalars['String']['input']>;
-  id: Scalars['String']['input'];
-  individualBaseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  individualNetworkBaseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  individualPrice?: InputMaybe<Scalars['String']['input']>;
-  individualPriceNetworkBaseToken?: InputMaybe<Scalars['String']['input']>;
-  individualPriceUsd?: InputMaybe<Scalars['String']['input']>;
-  individualTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  individualTradePrice?: InputMaybe<Scalars['String']['input']>;
-  logIndex: Scalars['Int']['input'];
-  maker: Scalars['String']['input'];
-  networkBaseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  networkId: Scalars['Int']['input'];
-  numberOfTokens?: InputMaybe<Scalars['String']['input']>;
-  paymentTokenAddress: Scalars['String']['input'];
-  poolAddress?: InputMaybe<Scalars['String']['input']>;
-  priceError?: InputMaybe<Scalars['String']['input']>;
-  sortKey: Scalars['String']['input'];
-  taker: Scalars['String']['input'];
-  timestamp: Scalars['Int']['input'];
-  tokenId: Scalars['String']['input'];
-  tokenPrice: Scalars['String']['input'];
-  totalPrice: Scalars['String']['input'];
-  totalPriceNetworkBaseToken?: InputMaybe<Scalars['String']['input']>;
-  totalPriceUsd?: InputMaybe<Scalars['String']['input']>;
-  totalTradePrice?: InputMaybe<Scalars['String']['input']>;
-  transactionHash: Scalars['String']['input'];
-  transactionIndex: Scalars['Int']['input'];
 };
 
 /** Details for an NFT offered or received as part of an nft trade. */
@@ -2898,6 +2815,7 @@ export type NftEventWebhookCondition = {
   eventType?: Maybe<NftEventTypeCondition>;
   exchangeAddress?: Maybe<StringEqualsCondition>;
   fillSource?: Maybe<NftEventFillSourceCondition>;
+  ignoreTransfers?: Maybe<Scalars['Boolean']['output']>;
   individualBaseTokenPrice?: Maybe<ComparisonOperator>;
   maker?: Maybe<StringEqualsCondition>;
   networkId?: Maybe<OneOfNumberCondition>;
@@ -2910,6 +2828,7 @@ export type NftEventWebhookConditionInput = {
   eventType?: InputMaybe<NftEventTypeConditionInput>;
   exchangeAddress?: InputMaybe<StringEqualsConditionInput>;
   fillSource?: InputMaybe<NftEventFillSourceConditionInput>;
+  ignoreTransfers?: InputMaybe<Scalars['Boolean']['input']>;
   maker?: InputMaybe<StringEqualsConditionInput>;
   networkId?: InputMaybe<OneOfNumberConditionInput>;
   tokenId?: InputMaybe<StringEqualsConditionInput>;
@@ -3335,8 +3254,22 @@ export type NftPoolCollectionResponse = {
   nftVolumeAllTimeV2?: Maybe<Scalars['String']['output']>;
   /** The highest price at which any of the NFT collection's pools are willing to buy an NFT in the network's base token. */
   offerNBT?: Maybe<Scalars['String']['output']>;
+  /** The sum of pool fees generated by the collection in the network's base token over the collection's lifetime. */
+  poolFeesNBTAll?: Maybe<Scalars['String']['output']>;
+  /** The sum of pool fees generated by the collection in USD over the collection's lifetime. */
+  poolFeesUSDAll?: Maybe<Scalars['String']['output']>;
+  /** The sum of protocol fees generated by the collection in the network's base token over the collection's lifetime. */
+  protocolFeesNBTAll?: Maybe<Scalars['String']['output']>;
+  /** The sum of protocol fees generated by the collection in USD over the collection's lifetime. */
+  protocolFeesUSDAll?: Maybe<Scalars['String']['output']>;
+  /** As estimated sum in the network's base token of the collection's royalties paid to creators by pool swaps over the collection's lifetime. */
+  royaltiesNBTAllEstimate?: Maybe<Scalars['String']['output']>;
+  /** An estimated sum in USD of the collection's royalties paid to creators by pool swaps over the collection's lifetime. */
+  royaltiesUSDAllEstimate?: Maybe<Scalars['String']['output']>;
   /** The total volume of the collection in the network's base token over the collection's lifetime. */
   volumeAllTimeNBT?: Maybe<Scalars['String']['output']>;
+  /** The total volume of the collection in USD over the collection's lifetime. */
+  volumeAllTimeUSD?: Maybe<Scalars['String']['output']>;
 };
 
 /** The NFT pool contract version. */
@@ -3410,9 +3343,14 @@ export type NftPoolEventNftTransferV2 = {
   __typename?: 'NftPoolEventNftTransferV2';
   /** The value of the token at the time of transfer. */
   amountT: Scalars['String']['output'];
+  /** The number of tokens involved in the transfer. */
+  nftQuantity: Scalars['String']['output'];
   /** The NFT token ID involved in the transfer. */
   nftTokenId: Scalars['String']['output'];
-  /** The number of tokens involved in the transfer. */
+  /**
+   * The number of tokens involved in the transfer.
+   * @deprecated nftTokenQuantity is no longer supported - use nftQuantity instead.
+   */
   nftTokenQuantity: Scalars['String']['output'];
 };
 
@@ -3733,6 +3671,8 @@ export type NftPoolNftDepositEventData = {
 /** Event data for depositing an NFT into a pool. */
 export type NftPoolNftDepositEventDataV2 = {
   __typename?: 'NftPoolNftDepositEventDataV2';
+  /** *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds. */
+  nftAssets?: Maybe<Array<Maybe<NftAsset>>>;
   /** The amount of each NFT token deposited. */
   nftTokenAmounts: Array<Scalars['String']['output']>;
   /** The list of NFT token IDs deposited. */
@@ -3759,6 +3699,8 @@ export type NftPoolNftWithdrawalEventData = {
 /** Event data for withdrawing an NFT from a pool. */
 export type NftPoolNftWithdrawalEventDataV2 = {
   __typename?: 'NftPoolNftWithdrawalEventDataV2';
+  /** *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds. */
+  nftAssets?: Maybe<Array<Maybe<NftAsset>>>;
   /** The amount of each NFT token withdrawn. */
   nftTokenAmounts: Array<Scalars['String']['output']>;
   /** The list of NFT token IDs withdrawn. */
@@ -4501,97 +4443,54 @@ export type PairFilters = {
   volumeUSD24?: InputMaybe<NumberFilter>;
 };
 
-/** Response returned by `onPairMetadataUpdated`. */
 export type PairMetadata = {
   __typename?: 'PairMetadata';
-  /** The ID of the exchange (`exchangeAddress`:`networkId`). */
   exchangeId?: Maybe<Scalars['String']['output']>;
-  /** The exchange fee for swaps. */
   fee?: Maybe<Scalars['Int']['output']>;
-  /** The highest price in USD in the past hour. */
   highPrice1?: Maybe<Scalars['String']['output']>;
-  /** The highest price in USD in the past week. */
   highPrice1w?: Maybe<Scalars['String']['output']>;
-  /** The highest price in USD in the past 4 hours. */
   highPrice4?: Maybe<Scalars['String']['output']>;
-  /** The highest price in USD in the past 12 hours. */
   highPrice12?: Maybe<Scalars['String']['output']>;
-  /** The highest price in USD in the past 24 hours. */
   highPrice24?: Maybe<Scalars['String']['output']>;
-  /** The ID for the pair (`pairAddress`:`networkId`). */
   id: Scalars['String']['output'];
-  /** The amount of liquidity in the pair. */
   liquidity: Scalars['String']['output'];
-  /** The token with higher liquidity in the pair. Can be `token0` or `token1`. */
   liquidityToken?: Maybe<Scalars['String']['output']>;
-  /** The lowest price in USD in the past hour. */
   lowPrice1?: Maybe<Scalars['String']['output']>;
-  /** The lowest price in USD in the past week. */
   lowPrice1w?: Maybe<Scalars['String']['output']>;
-  /** The lowest price in USD in the 4 hours. */
   lowPrice4?: Maybe<Scalars['String']['output']>;
-  /** The lowest price in USD in the 12 hours. */
   lowPrice12?: Maybe<Scalars['String']['output']>;
-  /** The lowest price in USD in the 24 hours. */
   lowPrice24?: Maybe<Scalars['String']['output']>;
-  /** The network ID that the pair is deployed on. */
   networkId?: Maybe<Scalars['Int']['output']>;
-  /** The token with lower liquidity in the pair. Can be `token0` or `token1`. */
   nonLiquidityToken?: Maybe<Scalars['String']['output']>;
-  /** The contract address for the pair. */
   pairAddress: Scalars['String']['output'];
-  /** The token price in USD. */
   price: Scalars['String']['output'];
-  /** The percent price change in the past hour. */
   priceChange1?: Maybe<Scalars['Float']['output']>;
-  /** The percent price change in the past week. */
   priceChange1w?: Maybe<Scalars['Float']['output']>;
-  /** The percent price change in the past 4 hours. */
   priceChange4?: Maybe<Scalars['Float']['output']>;
-  /** The percent price change in the past 12 hours. */
+  priceChange5m?: Maybe<Scalars['Float']['output']>;
   priceChange12?: Maybe<Scalars['Float']['output']>;
-  /** The percent price change in the past 24 hours. */
   priceChange24?: Maybe<Scalars['Float']['output']>;
-  /** The token of interest within the pair. */
   quoteToken?: Maybe<QuoteToken>;
-  /** The type of statistics used. Can be `Filtered` or `Unfiltered`. */
   statsType: TokenPairStatisticsType;
-  /** The amount of required tick separation. Only applicable for pairs on UniswapV3. */
   tickSpacing?: Maybe<Scalars['Int']['output']>;
-  /** Metadata for `token0`. */
   token0: PairMetadataToken;
-  /** Metadata for `token1`. */
   token1: PairMetadataToken;
-  /** The trade volume in USD in the past hour. */
   volume1?: Maybe<Scalars['String']['output']>;
-  /** The trade volume in USD in the past week. */
   volume1w?: Maybe<Scalars['String']['output']>;
-  /** The trade volume in USD in the past 4 hours. */
   volume4?: Maybe<Scalars['String']['output']>;
-  /** The trade volume in USD in the past 12 hours. */
   volume12?: Maybe<Scalars['String']['output']>;
-  /** The trade volume in USD in the past 24 hours. */
   volume24?: Maybe<Scalars['String']['output']>;
 };
 
-/** Metadata for a token within a pair. */
 export type PairMetadataToken = {
   __typename?: 'PairMetadataToken';
-  /** The contract address of the token. */
   address: Scalars['String']['output'];
-  /** The precision to which the token can be divided. For example, the smallest unit for USDC is 0.000001 (6 decimals). */
   decimals?: Maybe<Scalars['Int']['output']>;
-  /** A list of labels for the token. */
   labels?: Maybe<Array<Maybe<ContractLabel>>>;
-  /** The token name. For example, `ApeCoin`. */
   name: Scalars['String']['output'];
-  /** The network ID the token is deployed on. */
   networkId: Scalars['Int']['output'];
-  /** The amount of this token in the pair. */
   pooled: Scalars['String']['output'];
-  /** The token price in USD. */
   price: Scalars['String']['output'];
-  /** The token symbol. For example, `APE`. */
   symbol: Scalars['String']['output'];
 };
 
@@ -4954,24 +4853,37 @@ export type ParallelCardChangesConnection = {
 export enum Plan {
   Defined = 'DEFINED',
   Enterprise = 'ENTERPRISE',
+  Free = 'FREE',
   Standard = 'STANDARD'
 }
 
-export type Pnl = {
-  __typename?: 'Pnl';
-  realized: Scalars['Float']['output'];
-  unrealized: Scalars['Float']['output'];
-};
-
-export type PnlInput = {
-  /** docs: hide */
-  balances?: InputMaybe<Array<BalanceInput>>;
-  /** Cost basis calculation method, defaults to FIFO */
-  costBasisMethod?: InputMaybe<CostBasisMethod>;
-  /** The tokenIds */
-  tokenIds: Array<Scalars['String']['input']>;
-  /** The wallet address(es) in question */
-  walletAddresses: Array<Scalars['String']['input']>;
+/** Event data for a BalancerV2 Pool Balance Changed event. */
+export type PoolBalanceChangedEventData = {
+  __typename?: 'PoolBalanceChangedEventData';
+  /** The amount of `token0` added or removed from the pair. */
+  amount0?: Maybe<Scalars['String']['output']>;
+  /** The amount of `token0` added or removed from the pair, adjusted by the number of decimals in the token. For example, if `amount0` is in WEI, `amount0Shifted` will be in ETH. */
+  amount0Shifted?: Maybe<Scalars['String']['output']>;
+  /** The amount of `token1` added or from the pair. */
+  amount1?: Maybe<Scalars['String']['output']>;
+  /** The amount of `token1` added or removed from the pair, adjusted by the number of decimals in the token. For example, USDC `amount1Shifted` will be by 6 decimals. */
+  amount1Shifted?: Maybe<Scalars['String']['output']>;
+  /** The amount of token0 now in the pool. */
+  liquidity0?: Maybe<Scalars['String']['output']>;
+  /** The amount of token1 now in the pool. */
+  liquidity1?: Maybe<Scalars['String']['output']>;
+  /** The amount of token0 captured by the protocol. */
+  protocolFeeAmount0?: Maybe<Scalars['String']['output']>;
+  /** The amount of token1 captured by the protocol. */
+  protocolFeeAmount1?: Maybe<Scalars['String']['output']>;
+  /** The address of account that added or removed liquidity. */
+  sender?: Maybe<Scalars['String']['output']>;
+  /** The address of `token0` in the pair. */
+  token0?: Maybe<Scalars['String']['output']>;
+  /** The address of `token1` in the pair. */
+  token1?: Maybe<Scalars['String']['output']>;
+  /** The type of token event, `Burn`. */
+  type: EventType;
 };
 
 /** The type of NFT in the pool. */
@@ -4988,11 +4900,13 @@ export type PooledTokenValues = {
   token1?: Maybe<Scalars['String']['output']>;
 };
 
-/** Current or historical prices for a token. */
+/** Real-time or historical prices for a token. */
 export type Price = {
   __typename?: 'Price';
   /** The contract address of the token. */
   address: Scalars['String']['output'];
+  /** Ratio of how confident we are in the price */
+  confidence?: Maybe<Scalars['Float']['output']>;
   /** The network ID the token is deployed on. */
   networkId: Scalars['Int']['output'];
   /** The token price in USD. */
@@ -5548,6 +5462,7 @@ export type Query = {
   getExchanges: Array<Exchange>;
   /** Returns new tokens listed over the last three days. */
   getLatestPairs?: Maybe<LatestPairConnection>;
+  getLatestTokens?: Maybe<LatestTokenConnection>;
   /** Returns the status of a list of networks supported on Defined. */
   getNetworkStatus?: Maybe<Array<MetadataResponse>>;
   /** Returns a list of all networks supported on Defined. */
@@ -5584,6 +5499,7 @@ export type Query = {
   getPrimePoolEvents?: Maybe<PrimePoolEventConnection>;
   /** Returns a list of Prime pools. */
   getPrimePools?: Maybe<PrimePoolConnection>;
+  getSimulateTokenContractResults: GetSimulateTokenContractResultsConnection;
   /** Returns metadata for a given pair. */
   getSymbol?: Maybe<SymbolResponse>;
   /** Returns the total count of tokens on Defined. This value is updated approximately every 6 hours. */
@@ -5596,8 +5512,8 @@ export type Query = {
   getTokenPrices?: Maybe<Array<Maybe<Price>>>;
   /** Returns metadata for a list of given tokens. */
   getTokensInfo?: Maybe<Array<Maybe<TokenInfo>>>;
-  /** Get the wallet profit and loss based on their dex trades */
-  getWalletPnl: Array<Maybe<WalletPnl>>;
+  /** Returns tick data for a given Uniswap V3-style pool. */
+  getUniV3Ticks?: Maybe<UniV3TickConnection>;
   getWebhooks?: Maybe<GetWebhooksResponse>;
   /** Returns list of wallets that hold a given token, ordered by holdings descending. Also has the unique count of holders for that token */
   holders: HoldersResponse;
@@ -5712,6 +5628,7 @@ export type QueryGetBarsArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
   from: Scalars['Int']['input'];
   quoteToken?: InputMaybe<QuoteToken>;
+  removeEmptyBars?: InputMaybe<Scalars['Boolean']['input']>;
   removeLeadingNullValues?: InputMaybe<Scalars['Boolean']['input']>;
   resolution: Scalars['String']['input'];
   statsType?: InputMaybe<TokenPairStatisticsType>;
@@ -5769,12 +5686,24 @@ export type QueryGetEventLabelsArgs = {
 };
 
 
+export type QueryGetExchangesArgs = {
+  showNameless?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+
 export type QueryGetLatestPairsArgs = {
   cursor?: InputMaybe<Scalars['String']['input']>;
   exchangeFilter?: InputMaybe<Array<Scalars['String']['input']>>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   minLiquidityFilter?: InputMaybe<Scalars['Int']['input']>;
   networkFilter?: InputMaybe<Array<Scalars['Int']['input']>>;
+};
+
+
+export type QueryGetLatestTokensArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkFilter?: InputMaybe<Array<Scalars['Int']['input']>>;
+  offset?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -5786,6 +5715,7 @@ export type QueryGetNetworkStatusArgs = {
 export type QueryGetNftAssetsArgs = {
   address: Scalars['String']['input'];
   cursor?: InputMaybe<Scalars['String']['input']>;
+  fetchMissingAssets?: InputMaybe<Scalars['Boolean']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   networkId: Scalars['Int']['input'];
   tokenIds?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
@@ -5839,9 +5769,10 @@ export type QueryGetNftPoolCollectionsByExchangeArgs = {
 
 
 export type QueryGetNftPoolEventsArgs = {
-  collectionAddress: Scalars['String']['input'];
+  collectionAddress?: InputMaybe<Scalars['String']['input']>;
   cursor?: InputMaybe<Scalars['String']['input']>;
   eventTypes?: InputMaybe<Array<NftPoolEventType>>;
+  exchangeAddress?: InputMaybe<Scalars['String']['input']>;
   limit?: InputMaybe<Scalars['Int']['input']>;
   networkId: Scalars['Int']['input'];
   poolAddress?: InputMaybe<Scalars['String']['input']>;
@@ -5921,6 +5852,15 @@ export type QueryGetPrimePoolsArgs = {
 };
 
 
+export type QueryGetSimulateTokenContractResultsArgs = {
+  contractAddress: Scalars['String']['input'];
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkId: Scalars['Int']['input'];
+  simulationId?: InputMaybe<Scalars['String']['input']>;
+};
+
+
 export type QueryGetSymbolArgs = {
   currencyCode?: InputMaybe<Scalars['String']['input']>;
   symbol: Scalars['String']['input'];
@@ -5951,8 +5891,11 @@ export type QueryGetTokensInfoArgs = {
 };
 
 
-export type QueryGetWalletPnlArgs = {
-  input: PnlInput;
+export type QueryGetUniV3TicksArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+  networkId: Scalars['Int']['input'];
+  offset?: InputMaybe<Scalars['Int']['input']>;
+  poolAddress: Scalars['String']['input'];
 };
 
 
@@ -6048,15 +5991,30 @@ export type QueryTokensArgs = {
   ids?: InputMaybe<Array<TokenInput>>;
 };
 
+export type Quote = {
+  __typename?: 'Quote';
+  poolFee?: Maybe<Scalars['String']['output']>;
+  poolFeeBps?: Maybe<Scalars['Float']['output']>;
+  quoteType: QuoteType;
+  quotedAmount: Scalars['String']['output'];
+  tradeFee: Scalars['String']['output'];
+  tradeFeeBps: Scalars['Float']['output'];
+};
+
 export enum QuoteCurrency {
   Token = 'TOKEN',
   Usd = 'USD'
 }
 
-/** The token of interest within a pair. */
+/** The quote token within the pair. */
 export enum QuoteToken {
   Token0 = 'token0',
   Token1 = 'token1'
+}
+
+export enum QuoteType {
+  Input = 'INPUT',
+  Output = 'OUTPUT'
 }
 
 /** The order of ranking. */
@@ -6150,21 +6108,6 @@ export type ResolutionBarData = {
   r720?: Maybe<CurrencyBarData>;
 };
 
-export type ResolutionBarInput = {
-  r1?: InputMaybe<CurrencyBarInput>;
-  r1D?: InputMaybe<CurrencyBarInput>;
-  r1S?: InputMaybe<CurrencyBarInput>;
-  r5?: InputMaybe<CurrencyBarInput>;
-  r5S?: InputMaybe<CurrencyBarInput>;
-  r7D?: InputMaybe<CurrencyBarInput>;
-  r15?: InputMaybe<CurrencyBarInput>;
-  r15S?: InputMaybe<CurrencyBarInput>;
-  r30?: InputMaybe<CurrencyBarInput>;
-  r60?: InputMaybe<CurrencyBarInput>;
-  r240?: InputMaybe<CurrencyBarInput>;
-  r720?: InputMaybe<CurrencyBarInput>;
-};
-
 export type RetrySettings = {
   __typename?: 'RetrySettings';
   maxRetries?: Maybe<Scalars['Int']['output']>;
@@ -6200,7 +6143,7 @@ export enum SandwichLabelForEventType {
   Sandwiched = 'sandwiched'
 }
 
-/** Metadata for a sandwich label */
+/** Metadata for a sandwich label. */
 export type SandwichedLabelData = {
   __typename?: 'SandwichedLabelData';
   /** The amount of `token0` drained in the attack. */
@@ -6209,11 +6152,233 @@ export type SandwichedLabelData = {
   token1DrainedAmount?: Maybe<Scalars['String']['output']>;
 };
 
+export type SessionMetadata = {
+  shouldNotify?: InputMaybe<Scalars['Boolean']['input']>;
+};
+
+export type SimulateContractBalanceErrorsType = {
+  __typename?: 'SimulateContractBalanceErrorsType';
+  tokenContractEthBalanceError?: Maybe<Scalars['String']['output']>;
+  tokenContractTokenBalanceError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateContractBalanceType = {
+  __typename?: 'SimulateContractBalanceType';
+  tokenContractEthBalance?: Maybe<Scalars['String']['output']>;
+  tokenContractTokenBalance?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateCreateTransactionInput = {
+  /** The block number to simulate the contract at. */
+  blockNumber: Scalars['Int']['input'];
+  /** The contract address of the token. */
+  contractAddress: Scalars['String']['input'];
+  /** The contract creation transaction hash from the live network. */
+  createTransactionHash: Scalars['String']['input'];
+  /** The network ID the token is deployed on. Currently only supports 1 (mainnet). */
+  networkId: Scalars['Int']['input'];
+};
+
+export type SimulateCreatorErrorsType = {
+  __typename?: 'SimulateCreatorErrorsType';
+  creatorEthBalanceError?: Maybe<Scalars['String']['output']>;
+  creatorTokenBalanceError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateCreatorType = {
+  __typename?: 'SimulateCreatorType';
+  creatorAddress?: Maybe<Scalars['String']['output']>;
+  creatorEthBalance?: Maybe<Scalars['String']['output']>;
+  creatorTokenBalance?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateDeployErrorsType = {
+  __typename?: 'SimulateDeployErrorsType';
+  deployError?: Maybe<Scalars['String']['output']>;
+  tokenMintedToDeployerError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateDeployInput = {
+  /** The block number to simulate the contract at. */
+  blockNumber: Scalars['Int']['input'];
+  /** The contract address of the token. */
+  contractAddress: Scalars['String']['input'];
+  /** The contract creation transaction input to simulate. */
+  contractInput: Scalars['String']['input'];
+  /** The network ID the token is deployed on. Currently only supports 1 (mainnet). */
+  networkId: Scalars['Int']['input'];
+};
+
+export type SimulateDeployType = {
+  __typename?: 'SimulateDeployType';
+  deploySuccess?: Maybe<Scalars['Boolean']['output']>;
+  tokenMintedToDeployer?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateLiquidityErrorsType = {
+  __typename?: 'SimulateLiquidityErrorsType';
+  addLiquidityError?: Maybe<Scalars['String']['output']>;
+  lpTotalSupplyError?: Maybe<Scalars['String']['output']>;
+  postLiquidityEnableTradingError?: Maybe<Scalars['String']['output']>;
+  preLiquidityEnableTradingError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateLiquidityType = {
+  __typename?: 'SimulateLiquidityType';
+  addLiquiditySuccess?: Maybe<Scalars['Boolean']['output']>;
+  liquiditySetByPreLiquidityOpenTradingCall?: Maybe<Scalars['Boolean']['output']>;
+  lpTotalSupply?: Maybe<Scalars['String']['output']>;
+  pairAddress?: Maybe<Scalars['String']['output']>;
+  postLiquidityEnableTradingCall?: Maybe<Scalars['String']['output']>;
+  postLiquidityEnableTradingSuccess?: Maybe<Scalars['Boolean']['output']>;
+  preLiquidityEnableTradingCall?: Maybe<Scalars['String']['output']>;
+  preLiquidityEnableTradingSuccess?: Maybe<Scalars['Boolean']['output']>;
+  preLiquidityEnableTradingSupportsTransfer?: Maybe<Scalars['Boolean']['output']>;
+};
+
+export type SimulateLiveContractInput = {
+  /** The block number to simulate the contract at. */
+  blockNumber?: InputMaybe<Scalars['Int']['input']>;
+  /** The contract address of the token. */
+  contractAddress: Scalars['String']['input'];
+  /** The network ID the token is deployed on. Currently only supports 1 (mainnet). */
+  networkId: Scalars['Int']['input'];
+};
+
+export type SimulateOwnerErrorsType = {
+  __typename?: 'SimulateOwnerErrorsType';
+  ownerAddressError?: Maybe<Scalars['String']['output']>;
+  ownerEthBalanceError?: Maybe<Scalars['String']['output']>;
+  ownerTokenBalanceError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateOwnerType = {
+  __typename?: 'SimulateOwnerType';
+  ownerAddress?: Maybe<Scalars['String']['output']>;
+  ownerEthBalance?: Maybe<Scalars['String']['output']>;
+  ownerTokenBalance?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateSwapErrorsType = {
+  __typename?: 'SimulateSwapErrorsType';
+  buyError?: Maybe<Scalars['String']['output']>;
+  buyErrorEnum?: Maybe<SimulateTokenContractBuySellErrorEnum>;
+  sellError?: Maybe<Scalars['String']['output']>;
+  sellErrorEnum?: Maybe<SimulateTokenContractBuySellErrorEnum>;
+};
+
+export type SimulateSwapType = {
+  __typename?: 'SimulateSwapType';
+  buyGasUsed?: Maybe<Scalars['String']['output']>;
+  buySuccess?: Maybe<Scalars['Boolean']['output']>;
+  buyTax?: Maybe<Scalars['String']['output']>;
+  maxBuyAmount?: Maybe<Scalars['String']['output']>;
+  maxSellAmount?: Maybe<Scalars['String']['output']>;
+  sellGasUsed?: Maybe<Scalars['String']['output']>;
+  sellSuccess?: Maybe<Scalars['Boolean']['output']>;
+  sellTax?: Maybe<Scalars['String']['output']>;
+};
+
+export enum SimulateTokenContractBuySellErrorEnum {
+  InsufficientLiquidity = 'INSUFFICIENT_LIQUIDITY',
+  InsufficientOutputAmount = 'INSUFFICIENT_OUTPUT_AMOUNT',
+  TransferFailed = 'TRANSFER_FAILED',
+  UnknownError = 'UNKNOWN_ERROR'
+}
+
+export type SimulateTokenContractErrors = {
+  __typename?: 'SimulateTokenContractErrors';
+  contractBalanceErrors: SimulateContractBalanceErrorsType;
+  creatorErrors: SimulateCreatorErrorsType;
+  deployErrors: SimulateDeployErrorsType;
+  liquidityErrors: SimulateLiquidityErrorsType;
+  ownerErrors: SimulateOwnerErrorsType;
+  simulatorError?: Maybe<Scalars['String']['output']>;
+  swapErrors: SimulateSwapErrorsType;
+  tokenErrors: SimulateTokenErrorsType;
+  transferErrors: SimulateTransferErrorsType;
+};
+
+export type SimulateTokenContractInput = {
+  /** Input for a token contract create transaction simulation. */
+  simulateCreateTransactionInput?: InputMaybe<SimulateCreateTransactionInput>;
+  /** Input for a token contract deploy simulation. */
+  simulateDeployInput?: InputMaybe<SimulateDeployInput>;
+  /** Input for a live token contract simulation. */
+  simulateLiveContractInput?: InputMaybe<SimulateLiveContractInput>;
+};
+
+export type SimulateTokenContractResponse = {
+  __typename?: 'SimulateTokenContractResponse';
+  error?: Maybe<Scalars['String']['output']>;
+  result: Scalars['Boolean']['output'];
+  simulationId?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateTokenContractResult = {
+  __typename?: 'SimulateTokenContractResult';
+  analysisType: Scalars['Int']['output'];
+  blockNumber: Scalars['String']['output'];
+  contractBalance: SimulateContractBalanceType;
+  contractHashKey: Scalars['String']['output'];
+  creator: SimulateCreatorType;
+  deploy: SimulateDeployType;
+  errors: SimulateTokenContractErrors;
+  id: Scalars['String']['output'];
+  liquidity: SimulateLiquidityType;
+  networkId: Scalars['Int']['output'];
+  owner: SimulateOwnerType;
+  sortKey: Scalars['String']['output'];
+  status: SimulateTokenContractResultStatusEnum;
+  swap: SimulateSwapType;
+  timestamp: Scalars['Int']['output'];
+  token: SimulateTokenType;
+  transfer: SimulateTransferType;
+  uuid: Scalars['String']['output'];
+  uuidHashKey: Scalars['String']['output'];
+};
+
 export enum SimulateTokenContractResultStatusEnum {
   Failure = 'FAILURE',
   Pending = 'PENDING',
   Success = 'SUCCESS'
 }
+
+export type SimulateTokenErrorsType = {
+  __typename?: 'SimulateTokenErrorsType';
+  canRenounceOwnershipError?: Maybe<Scalars['String']['output']>;
+  canTransferOwnershipError?: Maybe<Scalars['String']['output']>;
+  decimalsError?: Maybe<Scalars['String']['output']>;
+  tokenNameError?: Maybe<Scalars['String']['output']>;
+  tokenSymbolError?: Maybe<Scalars['String']['output']>;
+  totalSupplyError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateTokenType = {
+  __typename?: 'SimulateTokenType';
+  canRenounceOwnership?: Maybe<Scalars['Boolean']['output']>;
+  canTransferOwnership?: Maybe<Scalars['Boolean']['output']>;
+  contractAddress: Scalars['String']['output'];
+  decimals?: Maybe<Scalars['Int']['output']>;
+  isOwnerRenounced?: Maybe<Scalars['Boolean']['output']>;
+  tokenName?: Maybe<Scalars['String']['output']>;
+  tokenSymbol?: Maybe<Scalars['String']['output']>;
+  totalSupply?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateTransferErrorsType = {
+  __typename?: 'SimulateTransferErrorsType';
+  tokenContractApprovalError?: Maybe<Scalars['String']['output']>;
+  tokenTransferredToContractError?: Maybe<Scalars['String']['output']>;
+  userApprovalError?: Maybe<Scalars['String']['output']>;
+};
+
+export type SimulateTransferType = {
+  __typename?: 'SimulateTransferType';
+  tokenContractApprovalSuccess?: Maybe<Scalars['Boolean']['output']>;
+  tokenTransferredToContractSuccess?: Maybe<Scalars['Boolean']['output']>;
+  userApprovalSuccess?: Maybe<Scalars['Boolean']['output']>;
+};
 
 /** Community gathered social links of tokens/NFTs. */
 export type SocialLinks = {
@@ -6301,8 +6466,9 @@ export type Subscription = {
   onEventLabelCreated?: Maybe<EventLabel>;
   /** Live-streamed transactions for a token. */
   onEventsCreated?: Maybe<AddEventsOutput>;
-  /** Live-streamed updates for newly listed tokens. */
+  /** Live-streamed updates for newly listed pairs. */
   onLatestPairUpdated?: Maybe<LatestPair>;
+  onLatestTokens?: Maybe<LatestToken>;
   /** Live-streamed transactions for an NFT asset. */
   onNftAssetsCreated?: Maybe<NftAsset>;
   /** Live-streamed transactions for an NFT collection. */
@@ -6313,6 +6479,7 @@ export type Subscription = {
   onPairMetadataUpdated?: Maybe<PairMetadata>;
   /** Live-streamed price updates for a token. */
   onPriceUpdated?: Maybe<Price>;
+  onSimulateTokenContract: SimulateTokenContractResult;
 };
 
 
@@ -6339,6 +6506,19 @@ export type SubscriptionOnEventsCreatedArgs = {
   address?: InputMaybe<Scalars['String']['input']>;
   id?: InputMaybe<Scalars['String']['input']>;
   quoteToken?: InputMaybe<QuoteToken>;
+};
+
+
+export type SubscriptionOnLatestPairUpdatedArgs = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  networkId?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type SubscriptionOnLatestTokensArgs = {
+  id?: InputMaybe<Scalars['String']['input']>;
+  networkId?: InputMaybe<Scalars['Int']['input']>;
+  tokenAddress?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -6375,6 +6555,13 @@ export type SubscriptionOnPriceUpdatedArgs = {
   networkId?: InputMaybe<Scalars['Int']['input']>;
 };
 
+
+export type SubscriptionOnSimulateTokenContractArgs = {
+  contractAddress?: InputMaybe<Scalars['String']['input']>;
+  networkId: Scalars['Int']['input'];
+  simulationId?: InputMaybe<Scalars['String']['input']>;
+};
+
 /** Event data for a token swap event. */
 export type SwapEventData = {
   __typename?: 'SwapEventData';
@@ -6404,46 +6591,6 @@ export type SwapEventData = {
   tick?: Maybe<Scalars['String']['output']>;
   /** The type of token event, `Swap`. */
   type: EventType;
-};
-
-export type SwapEventDataInput = {
-  amount0?: InputMaybe<Scalars['String']['input']>;
-  amount0In?: InputMaybe<Scalars['String']['input']>;
-  amount0Out?: InputMaybe<Scalars['String']['input']>;
-  amount1?: InputMaybe<Scalars['String']['input']>;
-  amount1In?: InputMaybe<Scalars['String']['input']>;
-  amount1Out?: InputMaybe<Scalars['String']['input']>;
-  amountNonLiquidityToken?: InputMaybe<Scalars['String']['input']>;
-  priceBaseToken?: InputMaybe<Scalars['String']['input']>;
-  priceBaseTokenTotal?: InputMaybe<Scalars['String']['input']>;
-  priceUsd?: InputMaybe<Scalars['String']['input']>;
-  priceUsdTotal?: InputMaybe<Scalars['String']['input']>;
-  tick?: InputMaybe<Scalars['String']['input']>;
-  type: EventType;
-};
-
-export type SwapEventInput = {
-  address: Scalars['String']['input'];
-  baseTokenPrice?: InputMaybe<Scalars['String']['input']>;
-  blockHash: Scalars['String']['input'];
-  blockNumber: Scalars['Int']['input'];
-  data?: InputMaybe<SwapEventDataInput>;
-  eventDisplayType?: InputMaybe<EventDisplayType>;
-  id: Scalars['String']['input'];
-  liquidityToken?: InputMaybe<Scalars['String']['input']>;
-  logIndex: Scalars['Int']['input'];
-  maker?: InputMaybe<Scalars['String']['input']>;
-  networkId: Scalars['Int']['input'];
-  quoteToken?: InputMaybe<QuoteToken>;
-  timestamp: Scalars['Int']['input'];
-  token0PoolValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token0SwapValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token0ValueBase?: InputMaybe<Scalars['String']['input']>;
-  token1PoolValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token1SwapValueUsd?: InputMaybe<Scalars['String']['input']>;
-  token1ValueBase?: InputMaybe<Scalars['String']['input']>;
-  transactionHash: Scalars['String']['input'];
-  transactionIndex: Scalars['Int']['input'];
 };
 
 /** Event data for swapping an NFT into a pool. */
@@ -6494,6 +6641,8 @@ export type SwapNftInPoolEventDataV2 = {
   newSellPriceT: Scalars['String']['output'];
   /** The updated spot price in the pool's liquidity token. */
   newSpotPriceT: Scalars['String']['output'];
+  /** *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds. */
+  nftAssets?: Maybe<Array<Maybe<NftAsset>>>;
   /** Metadata for each of the NFTs involved in the swap. */
   nftsTransfered?: Maybe<Array<Maybe<NftPoolEventNftTransferV2>>>;
   /** The fee for the pool in the pool's liquidity token. */
@@ -6558,6 +6707,8 @@ export type SwapNftOutPoolEventDataV2 = {
   newSellPriceT: Scalars['String']['output'];
   /** The updated spot price in the pool's liquidity token. */
   newSpotPriceT: Scalars['String']['output'];
+  /** *New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds. */
+  nftAssets?: Maybe<Array<Maybe<NftAsset>>>;
   /** Metadata for each of the NFTs involved in the swap. */
   nftsTransfered?: Maybe<Array<Maybe<NftPoolEventNftTransferV2>>>;
   /** The fee for the pool in the pool's liquidity token. */
@@ -6639,6 +6790,8 @@ export type TokenFilterResult = {
   high12?: Maybe<Scalars['String']['output']>;
   /** The highest price in USD in the past 24 hours. */
   high24?: Maybe<Scalars['String']['output']>;
+  /** The number of different wallets holding the token. */
+  holders?: Maybe<Scalars['Int']['output']>;
   /** Whether the token has been flagged as a scam. */
   isScam?: Maybe<Scalars['Boolean']['output']>;
   /** The unix timestamp for the token's last transaction. */
@@ -6735,6 +6888,10 @@ export type TokenFilters = {
   change24?: InputMaybe<NumberFilter>;
   /** The unix timestamp for the creation of the token's first pair. */
   createdAt?: InputMaybe<NumberFilter>;
+  /** The list of exchange contract addresses to filter by. */
+  exchangeAddress?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
+  /** The list of exchange contract IDs to filter by. Applied in conjunction with `network` filter using an OR condition. When used together, the query returns results that match either the specified exchanges or the specified network. */
+  exchangeId?: InputMaybe<Array<InputMaybe<Scalars['String']['input']>>>;
   /** @deprecated FDV isn't supported - use marketCap instead */
   fdv?: InputMaybe<NumberFilter>;
   /** The highest price in USD in the past hour. */
@@ -6745,6 +6902,8 @@ export type TokenFilters = {
   high12?: InputMaybe<NumberFilter>;
   /** The highest price in USD in the past 24 hours. */
   high24?: InputMaybe<NumberFilter>;
+  /** The number of different wallets holding the token. */
+  holders?: InputMaybe<NumberFilter>;
   /** Whether to include tokens that have been flagged as scams. Default: false */
   includeScams?: InputMaybe<Scalars['Boolean']['input']>;
   /** The unix timestamp for the token's last transaction. */
@@ -6761,7 +6920,7 @@ export type TokenFilters = {
   low24?: InputMaybe<NumberFilter>;
   /** The market cap of circulating supply. */
   marketCap?: InputMaybe<NumberFilter>;
-  /** The network ID. */
+  /** The list of network IDs to filter by. Applied in conjunction with `exchangeId` filter using an OR condition. When used together, the query returns results that match either the specified exchanges or the specified network. */
   network?: InputMaybe<Array<InputMaybe<Scalars['Int']['input']>>>;
   /** The token price in USD. */
   priceUSD?: InputMaybe<NumberFilter>;
@@ -6930,6 +7089,7 @@ export enum TokenRankingAttribute {
   High4 = 'high4',
   High12 = 'high12',
   High24 = 'high24',
+  Holders = 'holders',
   LastTransaction = 'lastTransaction',
   Liquidity = 'liquidity',
   Low1 = 'low1',
@@ -7069,40 +7229,23 @@ export type TokenWithMetadata = {
   volume: Scalars['String']['output'];
 };
 
-export type UpdateAggregateBatchInput = {
-  aggregates: ResolutionBarInput;
-  eventSortKey: Scalars['String']['input'];
-  networkId: Scalars['Int']['input'];
-  pairAddress: Scalars['String']['input'];
-  pairId: Scalars['String']['input'];
-  quoteToken?: InputMaybe<QuoteToken>;
-  statsType: TokenPairStatisticsType;
-  timestamp: Scalars['Int']['input'];
+export type UniV3Tick = {
+  __typename?: 'UniV3Tick';
+  liquidityNet?: Maybe<Scalars['String']['output']>;
+  price0?: Maybe<Scalars['String']['output']>;
+  price1?: Maybe<Scalars['String']['output']>;
+  tick?: Maybe<Scalars['Int']['output']>;
 };
 
-export type UpdatePriceInput = {
-  address: Scalars['String']['input'];
-  networkId: Scalars['Int']['input'];
-  priceUsd: Scalars['Float']['input'];
-  timestamp: Scalars['Int']['input'];
-};
-
-export type WalletPnl = {
-  __typename?: 'WalletPnl';
-  address: Scalars['String']['output'];
-  pnl: Pnl;
-  tokens: Array<WalletTokenPnl>;
-};
-
-export type WalletTokenPnl = {
-  __typename?: 'WalletTokenPnl';
-  /** The average buy price for the token */
-  averageEntry?: Maybe<Scalars['Float']['output']>;
-  id: Scalars['String']['output'];
-  /** How much your investment has gained or lost in a percentage */
-  percentChange?: Maybe<Scalars['Float']['output']>;
-  pnl: Pnl;
-  tokenAddress: Scalars['String']['output'];
+/** Response returned by `getUniV3Ticks`. */
+export type UniV3TickConnection = {
+  __typename?: 'UniV3TickConnection';
+  /** The number of ticks returned. */
+  count?: Maybe<Scalars['Int']['output']>;
+  /** Where in the list the server started when returning items. */
+  offset?: Maybe<Scalars['Int']['output']>;
+  /** The list of Uni V3 ticks matching the filter parameters. */
+  results?: Maybe<Array<Maybe<UniV3Tick>>>;
 };
 
 /** Metadata for a washtrade label. */
@@ -7192,20 +7335,12 @@ export type WindowedDetailedNftCurrencyStats = {
   average?: Maybe<DetailedNftStatsStringMetrics>;
   /** The closing price for the time frame. */
   close?: Maybe<DetailedNftStatsStringMetrics>;
-  /** The closing floor listing price for the time frame. */
-  closeListingFloor?: Maybe<DetailedNftStatsStringMetrics>;
-  /** The highest listing price in the time frame. */
-  highestListingFloor?: Maybe<DetailedNftStatsStringMetrics>;
   /** The highest sale price in the time frame. */
   highestSale?: Maybe<DetailedNftStatsStringMetrics>;
-  /** The lowest listing price for the time frame. */
-  listingFloor?: Maybe<DetailedNftStatsStringMetrics>;
   /** The lowest sale price in the time frame. */
   lowestSale?: Maybe<DetailedNftStatsStringMetrics>;
   /** The opening price for the time frame. */
   open?: Maybe<DetailedNftStatsStringMetrics>;
-  /** The opening floor listing price for the time frame. */
-  openListingFloor?: Maybe<DetailedNftStatsStringMetrics>;
   /** The volume over the time frame. */
   volume?: Maybe<DetailedNftStatsStringMetrics>;
 };
@@ -7284,34 +7419,34 @@ export type WindowedDetailedPairStats = {
   timestamps: Array<Maybe<DetailedPairStatsBucketTimestamp>>;
 };
 
-/** Detailed token stats over a time frame. */
+/** Detailed stats over a window. */
 export type WindowedDetailedStats = {
   __typename?: 'WindowedDetailedStats';
   /** The list of start/end timestamps broken down for each bucket within the window. */
   buckets: Array<Maybe<DetailedStatsBucketTimestamp>>;
-  /** The buy volume in USD over the time frame. */
+  /** The buy volume over the window. */
   buyVolume?: Maybe<DetailedStatsStringMetrics>;
-  /** The number of unique buyers over the time frame. */
+  /** The number of unique buyers over the window. */
   buyers: DetailedStatsNumberMetrics;
-  /** The number of buys over the time frame. */
+  /** The number of buys over the window. */
   buys: DetailedStatsNumberMetrics;
   /** The unix timestamp for the end of the window. */
   endTimestamp: Scalars['Int']['output'];
-  /** The sell volume in USD over the time frame. */
+  /** The sell volume over the window. */
   sellVolume?: Maybe<DetailedStatsStringMetrics>;
-  /** The number of unique sellers over the time frame. */
+  /** The number of unique sellers over the window. */
   sellers: DetailedStatsNumberMetrics;
-  /** The number of sells over the time frame. */
+  /** The number of sells over the window. */
   sells: DetailedStatsNumberMetrics;
   /** The unix timestamp for the start of the window. */
   timestamp: Scalars['Int']['output'];
-  /** The number of unique traders over the time frame. */
+  /** The number of unique traders over the window. */
   traders?: Maybe<DetailedStatsNumberMetrics>;
-  /** The number of transactions over the time frame. */
+  /** The transaction count over the window. */
   transactions: DetailedStatsNumberMetrics;
-  /** The trade volume in USD over the time frame. */
+  /** The volume over the window. */
   volume: DetailedStatsStringMetrics;
-  /** The window size used to request detailed token stats. */
+  /** The window size used to request detailed stats. */
   windowSize: DetailedStatsWindowSize;
 };
 
@@ -7319,7 +7454,6 @@ export enum Join__Graph {
   Decodings = 'DECODINGS',
   Meta = 'META',
   Nfts = 'NFTS',
-  Subscriptions = 'SUBSCRIPTIONS',
   Tokens = 'TOKENS',
   Users = 'USERS'
 }
@@ -7337,20 +7471,12 @@ export type StatsCurrency = {
   average?: InputMaybe<StatsFilter>;
   /** The closing price for the time frame. */
   close?: InputMaybe<StatsFilter>;
-  /** The closing floor listing price for the time frame. */
-  closeListingFloor?: InputMaybe<StatsFilter>;
-  /** The highest listing price in the time frame. */
-  highestListingFloor?: InputMaybe<StatsFilter>;
   /** The highest sale price in the time frame. */
   highestSale?: InputMaybe<StatsFilter>;
-  /** The lowest listing price for the time frame. */
-  listingFloor?: InputMaybe<StatsFilter>;
   /** The lowest sale price in the time frame. */
   lowestSale?: InputMaybe<StatsFilter>;
   /** The opening price for the time frame. */
   open?: InputMaybe<StatsFilter>;
-  /** The opening floor listing price for the time frame. */
-  openListingFloor?: InputMaybe<StatsFilter>;
   /** The volume over the time frame. */
   volume?: InputMaybe<StatsFilter>;
   /** The volume by fillsource over the time frame. */
