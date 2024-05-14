@@ -1,6 +1,6 @@
 {
   "name": "@definedfi/sdk",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "engines": {
     "node": ">=17.5.0"
   },
@@ -18,7 +18,14 @@
     "dist",
     "src"
   ],
-  "keywords": ["crypto", "charting", "sdk", "analytics", "blockchain", "api"],
+  "keywords": [
+    "crypto",
+    "charting",
+    "sdk",
+    "analytics",
+    "blockchain",
+    "api"
+  ],
   "repository": "github:definedfi/sdk",
   "author": "Defined.fi",
   "license": "MIT",
