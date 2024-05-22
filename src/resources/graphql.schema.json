@@ -11592,6 +11592,57 @@
             "deprecationReason": null
           },
           {
+            "name": "walletAddress",
+            "description": "The address of the wallet.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "NftCollectionCurrencyStats",
+        "description": "Price stats for an NFT collection over a time frame. Either in USD or the network's base token.",
+        "fields": [
+          {
+            "name": "average",
+            "description": "The average sale price in the time frame.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "NftStatsStringMetrics",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "close",
+            "description": "The closing price for the time frame.",
+            "args": [],
+            "type": {
+              "kind": "OBJECT",
+              "name": "NftStatsStringMetrics",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
             "name": "highestSale",
             "description": "The highest sale price in the time frame.",
             "args": [],
@@ -17743,18 +17794,7 @@
             "description": null,
             "isDeprecated": false,
             "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "NftFillsourceStatsStringMetrics",
-        "description": "String metrics for NFT stats.",
-        "fields": [
+          },
           {
             "name": "LOOKSRAREV2",
             "description": null,
@@ -17864,19 +17904,7 @@
             },
             "isDeprecated": false,
             "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "NftHoldersInput",
-        "description": null,
-        "fields": null,
-        "inputFields": [
+          },
           {
             "name": "current",
             "description": "The total value for the current window.",
@@ -17886,7 +17914,6 @@
               "name": "Float",
               "ofType": null
             },
-            "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -17899,7 +17926,6 @@
               "name": "String",
               "ofType": null
             },
-            "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
           },
@@ -17912,7 +17938,6 @@
               "name": "Float",
               "ofType": null
             },
-            "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
           }
@@ -17956,6 +17981,124 @@
             "description": "Marketplace that filled the NFT order volume. (ex. OPENSEA, BLUR, etc.)",
             "args": [],
             "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "previous",
+            "description": "The total value for the previous window.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "NftHoldersInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "collectionAddress",
+            "description": "The address of the collection contract.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "networkId",
+            "description": "The network ID the collection is deployed on.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "NftHoldersResponse",
+        "description": null,
+        "fields": [
+          {
+            "name": "count",
+            "description": "the unique count of holders for the collection.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "Int",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "items",
+            "description": "The list wallets for a collection.",
+            "args": [],
+            "type": {
               "kind": "NON_NULL",
               "name": null,
               "ofType": {
@@ -17976,13 +18119,17 @@
             "deprecationReason": null
           },
           {
-            "name": "previous",
-            "description": "The total value for the previous window.",
+            "name": "status",
+            "description": "Status of holder. Disabled if on unsupported network or there is insufficient holder data.",
             "args": [],
             "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "ENUM",
+                "name": "HoldersStatus",
+                "ofType": null
+              }
             },
             "isDeprecated": false,
             "deprecationReason": null
@@ -18537,8 +18684,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": true,
-            "deprecationReason": "nftVolumeAll is changing from Int to String - use nftVolumeAllV2 instead."
+            "isDeprecated": false,
+            "deprecationReason": null
           },
           {
             "name": "offerNBT",
@@ -18582,11 +18729,11 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "String",
               "ofType": null
             },
-            "isDeprecated": true,
-            "deprecationReason": "nftsBoughtAll is changing from Int to String - use nftsBoughtAllV2 instead."
+            "isDeprecated": false,
+            "deprecationReason": null
           },
           {
             "name": "poolFeesUSD24",
@@ -18606,7 +18753,7 @@
             "args": [],
             "type": {
               "kind": "SCALAR",
-              "name": "Int",
+              "name": "String",
               "ofType": null
             },
             "isDeprecated": false,
@@ -18645,8 +18792,8 @@
               "name": "String",
               "ofType": null
             },
-            "isDeprecated": true,
-            "deprecationReason": "nftsSoldAll is changing from Int to String - use nftsSoldAllV2 instead."
+            "isDeprecated": false,
+            "deprecationReason": null
           },
           {
             "name": "protocolFeesUSDAll",
@@ -18943,19 +19090,7 @@
             "defaultValue": null,
             "isDeprecated": false,
             "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "INPUT_OBJECT",
-        "name": "NftPoolCollectionFilters",
-        "description": "Input type of `NftPoolCollectionFilters`.",
-        "fields": null,
-        "inputFields": [
+          },
           {
             "name": "highPriceNBT24",
             "description": "The highest sale price within the collection in the network's base token in the past 24 hours.",
@@ -19928,104 +20063,6 @@
             "isDeprecated": false,
             "deprecationReason": null
           },
-          {
-            "name": "poolFeesUSDAll",
-            "description": "The sum of pool fees generated by the collection in USD over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "protocolFeesNBTAll",
-            "description": "The sum of protocol fees generated by the collection in the network's base token over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "protocolFeesUSDAll",
-            "description": "The sum of protocol fees generated by the collection in USD over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "royaltiesNBTAllEstimate",
-            "description": "As estimated sum in the network's base token of the collection's royalties paid to creators by pool swaps over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "royaltiesUSDAllEstimate",
-            "description": "An estimated sum in USD of the collection's royalties paid to creators by pool swaps over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "volumeAllTimeNBT",
-            "description": "The total volume of the collection in the network's base token over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "volumeAllTimeUSD",
-            "description": "The total volume of the collection in USD over the collection's lifetime.",
-            "args": [],
-            "type": {
-              "kind": "SCALAR",
-              "name": "String",
-              "ofType": null
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "ENUM",
-        "name": "NftPoolContractVersion",
-        "description": "The NFT pool contract version.",
-        "fields": null,
-        "inputFields": null,
-        "interfaces": null,
-        "enumValues": [
           {
             "name": "poolFeesUSDAll",
             "description": "The sum of pool fees generated by the collection in USD over the collection's lifetime.",
@@ -22447,196 +22484,6 @@
         "kind": "OBJECT",
         "name": "NftPoolNftDepositEventDataV2",
         "description": "Event data for depositing an NFT into a pool.",
-        "fields": [
-          {
-            "name": "nftAssets",
-            "description": "*New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.",
-            "args": [],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "NftAsset",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "nftTokenAmounts",
-            "description": "The amount of each NFT token deposited.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "nftTokenIds",
-            "description": "The list of NFT token IDs deposited.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "tokenBalanceT",
-            "description": "The amount of token in the contract after the block has processed in the pool's liquidity token.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "type",
-            "description": "The type of NFT pool event, `NFT_DEPOSIT`.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "NftPoolEventType",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "NftPoolNftWithdrawalEventData",
-        "description": "Event data for withdrawing an NFT from a pool.",
-        "fields": [
-          {
-            "name": "nftTokenBalance",
-            "description": "The number of NFTs in the contract after the block has processed.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "nftTokenIds",
-            "description": "The NFT token IDs withdrawn.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "LIST",
-                "name": null,
-                "ofType": {
-                  "kind": "NON_NULL",
-                  "name": null,
-                  "ofType": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  }
-                }
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "tokenBalanceT",
-            "description": "The amount of token in the contract after the block has processed in the pool's liquidity token.",
-            "args": [],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "NftAsset",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
-            "name": "type",
-            "description": "The type of NFT pool event, `NFT_WITHDRAWAL`.",
-            "args": [],
-            "type": {
-              "kind": "NON_NULL",
-              "name": null,
-              "ofType": {
-                "kind": "ENUM",
-                "name": "NftPoolEventType",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          }
-        ],
-        "inputFields": null,
-        "interfaces": [],
-        "enumValues": null,
-        "possibleTypes": null
-      },
-      {
-        "kind": "OBJECT",
-        "name": "NftPoolNftWithdrawalEventDataV2",
-        "description": "Event data for withdrawing an NFT from a pool.",
         "fields": [
           {
             "name": "nftAssets",
@@ -36144,8 +35991,8 @@
             "description": "Returns metadata for a given token.",
             "args": [
               {
-                "name": "contractAddress",
-                "description": null,
+                "name": "address",
+                "description": "The contract address of the token.",
                 "type": {
                   "kind": "NON_NULL",
                   "name": null,
@@ -37149,6 +36996,72 @@
                   "name": "EnhancedToken",
                   "ofType": null
                 }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "walletNftCollectionAssets",
+            "description": "Returns list of NFT assets held by a given wallet for a single collection.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "WalletNftCollectionAssetsInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "WalletNftCollectionAssetsResponse",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "walletNftCollections",
+            "description": "Returns list of collections and quantity of NFTs held by a given wallet.",
+            "args": [
+              {
+                "name": "input",
+                "description": null,
+                "type": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "INPUT_OBJECT",
+                    "name": "WalletNftCollectionsInput",
+                    "ofType": null
+                  }
+                },
+                "defaultValue": null,
+                "isDeprecated": false,
+                "deprecationReason": null
+              }
+            ],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "OBJECT",
+                "name": "WalletNftCollectionsResponse",
+                "ofType": null
               }
             },
             "isDeprecated": false,
@@ -42100,22 +42013,6 @@
             "deprecationReason": null
           },
           {
-            "name": "nftAssets",
-            "description": "*New Param*: The list of NFT assets withdrawn. More extensive info than nftTokenIds.",
-            "args": [],
-            "type": {
-              "kind": "LIST",
-              "name": null,
-              "ofType": {
-                "kind": "OBJECT",
-                "name": "NftAsset",
-                "ofType": null
-              }
-            },
-            "isDeprecated": false,
-            "deprecationReason": null
-          },
-          {
             "name": "nftsTransfered",
             "description": "Metadata for each of the NFTs involved in the swap.",
             "args": [],
@@ -45401,6 +45298,324 @@
         "fields": null,
         "inputFields": null,
         "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "WalletNftCollection",
+        "description": null,
+        "fields": [
+          {
+            "name": "collectionId",
+            "description": "The collection ID (`collectionAddress:networkId`).",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "quantity",
+            "description": "The number of items held by the wallet.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "walletAddress",
+            "description": "The address of the wallet.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "WalletNftCollectionAsset",
+        "description": null,
+        "fields": [
+          {
+            "name": "quantity",
+            "description": "The number of instances of the nft held by the wallet (Applicable to ERC1155 NFTs).",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "tokenId",
+            "description": "The id of the nft asset.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "WalletNftCollectionAssetsInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "collectionId",
+            "description": "The collection ID (`collectionAddress:networkId`).",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "walletAddress",
+            "description": "The address of the wallet.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "WalletNftCollectionAssetsResponse",
+        "description": null,
+        "fields": [
+          {
+            "name": "collectionId",
+            "description": "The collection ID (`collectionAddress:networkId`).",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "items",
+            "description": "The list of nft assets for a wallet.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "WalletNftCollectionAsset",
+                  "ofType": null
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "walletAddress",
+            "description": "The address of the wallet.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "INPUT_OBJECT",
+        "name": "WalletNftCollectionsInput",
+        "description": null,
+        "fields": null,
+        "inputFields": [
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "walletAddress",
+            "description": "The address of the wallet.",
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "SCALAR",
+                "name": "String",
+                "ofType": null
+              }
+            },
+            "defaultValue": null,
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "interfaces": null,
+        "enumValues": null,
+        "possibleTypes": null
+      },
+      {
+        "kind": "OBJECT",
+        "name": "WalletNftCollectionsResponse",
+        "description": null,
+        "fields": [
+          {
+            "name": "cursor",
+            "description": "A cursor for use in pagination.",
+            "args": [],
+            "type": {
+              "kind": "SCALAR",
+              "name": "String",
+              "ofType": null
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          },
+          {
+            "name": "items",
+            "description": "The list of collections for a wallet.",
+            "args": [],
+            "type": {
+              "kind": "NON_NULL",
+              "name": null,
+              "ofType": {
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "NON_NULL",
+                  "name": null,
+                  "ofType": {
+                    "kind": "OBJECT",
+                    "name": "WalletNftCollection",
+                    "ofType": null
+                  }
+                }
+              }
+            },
+            "isDeprecated": false,
+            "deprecationReason": null
+          }
+        ],
+        "inputFields": null,
+        "interfaces": [],
         "enumValues": null,
         "possibleTypes": null
       },

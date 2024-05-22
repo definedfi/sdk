@@ -9657,6 +9657,68 @@ type UniV3TickConnection {
 
 scalar Void
 
+type WalletNftCollection {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The collection ID (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """The number of items held by the wallet."""
+  quantity: String!
+}
+
+type WalletNftCollectionAsset {
+  """The id of the nft asset."""
+  tokenId: String!
+
+  """
+  The number of instances of the nft held by the wallet (Applicable to ERC1155 NFTs).
+  """
+  quantity: String!
+}
+
+input WalletNftCollectionAssetsInput {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The collection ID (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+type WalletNftCollectionAssetsResponse {
+  """The list of nft assets for a wallet."""
+  items: [WalletNftCollectionAsset]!
+
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The collection ID (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+input WalletNftCollectionsInput {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+type WalletNftCollectionsResponse {
+  """The list of collections for a wallet."""
+  items: [WalletNftCollection!]!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
 """Metadata for a washtrade label."""
 type WashtradeLabelForEvent {
   """The label type, 'washtrade'"""
