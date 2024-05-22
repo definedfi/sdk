@@ -2287,6 +2287,18 @@ type NftAssetsConnection {
   cursor: String
 }
 
+"""Wallet balance of an Nft Collection."""
+type NftBalance {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The ID of the collection (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """The number of items held by the wallet."""
+  balance: String!
+}
+
 """
 Price stats for an NFT collection over a time frame. Either in USD or the network's base token.
 """
@@ -3508,6 +3520,33 @@ type NftFillsourceStatsStringMetrics {
 
   """The percent change between the `current` and `previous`."""
   change: Float
+}
+
+input NftHoldersInput {
+  """The address of the collection contract."""
+  collectionAddress: String!
+
+  """The network ID the collection is deployed on."""
+  networkId: Int!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+type NftHoldersResponse {
+  """The list wallets for a collection."""
+  items: [NftBalance!]!
+
+  """the unique count of holders for the collection."""
+  count: Int!
+
+  """A cursor for use in pagination."""
+  cursor: String
+
+  """
+  Status of holder. Disabled if on unsupported network or there is insufficient holder data.
+  """
+  status: HoldersStatus!
 }
 
 """Event data for updating the asset recipient of a pool."""
@@ -7541,6 +7580,21 @@ type Query {
     cursor: String
   ): PrimePoolConnection
 
+  """
+  Returns list of wallets that hold a given collection, ordered by holdings descending. Also has the unique count of holders for that collection
+  """
+  nftHolders(input: NftHoldersInput!): NftHoldersResponse!
+
+  """
+  Returns list of collections and quantity of NFTs held by a given wallet.
+  """
+  walletNftCollections(input: WalletNftCollectionsInput!): WalletNftCollectionsResponse!
+
+  """
+  Returns list of NFT assets held by a given wallet for a single collection.
+  """
+  walletNftCollectionAssets(input: WalletNftCollectionAssetsInput!): WalletNftCollectionAssetsResponse!
+
   """Returns a list of tokens based on a variety of filters."""
   filterTokens(
     """A set of filters to apply."""
@@ -7813,6 +7867,9 @@ type Query {
 
     """The type of statistics returned. Can be `FILTERED` or `UNFILTERED`"""
     statsType: TokenPairStatisticsType
+
+    """guarantees number of bars returned is at most this number"""
+    countback: Int
   ): BarsResponse
 
   """Returns a list of tokens matching a given query string."""
@@ -9599,6 +9656,68 @@ type UniV3TickConnection {
 }
 
 scalar Void
+
+type WalletNftCollection {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The collection ID (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """The number of items held by the wallet."""
+  quantity: String!
+}
+
+type WalletNftCollectionAsset {
+  """The id of the nft asset."""
+  tokenId: String!
+
+  """
+  The number of instances of the nft held by the wallet (Applicable to ERC1155 NFTs).
+  """
+  quantity: String!
+}
+
+input WalletNftCollectionAssetsInput {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The collection ID (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+type WalletNftCollectionAssetsResponse {
+  """The list of nft assets for a wallet."""
+  items: [WalletNftCollectionAsset]!
+
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """The collection ID (`collectionAddress:networkId`)."""
+  collectionId: String!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+input WalletNftCollectionsInput {
+  """The address of the wallet."""
+  walletAddress: String!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
+
+type WalletNftCollectionsResponse {
+  """The list of collections for a wallet."""
+  items: [WalletNftCollection!]!
+
+  """A cursor for use in pagination."""
+  cursor: String
+}
 
 """Metadata for a washtrade label."""
 type WashtradeLabelForEvent {

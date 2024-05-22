@@ -68,12 +68,19 @@ query FilterPairs(
       volumeUSD12
       volumeUSD24
       pair {
-        token0
-        token1
+        address
+        createdAt
+        exchangeHash
+        fee
+        id
+        networkId
         pooled {
           token0
           token1
         }
+        tickSpacing
+        token0
+        token1
       }
       token0 {
         address

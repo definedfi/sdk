@@ -1819,6 +1819,17 @@ export type NftAssetsConnection = {
   items?: Maybe<Array<Maybe<NftAsset>>>;
 };
 
+/** Wallet balance of an Nft Collection. */
+export type NftBalance = {
+  __typename?: 'NftBalance';
+  /** The number of items held by the wallet. */
+  balance: Scalars['String']['output'];
+  /** The ID of the collection (`collectionAddress:networkId`). */
+  collectionId: Scalars['String']['output'];
+  /** The address of the wallet. */
+  walletAddress: Scalars['String']['output'];
+};
+
 /** Price stats for an NFT collection over a time frame. Either in USD or the network's base token. */
 export type NftCollectionCurrencyStats = {
   __typename?: 'NftCollectionCurrencyStats';
@@ -2894,6 +2905,27 @@ export type NftFillsourceStatsStringMetrics = {
   fillsource?: Maybe<Scalars['String']['output']>;
   /** The total value for the previous window. */
   previous?: Maybe<Scalars['String']['output']>;
+};
+
+export type NftHoldersInput = {
+  /** The address of the collection contract. */
+  collectionAddress: Scalars['String']['input'];
+  /** A cursor for use in pagination. */
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  /** The network ID the collection is deployed on. */
+  networkId: Scalars['Int']['input'];
+};
+
+export type NftHoldersResponse = {
+  __typename?: 'NftHoldersResponse';
+  /** the unique count of holders for the collection. */
+  count: Scalars['Int']['output'];
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** The list wallets for a collection. */
+  items: Array<NftBalance>;
+  /** Status of holder. Disabled if on unsupported network or there is insufficient holder data. */
+  status: HoldersStatus;
 };
 
 /** Event data for updating the asset recipient of a pool. */
@@ -5525,6 +5557,8 @@ export type Query = {
   listPairsWithMetadataForToken: ListPairsForTokenResponse;
   /** Returns a list of trending tokens across any given network(s). */
   listTopTokens?: Maybe<Array<TokenWithMetadata>>;
+  /** Returns list of wallets that hold a given collection, ordered by holdings descending. Also has the unique count of holders for that collection */
+  nftHolders: NftHoldersResponse;
   /** Returns metadata for a pair of tokens. */
   pairMetadata: PairMetadata;
   /** Fetch the balance of a wallet holding PRIME on ethereum */
@@ -5541,6 +5575,10 @@ export type Query = {
   tokenSparklines: Array<TokenSparkline>;
   /** Find a list of tokens by their addresses & network id, with pagination. */
   tokens: Array<Maybe<EnhancedToken>>;
+  /** Returns list of NFT assets held by a given wallet for a single collection. */
+  walletNftCollectionAssets: WalletNftCollectionAssetsResponse;
+  /** Returns list of collections and quantity of NFTs held by a given wallet. */
+  walletNftCollections: WalletNftCollectionsResponse;
 };
 
 
@@ -5625,6 +5663,7 @@ export type QueryFilterTokensArgs = {
 
 
 export type QueryGetBarsArgs = {
+  countback?: InputMaybe<Scalars['Int']['input']>;
   currencyCode?: InputMaybe<Scalars['String']['input']>;
   from: Scalars['Int']['input'];
   quoteToken?: InputMaybe<QuoteToken>;
@@ -5941,6 +5980,11 @@ export type QueryListTopTokensArgs = {
 };
 
 
+export type QueryNftHoldersArgs = {
+  input: NftHoldersInput;
+};
+
+
 export type QueryPairMetadataArgs = {
   pairId: Scalars['String']['input'];
   quoteToken?: InputMaybe<QuoteToken>;
@@ -5989,6 +6033,16 @@ export type QueryTokenSparklinesArgs = {
 
 export type QueryTokensArgs = {
   ids?: InputMaybe<Array<TokenInput>>;
+};
+
+
+export type QueryWalletNftCollectionAssetsArgs = {
+  input: WalletNftCollectionAssetsInput;
+};
+
+
+export type QueryWalletNftCollectionsArgs = {
+  input: WalletNftCollectionsInput;
 };
 
 export type Quote = {
@@ -7246,6 +7300,60 @@ export type UniV3TickConnection = {
   offset?: Maybe<Scalars['Int']['output']>;
   /** The list of Uni V3 ticks matching the filter parameters. */
   results?: Maybe<Array<Maybe<UniV3Tick>>>;
+};
+
+export type WalletNftCollection = {
+  __typename?: 'WalletNftCollection';
+  /** The collection ID (`collectionAddress:networkId`). */
+  collectionId: Scalars['String']['output'];
+  /** The number of items held by the wallet. */
+  quantity: Scalars['String']['output'];
+  /** The address of the wallet. */
+  walletAddress: Scalars['String']['output'];
+};
+
+export type WalletNftCollectionAsset = {
+  __typename?: 'WalletNftCollectionAsset';
+  /** The number of instances of the nft held by the wallet (Applicable to ERC1155 NFTs). */
+  quantity: Scalars['String']['output'];
+  /** The id of the nft asset. */
+  tokenId: Scalars['String']['output'];
+};
+
+export type WalletNftCollectionAssetsInput = {
+  /** The collection ID (`collectionAddress:networkId`). */
+  collectionId: Scalars['String']['input'];
+  /** A cursor for use in pagination. */
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  /** The address of the wallet. */
+  walletAddress: Scalars['String']['input'];
+};
+
+export type WalletNftCollectionAssetsResponse = {
+  __typename?: 'WalletNftCollectionAssetsResponse';
+  /** The collection ID (`collectionAddress:networkId`). */
+  collectionId: Scalars['String']['output'];
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** The list of nft assets for a wallet. */
+  items: Array<Maybe<WalletNftCollectionAsset>>;
+  /** The address of the wallet. */
+  walletAddress: Scalars['String']['output'];
+};
+
+export type WalletNftCollectionsInput = {
+  /** A cursor for use in pagination. */
+  cursor?: InputMaybe<Scalars['String']['input']>;
+  /** The address of the wallet. */
+  walletAddress: Scalars['String']['input'];
+};
+
+export type WalletNftCollectionsResponse = {
+  __typename?: 'WalletNftCollectionsResponse';
+  /** A cursor for use in pagination. */
+  cursor?: Maybe<Scalars['String']['output']>;
+  /** The list of collections for a wallet. */
+  items: Array<WalletNftCollection>;
 };
 
 /** Metadata for a washtrade label. */
