@@ -1,4 +1,4 @@
-query GetBars($symbol: String!, $from: Int!, $to: Int!, $resolution: String!, $currencyCode: String, $quoteToken: QuoteToken) {
+query GetBars($symbol: String!, $from: Int!, $to: Int!, $resolution: String!, $currencyCode: String, $quoteToken: QuoteToken, $removeLeadingNullValues: Boolean, $removeEmptyBars: Boolean, $statsType: TokenPairStatisticsType) {
   getBars(
     symbol: $symbol
     from: $from
@@ -6,11 +6,27 @@ query GetBars($symbol: String!, $from: Int!, $to: Int!, $resolution: String!, $c
     resolution: $resolution
     currencyCode: $currencyCode
     quoteToken: $quoteToken
+    removeLeadingNullValues: $removeLeadingNullValues
+    removeEmptyBars: $removeEmptyBars
+    statsType: $statsType
   ) {
-    o
+    buyers
+    buys
+    buyVolume
+    c
     h
     l
-    c
+    liquidity
+    o
+    s
+    sellers
+    sells
+    sellVolume
+    t
+    traders
+    transactions
+    v
     volume
+    volumeNativeToken
   }
 }

@@ -7,5 +7,8 @@ query GetTokens($input: [TokenInput!]) {
     networkId
     symbol
     totalSupply
+    createBlockNumber
+    createdAt
+    createTransactionHash
   }
 }

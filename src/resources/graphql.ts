@@ -6035,16 +6035,6 @@ export type QueryTokensArgs = {
   ids?: InputMaybe<Array<TokenInput>>;
 };
 
-
-export type QueryWalletNftCollectionAssetsArgs = {
-  input: WalletNftCollectionAssetsInput;
-};
-
-
-export type QueryWalletNftCollectionsArgs = {
-  input: WalletNftCollectionsInput;
-};
-
 export type Quote = {
   __typename?: 'Quote';
   poolFee?: Maybe<Scalars['String']['output']>;
@@ -7300,60 +7290,6 @@ export type UniV3TickConnection = {
   offset?: Maybe<Scalars['Int']['output']>;
   /** The list of Uni V3 ticks matching the filter parameters. */
   results?: Maybe<Array<Maybe<UniV3Tick>>>;
-};
-
-export type WalletNftCollection = {
-  __typename?: 'WalletNftCollection';
-  /** The collection ID (`collectionAddress:networkId`). */
-  collectionId: Scalars['String']['output'];
-  /** The number of items held by the wallet. */
-  quantity: Scalars['String']['output'];
-  /** The address of the wallet. */
-  walletAddress: Scalars['String']['output'];
-};
-
-export type WalletNftCollectionAsset = {
-  __typename?: 'WalletNftCollectionAsset';
-  /** The number of instances of the nft held by the wallet (Applicable to ERC1155 NFTs). */
-  quantity: Scalars['String']['output'];
-  /** The id of the nft asset. */
-  tokenId: Scalars['String']['output'];
-};
-
-export type WalletNftCollectionAssetsInput = {
-  /** The collection ID (`collectionAddress:networkId`). */
-  collectionId: Scalars['String']['input'];
-  /** A cursor for use in pagination. */
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  /** The address of the wallet. */
-  walletAddress: Scalars['String']['input'];
-};
-
-export type WalletNftCollectionAssetsResponse = {
-  __typename?: 'WalletNftCollectionAssetsResponse';
-  /** The collection ID (`collectionAddress:networkId`). */
-  collectionId: Scalars['String']['output'];
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars['String']['output']>;
-  /** The list of nft assets for a wallet. */
-  items: Array<Maybe<WalletNftCollectionAsset>>;
-  /** The address of the wallet. */
-  walletAddress: Scalars['String']['output'];
-};
-
-export type WalletNftCollectionsInput = {
-  /** A cursor for use in pagination. */
-  cursor?: InputMaybe<Scalars['String']['input']>;
-  /** The address of the wallet. */
-  walletAddress: Scalars['String']['input'];
-};
-
-export type WalletNftCollectionsResponse = {
-  __typename?: 'WalletNftCollectionsResponse';
-  /** A cursor for use in pagination. */
-  cursor?: Maybe<Scalars['String']['output']>;
-  /** The list of collections for a wallet. */
-  items: Array<WalletNftCollection>;
 };
 
 /** Metadata for a washtrade label. */
