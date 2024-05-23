@@ -84,6 +84,28 @@ query FilterTokens(
         name
         networkId
         symbol
+        isScam
+        socialLinks {
+          bitcointalk
+          blog
+          coingecko
+          coinmarketcap
+          discord
+          email
+          facebook
+          github
+          instagram
+          linkedin
+          reddit
+          slack
+          telegram
+          twitch
+          twitter
+          website
+          wechat
+          whitepaper
+          youtube
+        }
         info {
           imageThumbUrl
           imageSmallUrl
