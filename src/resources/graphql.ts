@@ -61,6 +61,20 @@ export enum AlertRecurrence {
   Once = 'ONCE'
 }
 
+export type ApiToken = {
+  __typename?: 'ApiToken';
+  /** ISO time string for the expiry of the token */
+  expiresTimeString: Scalars['String']['output'];
+  /** Unique identifier for the token */
+  id: Scalars['String']['output'];
+  /** Approximate number of remaining resolutions before this token is rate limited */
+  remaining?: Maybe<Scalars['String']['output']>;
+  /** Number of root fields this api token is allowed to resolve before it's rate limited */
+  requestLimit: Scalars['String']['output'];
+  /** JWT to be passed into the Authorization header for API requests */
+  token: Scalars['String']['output'];
+};
+
 /** Wallet balance of a token. */
 export type Balance = {
   __typename?: 'Balance';
@@ -315,6 +329,15 @@ export enum CostBasisMethod {
   Fifo = 'FIFO'
 }
 
+export type CreateApiTokensInput = {
+  /** Number of tokens to create, default is 1 */
+  count?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of milliseconds until the token expires, defaults to 1 hour (3600000) */
+  expiresIn?: InputMaybe<Scalars['Int']['input']>;
+  /** Number of requests allowed per token, represented as a string, default is 5000 */
+  requestLimit?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type CreateDecodedCallWebhookArgs = {
   alertRecurrence: AlertRecurrence;
   bucketId?: InputMaybe<Scalars['String']['input']>;
@@ -449,6 +472,7 @@ export type CreateWebhooksOutput = {
 };
 
 export enum CreationContext {
+  Mobile = 'MOBILE',
   Telegram = 'TELEGRAM',
   Web = 'WEB'
 }
@@ -785,7 +809,10 @@ export type EnhancedToken = {
   decimals: Scalars['Int']['output'];
   /** A list of exchanges where the token has been traded. */
   exchanges?: Maybe<Array<Exchange>>;
-  /** Information about the token from 3rd party sources. */
+  /**
+   * Information about the token from 3rd party sources.
+   * @deprecated Use the TokenInfo type
+   */
   explorerData?: Maybe<ExplorerTokenData>;
   /** The ID of the token (`address:networkId`). */
   id: Scalars['String']['output'];
@@ -1591,13 +1618,27 @@ export type MintEventData = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  /** Create a new set of short-lived api access tokens */
+  createApiTokens: Array<ApiToken>;
   createWebhooks: CreateWebhooksOutput;
+  /** Delete a single short-lived api access token by id */
+  deleteApiToken: Scalars['String']['output'];
   deleteWebhooks?: Maybe<DeleteWebhooksOutput>;
+};
+
+
+export type MutationCreateApiTokensArgs = {
+  input: CreateApiTokensInput;
 };
 
 
 export type MutationCreateWebhooksArgs = {
   input: CreateWebhooksInput;
+};
+
+
+export type MutationDeleteApiTokenArgs = {
+  id: Scalars['String']['input'];
 };
 
 
@@ -3448,18 +3489,24 @@ export type NftPoolFilterResult = {
   __typename?: 'NftPoolFilterResult';
   /** For ERC1155 pools, the list of NFT token IDs that are accepted by the pool. */
   acceptedNftTokenIds?: Maybe<Array<Maybe<Scalars['String']['output']>>>;
+  /** The wallet address that will receive the tokens or NFT sent to the pair during swaps. */
+  assetRecipientAddress?: Maybe<Scalars['String']['output']>;
   /** The current pool liquidity in the network's base token. */
   balanceNBT?: Maybe<Scalars['String']['output']>;
   /** The current value of the collection in the pool's liquidity token. */
   balanceT?: Maybe<Scalars['String']['output']>;
   /** The current pool liquidity in USD. */
   balanceUSD?: Maybe<Scalars['String']['output']>;
+  /** The contract address of the bonding curve. */
+  bondingCurveAddress: Scalars['String']['output'];
   /** The contract address of the NFT collection. */
   collectionAddress: Scalars['String']['output'];
   /** The name of the NFT collection. */
   collectionName: Scalars['String']['output'];
   /** The symbol of the NFT collection. */
   collectionSymbol: Scalars['String']['output'];
+  /** The delta used in the pool's bonding curve. */
+  delta: Scalars['String']['output'];
   /** The contract address of the NFT AMM marketplace. */
   exchangeAddress: Scalars['String']['output'];
   /** The total sell volume of the pool in the network's base token over the past 24 hours. */
@@ -3474,10 +3521,14 @@ export type NftPoolFilterResult = {
   expenseUSD24?: Maybe<Scalars['String']['output']>;
   /** The total sell volume of the pool in USD over the pool's lifetime. */
   expenseUSDAll?: Maybe<Scalars['String']['output']>;
+  /** The fee amount for the pool. */
+  feeAmount: Scalars['String']['output'];
   /** The ID of the NFT pool (`poolAddress`:`networkId`). */
   id: Scalars['String']['output'];
   /** The network ID the NFT collection is deployed on. */
   networkId: Scalars['Int']['output'];
+  /** The list of NFT assets in the pool. */
+  nftAssets?: Maybe<Array<Maybe<NftAsset>>>;
   /**
    * The current number of NFTs in the pool.
    * @deprecated nftBalance is changing from Int to String - use nftBalanceV2 instead.
@@ -3533,6 +3584,8 @@ export type NftPoolFilterResult = {
   offerT?: Maybe<Scalars['String']['output']>;
   /** The current price at which the pool is willing to buy an NFT in USD. */
   offerUSD?: Maybe<Scalars['String']['output']>;
+  /** The wallet address of the pool owner. */
+  ownerAddress: Scalars['String']['output'];
   /** The contract address of the NFT pool. */
   poolAddress: Scalars['String']['output'];
   /** The sum of pool fees generated by the pool in the network's base token over the past 24 hours. */
@@ -3549,6 +3602,8 @@ export type NftPoolFilterResult = {
   poolFeesUSDAll?: Maybe<Scalars['String']['output']>;
   /** The type of NFT in the pool. */
   poolNftType?: Maybe<PoolNftType>;
+  /** The type of liquidity pool. */
+  poolType: NftPoolType;
   /** The pool variant. Can be `ERC20` or `NATIVE`. */
   poolVariant: GraphQlNftPoolVariant;
   /** The property checker contract address for the pool. */
@@ -3591,6 +3646,8 @@ export type NftPoolFilterResult = {
   spotT?: Maybe<Scalars['String']['output']>;
   /** The unix timestamp indicating the last time the data was updated. Updates every 2 hours. */
   timestamp: Scalars['Int']['output'];
+  /** The contract address of the liquidity token of the pool. */
+  tokenAddress: Scalars['String']['output'];
   /** The NFT pool contract version. Can be `SUDOSWAP_V1` or `SUDOSWAP_V2`. */
   version?: Maybe<NftPoolContractVersion>;
   /** The total volume of the pool in the network's base token over the past 24 hours. */
@@ -4297,6 +4354,8 @@ export type PairFilterResult = {
   liquidity?: Maybe<Scalars['String']['output']>;
   /** The token with higher liquidity in the pair. Can be `token0` or `token1`. */
   liquidityToken?: Maybe<Scalars['String']['output']>;
+  /** The locked liquidity percentage. */
+  lockedLiquidityPercentage: Scalars['Float']['output'];
   /** The lowest price in USD in the past hour. */
   lowPrice1?: Maybe<Scalars['String']['output']>;
   /** The lowest price in USD in the past 4 hours. */
@@ -4403,6 +4462,8 @@ export type PairFilters = {
   lastTransaction?: InputMaybe<NumberFilter>;
   /** The amount of liquidity in the pair. */
   liquidity?: InputMaybe<NumberFilter>;
+  /** The percent amount of liquidity that is locked */
+  lockedLiquidityPercentage?: InputMaybe<NumberFilter>;
   /** The lowest price in USD in the past hour. */
   lowPrice1?: InputMaybe<NumberFilter>;
   /** The lowest price in USD in the past 4 hours. */
@@ -4547,6 +4608,7 @@ export enum PairRankingAttribute {
   HighPrice24 = 'highPrice24',
   LastTransaction = 'lastTransaction',
   Liquidity = 'liquidity',
+  LockedLiquidityPercentage = 'lockedLiquidityPercentage',
   LowPrice1 = 'lowPrice1',
   LowPrice4 = 'lowPrice4',
   LowPrice12 = 'lowPrice12',
@@ -5455,6 +5517,8 @@ export type PrimePoolWithdrawData = {
 
 export type Query = {
   __typename?: 'Query';
+  /** Get all active short-lived api tokens for this api key */
+  apiTokens: Array<ApiToken>;
   /** Returns list of token balances that a wallet has */
   balances: BalancesResponse;
   /** Returns a URL for a pair chart. */
@@ -6060,6 +6124,18 @@ export enum QuoteCurrency {
   Usd = 'USD'
 }
 
+export type QuoteExchange = {
+  __typename?: 'QuoteExchange';
+  factory: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  name: Scalars['String']['output'];
+  networkId: Scalars['Int']['output'];
+  protocol: Scalars['String']['output'];
+  quoter?: Maybe<Scalars['String']['output']>;
+  quoterInterface?: Maybe<Scalars['String']['output']>;
+  router: Scalars['String']['output'];
+};
+
 /** The quote token within the pair. */
 export enum QuoteToken {
   Token0 = 'token0',
@@ -6070,6 +6146,17 @@ export enum QuoteType {
   Input = 'INPUT',
   Output = 'OUTPUT'
 }
+
+export type QuoteV2 = {
+  __typename?: 'QuoteV2';
+  exchange: QuoteExchange;
+  poolFee?: Maybe<Scalars['String']['output']>;
+  poolFeeBps?: Maybe<Scalars['Float']['output']>;
+  quoteType: QuoteType;
+  quotedAmount: Scalars['String']['output'];
+  tradeFee: Scalars['String']['output'];
+  tradeFeeBps: Scalars['Float']['output'];
+};
 
 /** The order of ranking. */
 export enum RankingDirection {
@@ -7037,6 +7124,8 @@ export type TokenInfo = {
   circulatingSupply?: Maybe<Scalars['String']['output']>;
   /** The token ID on CoinMarketCap. */
   cmcId?: Maybe<Scalars['Int']['output']>;
+  /** A description of the token. */
+  description?: Maybe<Scalars['String']['output']>;
   /** Uniquely identifies the token. */
   id: Scalars['String']['output'];
   /** The large token logo URL. */
@@ -7559,6 +7648,7 @@ export type WindowedDetailedStats = {
 };
 
 export enum Join__Graph {
+  ApiAdmin = 'API_ADMIN',
   Decodings = 'DECODINGS',
   Meta = 'META',
   Nfts = 'NFTS',
