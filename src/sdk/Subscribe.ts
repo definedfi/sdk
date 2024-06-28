@@ -12,9 +12,11 @@ import {
   OnEventsCreatedDocument,
   OnNftAssetsCreatedDocument,
   OnNftEventsCreatedDocument,
+  OnPairMetadataUpdatedDocument,
   OnPriceUpdatedDocument,
   SubscriptionOnBarsUpdatedArgs,
   SubscriptionOnEventsCreatedArgs,
+  SubscriptionOnPairMetadataUpdatedArgs,
   SubscriptionOnPriceUpdatedArgs,
 } from "./generated/graphql";
 import { Defined } from "./index";
@@ -31,6 +33,10 @@ export class Subscribe {
     vars: SubscriptionOnDetailedStatsUpdatedArgs,
     sink: Sink,
   ) => this.sdk.subscribe(print(OnDetailedStatsUpdatedDocument), vars, sink);
+  pairMetadata = async (
+    vars: SubscriptionOnPairMetadataUpdatedArgs,
+    sink: Sink,
+  ) => this.sdk.subscribe(print(OnPairMetadataUpdatedDocument), vars, sink);
   nftAssets = async (vars: SubscriptionOnNftAssetsCreatedArgs, sink: Sink) =>
     this.sdk.subscribe(print(OnNftAssetsCreatedDocument), vars, sink);
   nftEvents = async (vars: SubscriptionOnNftEventsCreatedArgs, sink: Sink) =>
