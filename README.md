@@ -1,3 +1,10 @@
+> [!WARNING]
+> We've changed our name from Defined to Codex.
+>
+> There is a new Codex repo, and this Defined repo is no longer maintained.
+>
+> Please go to https://github.com/Codex-Data/sdk to access the SDK.
+
 # Defined SDK
 
 This package exists to help you develop on top of the Defined API (https://docs.defined.fi).
